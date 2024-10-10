@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: datasource-service
+          uri: lb://datasource-service
+          predicates:
+            - Path=/datasource-service/**
+        - id: augmentation-service
+          uri: lb://augmentation-service
+          predicates:
+            - Path=/augmentation-service/**
+        - id: aggregation-service
+          uri: lb://aggregation-service
+          predicates:
+            - Path=/aggregation-service/**
+        - id: alignment-service
+          uri: lb://alignment-service
+          predicates:
+            - Path=/alignment-service/**
+        - id: activation-service
+          uri: lb://activation-service
+          predicates:
+            - Path=/activation-service/**
+        - id: consumer-service
+          uri: lb://consumer-service
+          predicates:
+            - Path=/consumer-service/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+
+server:
+  port: 8762
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
