@@ -1,4 +1,45 @@
-# Overview
+# Semantic Web / ML / GenAI enabled Enterprise Application Integration Framework
+
+## Introduction
+
+In today's competitive landscape, organizations are often hampered by a portfolio of disconnected legacy and modern applications. This creates information silos, manual process inefficiencies, and significant barriers to innovation. This Unified Application Integration Framework project is a strategic initiative designed to address these challenges head-on.
+
+The project's core goal is to "integrate diverse existing / legacy applications or API services" by creating an intelligent middleware layer. This framework will automatically analyze data from various systems, understand the underlying business processes, and expose the combined functionality / use cases through a single, modern, and unified interface keeping in sync this interactions with the underlying integrated applications backends.
+
+## Approach
+
+I’d like to share some thoughts regarding what could be this Semantics / AI enabled Business Integration / Enterprise Application Integration (EAI) platform with a reactive microservices backend I'm willing to implement. I’m currently looking for advice on the frameworks, techniques and patterns used for the implementation.
+
+Particularly I’m needing help with a custom way to encode embeddings, enabling GenAI / MCP custom interactions (not just similarity but also relationships inference). I'm needing help or suggestions about this proposal and the overall architecture, choosing the right components and tools layout before moving into the implementation phase. This includes evaluating which GenAI models and tools could be used somehow leveraging this approach.
+
+## Goal
+
+The idea is to build a layered semantic (RDF4J) set of models with their own levels of abstraction backing a set of microservices (Spring) from data ingestion from integrated business / legacy applications, their datasources, files and APIs to an Activation layer which exposes a unified interface to the integrated applications use cases keeping in sync integrated applications backend with this layer’ interactions.
+
+## Implementation
+
+I’ll be using RDF / FCA (Formal Concept Analysis) for inference in an Aggregation layer, an FCA-based embeddings model for an Alignment layer and DDD (Domain Driven Development) / DOM (Dynamic Object Model) / DCI (Data, Context and Interaction) and Actor / Role Pattern for the mentioned Activation layer.
+
+## Reference documents:
+
+https://github.com/sebxama/sebxama/raw/refs/heads/main/ApplicationService.pdf 
+
+Implementation Roadmap (Work In Progress, needs cleanup):
+
+https://github.com/sebxama/sebxama/raw/refs/heads/main/RoadmapDetail1.4.pdf 
+
+https://github.com/sebxama/sebxama/raw/refs/heads/main/RoadmapDetail3.0.pdf 
+
+https://github.com/sebxama/sebxama/raw/refs/heads/main/RoadmapDetail3.1.pdf 
+
+https://github.com/sebxama/sebxama/raw/refs/heads/main/RoadmapDetail3.2.pdf 
+
+I'm currently just starting with the specification and design phases needing advice in this initial phase about tools and implementation choices.
+
+Sebastian Samaruga.
+https://sebxama.blogspot.com
+
+# Overview (original README)
 
 ![Diagram](https://github.com/sebxama/sebxama/blob/main/Services.png?raw=true "Diagram")
 
