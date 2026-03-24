@@ -52,9 +52,17 @@ Finally, the Facade Service exposes API Endpoints of the dynamic resources with 
 
 #### Services Graph Messages
 
-RDF Quad: (Type : context, Instance : subject, Attribute : predicate, Value : object).
-
+RDF Quad: (Type : context URI, Instance : subject URI, Attribute : predicate URI, Value : object URI).
 Datasource, Augmentation, Facade, Resource Model and Helper Services communicate using this message format.
+
+RDF Quad Reification (as URI):
+datasourceType://datasourceURI/[typeContextID]/[instanceSubjectID]/[attributePredicateID]/[valueObjectID]
+
+URIs unique PrimeIDs Assignment. Registry Helper Service to / from ID / URI string resolution.
+
+URIs pattern matching (partial paths, wildcards / expressions). Naming Helper Service resolves to, for example, a list of instanceSubjectIDs statements for a given typeContextID path.
+
+Representations (Content Types): Index Helper Service provides for dynamic resources schema navigable (production) and activatable (consumption) of rendered URI resources representations.
 
 #### Augmentation Pipeline Services FCA Messages
 
