@@ -1,3 +1,263 @@
+# Project Nexus
+
+2026 Sebastián Samaruga.
+
+This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://www.blogger.com/blog/post/edit/706441601602565934/33844616480881521#).
+
+## Executive Summary
+
+This project defines a next-generation data integration and intelligence framework. Unlike traditional ETL (Extract, Transform, Load) tools that move data from point A to point B, this framework creates a Dynamic Knowledge Facade. It ingests raw data from disparate backends, performs real-time mathematical inference (Augmentation) to discover hidden relationships, and provides a unified API (Facade) for applications to interact with. Crucially, it maintains a bi-directional sync, ensuring that actions taken in the Facade are reflected back in the source systems.
+
+Project Nexus is not just another data pipeline; it is an intelligent, self-organizing data fabric. By investing in this architecture, we will drastically reduce integration overhead, surface hidden business insights mathematically, and provide our teams with a system that adapts to our business in real-time.
+
+Modern enterprise data architecture is plagued by the "Silo Problem"-fragmented data spread across disparate applications that cannot talk to one another effectively. Current solutions use static ETL processes that move data but do not understand it.
+
+Project Nexus is a reactive, semantic data integration framework designed to not just move data, but to Augment it. By applying Formal Concept Analysis (FCA) and Prime ID Embeddings, the platform automatically infers relationships, types, and state transitions, providing a dynamic API Facade that keeps all source systems in bi-directional sync.
+
+## Objective
+
+Develop a framework capable of ingest raw data from any integrated service or application backend, perform any possible "Augmentation" (Aggregation, Alignment and Activation) inferences on them, then provide a dynamic Facade for interacting on the inferred data and schemas, in "intra" or "inter" integrated applications (possibly inferred) use cases (Contexts) REST APIs and keep source integrated services or application back ends in sync with this interactions. Consolidate views of the same data (information) coming from or possibly stored in disparate systems (knowledge).
+
+## Use Cases
+
+If it sees an entity with "Name, Salary, and Manager," it infers this is an "Employee" without a human programmer having to define the database schema.
+
+By analyzing historical contexts (e.g., "Yesterday's Price was Low", "Today's is Mid"), the system automatically predicts and aligns the next logical state ("Tomorrow's will be High").
+
+The system understands business lifecycles. It knows that a "Junior" employee transitions to a "Semi-senior." It automatically exposes the actions required to trigger that state change.
+
+Current State: Employee data is fragmented across Workday (payroll), Jira (performance), and internal directories. Nexus Application: The system ingests all three. Aggregation realizes "J. Doe" in Jira is "John Doe" in Workday by means of entity matching. Activation notices that based on Jira output, John is transitioning from Junior to Semi-senior. The Facade exposes a dynamic button to the HR manager: "Promote John." Clicking this automatically updates Workday and Jira simultaneously.
+
+Current State: Pricing analysts manually pull historical vendor prices to guess tomorrow's material costs. Nexus Application: The platform ingests vendor pricing daily. The Alignment engine analyzes the axis of time (Yesterday: Low -> Today: Mid). It infers a relationship context and flags an Activation alert: "High probability of price spike tomorrow." The Procurement team uses the dynamic API to lock in purchasing contracts today, saving the company money.
+
+Current State: Marketing has no single view of a customer because sales uses Salesforce, support uses Zendesk, and billing uses Stripe.
+
+Nexus Application: By using Rotated SPO Contexts (Person(buys, Product)), the system automatically infers that a Zendesk ticket creator is the exact same entity as a Stripe payer. It generates a real-time, unified Customer Profile API without any DBA writing a single SQL JOIN.
+
+## Technical Implementation Details
+
+### Reactive Services
+
+The whole framework is to be implemented as a series of reactive event driven micro services interacting with each other vía messages.
+
+The Datasource Service is configured to produce / consume model event messages for the configured integrated application backends source data (JDBC, XML, API, JSON, etc. "connectors")
+
+One service, the Resource Model, acts as the main shared state repository to other services (vía helper services). It holds ingested (Datasource) and augmented (Augmentation Pipeline) resources. Augmented resources may have passed through manipulation through the Facade (IO API) Service.
+
+The Augmentation Pipeline performs arithmetic inference over the raw source data: Aggregation (type inference, entity matching), Alignment (link / attribute prediction) and Activation (behavioral state management). It then updates the Resource Model with the aggregated, alignment and activated data.
+
+Finally, the Facade Service exposes API Endpoints of the dynamic resources with their dynamic schemas coming from the augmented (integrated) datasource(s) original data in a REST fashion which enables to augment and sync back resources to datasource(s) data re-augmenting the endpoint interactions exchanged resources.
+
+### Service Endpoints Message formats
+
+#### Services Graph Messages
+
+RDF Quad: (Type : context, Instance : subject, Attribute : predicate, Value : object).
+
+Datasource, Augmentation, Facade, Resource Model and Helper Services communicate using this message format.
+
+#### Augmentation Pipeline Services FCA Messages
+
+FCA ContextPoint(s) instances.
+
+Augmentation Pipeline Services (Aggregation, Alignment and Activation Services) internal communication format. Augmentation Service handles conversion from input / to output Services Graph Messages RDF Quad(s) while pipeline internally uses ContextPoint format Messages.
+
+### Services
+
+#### Datasources Service
+
+Ingestion / sync. Resource Model Service configured sources population / sources sync.
+
+Publish / Consumes to Resource Model.
+
+#### Augmentation Pipeline Services (FCA Contexts stream processing)
+
+Augmentation Service: Aggregation, Alignment, Activation services pipeline wrapper (orchestration / helper services).
+
+Consumes / Publish to Resource Model.
+
+#### Aggregation (Augmentation Pipeline) Service
+
+Type Inference: FCA Concepts.
+
+Entity Matching: Discover Equivalences.
+
+#### Alignment (Augmentation Pipeline) Service
+
+Attribute / Link prediction. Contexts given axis inference.
+
+#### Activation (Augmentation Pipeline) Service
+
+States transition change activations predictions. Attributes given axis shift inference.
+
+##### Augmentation Pipeline Dataflow
+
+Aggregation &lt;-&gt; Alignment &lt;-&gt; Activation
+
+#### Facade Service
+
+NakedObjects like (RESTful / HAL) Endpoint. Generic dynamic Endpoint API / Client. DCI (Data, Contexts and Interactions) semantics.
+
+Activates (exposes) augmented resources in their dynamic endpoints (Naming) and their dynamic schema (discovery) for performing Resource CRUD which in turn gets augmented, persisted (Resource Model) and synced (Datasources).
+
+Consumes / Publish to Augmentation.
+
+#### Resource Model Service
+
+Main shared state repository. Graph (quads) backend.
+
+Content Types / Addressing / Activation (Helper Services).
+
+#### Services Functional Message Streams (Monads) State IO Helper Services
+
+. Naming (Helper) Service : Addressing
+
+. Registry (Helper) Service : Repository
+
+. Index (Helper) Service : Resolution.
+
+This services handles utility methods for the Datasource ingestion / sync, Facade dynamic schema / data and Augmentation inferences interactions to / from the main Resource Model Service.
+
+### Services Dataflow (streams)
+
+Datasources -> Resource Model
+
+Resource Model -> Augmentation
+
+Augmentation -> Facade
+
+Facade -> Augmentation
+
+Augmentation -> Resource Model
+
+Resource Model -> Datasources
+
+## Augmentation Services Implementation
+
+FCA (Formal Concept Analysis):
+
+FCA Contexts: Objects x Attributes matrix.
+
+### Context triples encoding
+
+ContextPoint : (context : ContextPoint, object : ContextPoint, attribute : ContextPoint);
+
+ContextPoint: Augmentation Pipeline Events Message format.
+
+ContextPoint class:
+
+\- uri : String
+
+\- primeID : long
+
+\- context : ContextPoint
+
+\- previousContext : Map&lt;ContextPoint, ContextPoint&gt; // Alignment
+
+\- nextContext : Map&lt;ContextPoint, ContextPoint&gt; // Alignment
+
+\- object : ContextPoint
+
+\- attribute : ContextPoint
+
+\- previousAttribute : Map&lt;ContextPoint, ContextPoint&gt; // Activation
+
+\- nextAttribute : Map&lt;ContextPoint, ContextPoint&gt; // Activation
+
+\- contextOccurrences : Set&lt;Set<ContextPoint&gt;>
+
+\- objectOccurrences : Set&lt;Set<ContextPoint&gt;>
+
+\- attributeOccurrences : Set&lt;Set<ContextPoint&gt;>
+
+\+ getContext() : ContextPoint
+
+\+ getObject() : ContextPoint
+
+\+ getAttribute() : ContextPoint
+
+\+ getContexts() : Set&lt;ContextPoint&gt;
+
+\+ getObjects() : Set&lt;ContextPoint&gt;
+
+\+ getAttributes() : Set&lt;ContextPoint&gt;
+
+\+ getPreviousContext(axis : ContextPoint) : ContextPoint
+
+\+ getNextContext(axis : ContextPoint) : ContextPoint
+
+\+ getPreviousAttribute(axis : ContextPoint) : ContextPoint
+
+\+ getNextAttribute(axis : ContextPoint) : ContextPoint
+
+\+ getPrimeIDEmbedding() : long
+
+### Aggregation (occurrences)
+
+ContextPoint context, object, attribute occurrences aggregated by FCA Formal Concept(s): Set&lt;Set<ContextPoint&gt;>. TODO: Subsumption Operations.
+
+Occurrence Monad: ContextPoint (Context, Object, Attribute Occurrences) wrapper / filter / traversal streams reactive composition / activation.
+
+Render SPO Graphs into FCA Contexts from input triples:
+
+Each S, P, O from input triples with Contexts of their own. Example: Predicate Context, Subject Objects, Object Attributes (P, S, O). "Rotated" SPO Contexts.
+
+(S, P, O) Context;
+
+(P, S, O) Context;
+
+(O, P, S) Context;
+
+### Prime ID Embeddings
+
+Each ContextPoint (singleton for a given URI) is assigned an unique incremental Prime Number Identifier.
+
+For a given ContextPoint occurrence in a given Context its Prime ID Embedding is calculated as the product of this occurrence Prime ID with the Prime ID Embeddings of the other two parts of the occurrences.
+
+For example: given an object in a given context its Prime ID Embedding is the product of its Prime ID (Embedding) by the Prime ID (Embedding) of the occurrence context by the Prime ID (Embeddings) of this object's attributes.
+
+Augmentation Layers. Stream Pipelines:
+
+Aggregation, Alignment, Activation steps. Leverage Prime ID Embeddings for reactive functional composition.
+
+### Augmentation Services
+
+#### Aggregation Service
+
+Type Inference (FCA Formal Concepts). Same attributes: same type. Attributes subset / superset: super / sub types. Aggregated rotated contexts for S / P / O Contexts type inference:
+
+(aPerson(worksAt, anEmployeer))
+
+(worksAt(aPerson, anEmployeer))
+
+(anEmployeer(worksAt, aPerson))
+
+Entity Matching:
+
+"J. Doe" in data source A is the same as "John Doe" in data source B.
+
+#### Alignment Service
+
+Attribute / Link prediction:
+
+Type (upper ontology / hierarchies / order) inference / alignment.
+
+Given type aggregated hierarchies and taking contexts into account as a given axis, predict objects attributes for an axis value shift:
+
+(Yesterday(Price, Low))
+
+(Today(Price, Mid))
+
+(Tomorrow(Price, High))
+
+#### Activation Service
+
+Transforms: available actors in roles in interaction context states transition change activations predictions:
+
+(CurrentStateContext(PreviousStateContext x NextStateContext))
+
+(Semisenior(Junior x Senior))
+
 # Semantic Web / ML / GenAI enabled Enterprise Application Integration Framework
 
 ## Introduction
