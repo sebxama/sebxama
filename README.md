@@ -4,6 +4,14 @@
 
 This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://www.blogger.com/blog/post/edit/706441601602565934/33844616480881521#).
 
+Latest version available at:
+
+[https://github.com/sebxama/sebxama/raw/refs/heads/main/Objective.docx](https://github.com/sebxama/sebxama/raw/refs/heads/main/Objective.docx)
+
+See also:
+
+[https://sebxama.blogspot.com/2026/03/algebraic-embeddings.html](https://sebxama.blogspot.com/2026/03/algebraic-embeddings.html)
+
 ## Executive Summary
 
 This project defines a next-generation data integration and intelligence framework. Unlike traditional ETL (Extract, Transform, Load) tools that move data from point A to point B, this framework creates a Dynamic Knowledge Facade. It ingests raw data from disparate backends, performs real-time mathematical inference (Augmentation) to discover hidden relationships, and provides a unified API (Facade) for applications to interact with. Crucially, it maintains a bi-directional sync, ensuring that actions taken in the Facade are reflected back in the source systems.
