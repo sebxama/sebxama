@@ -2,7 +2,7 @@
 
 2026 Sebastián Samaruga.
 
-This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://www.blogger.com/blog/post/edit/706441601602565934/33844616480881521#).
+This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License]([https://creativecommons.org/licenses/by-nc-sa/4.0/]).
 
 Latest version available at:
 
