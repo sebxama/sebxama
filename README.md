@@ -1,4 +1,4 @@
-# Project Nexus
+# Application Services Model
 
 2026 Sebastián Samaruga.
 
@@ -6,11 +6,11 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 Latest version available at:
 
-[https://github.com/sebxama/sebxama/raw/refs/heads/main/Objective.docx](https://github.com/sebxama/sebxama/raw/refs/heads/main/Objective.docx)
+[https://github.com/sebxama/sebxama/blob/main/Application%20Services%20Model.pdf](https://github.com/sebxama/sebxama/blob/main/Application%20Services%20Model.pdf)
 
 See also:
 
-[https://sebxama.blogspot.com/2026/03/algebraic-embeddings.html](https://sebxama.blogspot.com/2026/03/algebraic-embeddings.html)
+[https://sebxama.blogspot.com](https://sebxama.blogspot.com)
 
 ## Executive Summary
 
