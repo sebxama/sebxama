@@ -59,6 +59,8 @@ Statement Occurrences: SPOs y SKs, PKs, OKs in a given Role (Kind?)
 
 ## Kinds (SubjectKind, PredicateKind, ObjectKind) as Functional Definition Statements
 
+\-
+
 * SK: Domain (Predicates), Range (Objects)  
 * PK: Domain (Subjects), Range (Objects)  
 * OK: Domain (Subjects), Range (Predicates)
@@ -200,9 +202,7 @@ S, P, O: Dimensional Layer Rule SK, PK, OK
 
 # Semantic Services Architecture
 
-Augmentation Pipeline:
-
-Each Service Pipeline Layer Agent is tailored for the Augmentation phase it is configured on by means of augmentation instance data themselves (functional matching / traversal).
+Each Service Pipeline Layer Agent is tailored for the Augmentation phase it is configured on by means of augmentation instance data themselves: Production statements (functional matching / traversal).
 
 Layer processing of streams of input Statements is performed by a set of “processing” Statements (stream) configured (inferred) for each Layer Service Agent phase by means of actual instance data (inference), being applied to input statements 
 
@@ -215,16 +215,16 @@ Pipeline Layers Processing Statements:
 Matching with input Statements. Produces Layers Statements.
 
 Aggregation (DOM Layer): Aggregated Property Statements as Processing Statements:  
-**\-Property:**  
-(Property, SK, PK, OK)
+**Property:**  
+(Property, SK, PK, OK): Kinds are given by the aggregated layer statements SPOs as stated in: Quad Layer Types by Augmentation Agents Pipeline Layers.
 
 Alignment (Dimensional Layer): Aligned Rule Statements as Processing Statements:  
 **Rule:**  
-(Rule, SK, PK, OK)
+(Rule, SK, PK, OK): Kinds are given by the aggregated layer statements SPOs as stated in: Quad Layer Types by Augmentation Agents Pipeline Layers.
 
 Activation (DCI Layer): Activated Context Statements as Processing Statements:  
 **Context:**  
-(Context, SK, PK, OK)
+(Context, SK, PK, OK): Kinds are given by the aggregated layer statements SPOs as stated in: Quad Layer Types by Augmentation Agents Pipeline Layers.
 
 TODO: Determine Resource, Occurrence, Kind, Statement application semantics (functional)  
 TODO: Determine Statement traversal / destructuring for individual components contextual applications.  
@@ -238,6 +238,67 @@ Anything (any backend format) to RDF SPO Triples.
 Synchronization features via Event Bus
 
 Configuration as instance data..
+
+# Augmentation Pipeline
+
+Each Augmentation Pipeline Service Agent performs transformations over their messaging backbone ingested data and publishes results back to the messaging backbone in a Blackboard messaging infrastructure fashion.
+
+Each pipeline layer phase performs transformations given their layer responsibilities:
+
+Context / Role / Type inference in the Aggregation Layer.  
+Ontology Matching / Links / Dimensional / Order and Attributes inference in the Alignment Layer.  
+Contexts (Use Cases) and behaviors (Interactions) in the Activation Layer.
+
+According to its layer of responsibilities, each layer is aware of its “Production” statements, which are the augmented results of previous layers' statements processing. These “Productions” are not static but are a representation of the results of prior augmentations:
+
+Property Statements for Aggregation Layer.  
+Rule Statements for the Alignment Layer.  
+Context Statements for the Activation Layer. 
+
+## Messaging Infrastructure
+
+Blackboard style messaging backbone. All services subscribe and publish to the same topic.
+
+**Messaging Format: TreeGraph**
+
+Raw XML Serialization of Base Model Statements and entities. Layers Statements nested composition (tree like structure). Synchronization to and from an eventual TMRM underlying metamodel.
+
+XSLT for parsing and extracting composed layer statements source layers statements. Statements below in the hierarchy are composed of Statements above them. This XSL Stylesheet transform provides this upper composing layers statements in the context of the layer composed Statement being parsed.
+
+Augmentation: Graph operations performed in transforms results statements:
+
+Downstream layers composition.  
+Upstream layers decomposition.  
+On each composition / decomposition step result statements: Merge with Production Statements (Contexts). Compose / decompose merged transform results statements until merge is no op.
+
+Aggregation:  
+Merge statements obtained with Processing (composing) Statements. FCA Contexts Merge.
+
+Alignment:  
+CPPE Embeddings. Ontology Matching / Links / Dimensional / Order inference.
+
+Activation:  
+Further Statements layers composition downstream in the hierarchy.
+
+## Aggregation Service Agent
+
+Context / Role / Type inference in the Aggregation Layer.
+
+## Alignment Service Agent
+
+Ontology Matching / Links / Dimensional / Order and Attributes inference in the Alignment Layer.
+
+## Activation Service Agent
+
+Contexts (Use Cases) and behaviors (Interactions) in the Activation Layer.
+
+## Helper Services
+
+### Registry Service
+
+### Naming Service
+
+### Index Service
 
 # Leverage TMRM
 
@@ -518,29 +579,555 @@ Activation is the "Activation Energy" required to move from one prime state to a
 * **Monadic Wrap**: The Occurrence Monad captures the prime state of an actor. When the stream processes a "Role" event, it multiplies the actor's prime ID by the role's prime ID.  
 * **Trigger**: If the resulting product matches a known "Success Pattern" (a pre-calculated product of requirements), the **Activation** is fired (e.g., triggering a webhook or a UI change).
 
-# Augmentation Pipeline
+# Leverage W3C DIDs (Distributed Resource Identifiers)
 
-## Messaging Infrastructure
+Use W3C Decentralized Identifiers (DIDs) as a **distributed semantic registry mechanism** for Resources, Statements, Kinds, Schemas, Contexts and other semantic artifacts participating in the service. A DID provides a stable, globally addressable identifier whose associated DID Document can describe the identity, endpoints, metadata and verification mechanisms required to resolve and interact with the corresponding semantic resource.
 
-## Aggregation Service Agent
+Within the proposed architecture, the DID layer acts primarily as a **distributed identity and registry service**, while the TMRM/Base Model remains responsible for representing the semantic graph and its Resource/Occurrence/Statement structures. DIDs can therefore provide a common identity mechanism across independently managed data sources, semantic services and augmentation agents.
 
-## Alignment Service Agent
+The Registry Service could expose APIs/functions such as:
 
-## Activation Service Agent
+* **Resource registration:** register a semantic Resource and associate it with a DID and its Base Model URI/identifier.  
+* **DID resolution:** resolve a DID to its current metadata, semantic endpoints and associated resource information.  
+* **Resource discovery:** discover semantic resources, schemas, Kinds, contexts or services by DID, type, capability or semantic relationship.  
+* **Identity mapping:** maintain mappings between external identifiers, source-specific URIs and canonical DIDs.  
+* **Document/version management:** publish and retrieve changes to the metadata describing a registered resource, supporting versioned semantic definitions.  
+* **Verification:** verify the provenance, controller and integrity of registered semantic resources or statements where appropriate.  
+* **Service endpoint discovery:** expose the APIs, messaging endpoints or graph services through which a registered semantic resource can be accessed.  
+* **Delegation/authorization:** provide a foundation for determining which agents or services are allowed to publish, modify or operate on registered semantic resources.  
+* **Provenance and lineage:** associate resources and semantic statements with their originating registries, sources, agents or augmentation processes.  
+* **Distributed synchronization:** propagate registry changes through the existing Event Bus so that local indexes and semantic services can react to resource registration, update or removal events.
 
-## Helper Services
+A DID can consequently serve as the **distributed identity coordinate** for a semantic resource, while the Registry Service maintains the relationship between that identity and the actual semantic graph structures, endpoints and metadata. The Index Service can use these identifiers when maintaining searchable and numerical indexes, including the Prime ID mappings used by CPPE.
 
-### Registry Service
+This separation allows the architecture to distinguish between **identity, registration and semantic representation**: DIDs identify and locate resources across administrative boundaries; the Registry Service manages their distributed registration and discovery; and the TMRM/Base Model represents their semantic relationships. Augmentation Pipeline agents can then consume resources discovered through the registry and produce Property, Rule and Context Statements as part of the existing Aggregation, Alignment and Activation pipeline.
 
-### Naming Service
+The resulting API surface can therefore provide a common infrastructure for:
 
-### Index Service
+`Register → Resolve → Discover → Verify → Synchronize → Consume`
 
-## W3C DIDs Distributed Resource Identifiers:
+where the registered artifacts are not limited to data entities, but can include semantic schemas, Kinds, processing Statements, Contexts, service capabilities and other resources required to construct the distributed semantic application.
 
-Enable Blockchain Features (Registry Helper Service).
+### **Example: Music catalog as a registered semantic resource**
 
-## Appendix
+Suppose the semantic resource representing an external **Music Catalog** is registered under a DID. Its DID Document could expose a semantic graph endpoint such as:
+
+`https://catalog.example.org/semantic`
+
+The endpoint discovery mechanism tells the system: **“this DID represents a Music Catalog, and this is the service through which its semantic resources can be queried or consumed.”**
+
+For example:
+
+DID: did:example:music-catalog-123
+
+    └── service  
+         ├── type: SemanticGraphService  
+         ├── endpoint: https://catalog.example.org/semantic  
+         └── capabilities:  
+              ├── query  
+              ├── statements  
+              └── events
+
+A local **Registry Service** resolves the DID and discovers the endpoint. The system can then consume statements such as:
+
+(Album42, type, Album)  
+(Album42, digitalVariantOf, Product42)  
+(Artist7, created, Album42)  
+(Product42, availableIn, StoreA)
+
+These statements enter the existing **Augmentation Pipeline**. The Aggregation Agent can infer the relevant types and properties; the Alignment Agent can recognize that `Album` can participate as a `Product`; and the Activation Agent can potentially discover contexts such as `Purchase` or `DigitalDownload`. This follows the document's existing model in which external data is converted to RDF/SPO statements and then processed through Aggregation, Alignment and Activation.
+
+The important point is that **endpoint discovery decouples semantic identity from physical location**:
+
+DID  
+ ↓ resolve  
+Semantic Resource  
+ ↓ discover endpoint  
+SemanticGraphService  
+ ↓ retrieve statements  
+Base Model / TMRM  
+ ↓  
+Aggregation → Alignment → Activation  
+ ↓  
+Discovered Context / Interaction
+
+So, for example, the music store does not need to know beforehand that `Album42` is hosted by a particular catalog API. It can discover the resource through its DID, obtain the semantic service endpoint, ingest its statements, and let the rest of the system determine how that resource participates in the application's existing semantic model.
+
+This also fits the document's proposed **Event Bus synchronization**: if the catalog publishes a new semantic statement—e.g. `Product42 availableIn StoreB`—the event can be consumed by the pipeline, causing the relevant properties, alignments or contexts to be recomputed or activated.
+
+In that sense, **DID service endpoint discovery becomes the bridge between the distributed semantic ecosystem and the local semantic runtime**: it answers *“where/how can I access this semantic resource?”*, while TMRM, FCA, CPPE and the Augmentation Pipeline determine *“what does this resource mean, how does it relate to other resources, and what can the system do with it?”*
+
+W3C Decentralized Identifiers (DIDs) can be used as a **distributed semantic registry mechanism** for identifying Resources and discovering the services through which their semantic representations and capabilities can be accessed. The DID layer provides the distributed identity and service-discovery mechanism, while the Base Model/TMRM remains responsible for representing Resources, Occurrences and Statements and their semantic relationships.
+
+A registered semantic Resource exposes one or more service endpoints through its DID Document. For example, a music catalog could register an Album Resource as:
+
+{
+
+  "id": "did:example:album-42",
+
+  "service": \[
+
+    {
+
+      "id": "did:example:album-42\#semantic",
+
+      "type": "SemanticResourceService",
+
+      "serviceEndpoint": "https://music.example/api/semantic/album-42",
+
+      "capabilities": \[
+
+        "read",
+
+        "query",
+
+        "statements",
+
+        "subscribe"
+
+      \]
+
+    }
+
+  \]
+
+}
+
+The DID therefore provides a stable distributed identity, while the service entry provides the means to discover and access the semantic resource. The exact DID Document structure and transport protocol are implementation choices to be defined by the service; the existing architecture already provides the corresponding Registry, Naming and Index helper-service roles.
+
+A minimal Semantic Resource API could provide operations such as:
+
+GET  /resource/{did}
+
+GET  /resource/{did}/statements
+
+POST /query
+
+POST /statements
+
+POST /subscribe
+
+These APIs should expose the resource using the Base Model's semantic structures rather than requiring consumers to understand the resource's native backend representation. A Datasource Adapter can translate external APIs, databases or other formats into RDF/SPO Statements, which are then incorporated into the TMRM/Base Model. This is consistent with the existing requirement to transform arbitrary datasource formats into RDF SPO triples and with the TMRM APIs for resource management, statement access, traversal and pattern/query matching.
+
+#### **Example: Customer Buys Album**
+
+Consider a distributed music-store application. The following Resources may be registered independently:
+
+did:example:customer-123
+
+did:example:album-42
+
+did:example:inventory-7
+
+The Registry Service resolves their DIDs and discovers their semantic service endpoints. The services expose statements such as:
+
+(Customer123, type, Customer)
+
+(Customer123, state, Available)
+
+(Album42, type, Product)
+
+(Album42, state, InStock)
+
+(Album42, availableIn, Inventory7)
+
+These statements are ingested through the Datasource/semantic adapters and published through the existing messaging backbone. The TMRM/Base Model provides their common semantic representation and context-preserving access.
+
+The Augmentation Pipeline can then process the distributed information:
+
+Distributed DID Resources
+
+          ↓
+
+Service Endpoint Discovery
+
+          ↓
+
+Semantic Resource APIs
+
+          ↓
+
+RDF/SPO / Context Statements
+
+          ↓
+
+TMRM / Base Model
+
+          ↓
+
+Aggregation
+
+  Customer / Product / Properties
+
+          ↓
+
+Alignment
+
+  Available \+ InStock → Purchase Rule
+
+          ↓
+
+Activation
+
+  Purchase Context
+
+          ↓
+
+Purchase Interaction
+
+The Activation Agent can materialize an interaction such as:
+
+Purchase\#123
+
+(Customer123, purchases, Album42)
+
+The resulting interaction can then be reduced to deterministic semantic operations, for example:
+
+CreateLink(Customer123, owns, Album42)
+
+RemoveLink(Album42, availableIn, Inventory7)
+
+EmitEvent(AlbumSold)
+
+This follows the document's model in which Activation produces Context Statements representing use cases and behaviors, while higher-level behaviors can ultimately be reduced to primitive graph transformations and events.  
+The DID mechanism therefore does not execute the `Purchase` operation itself. Its role is to provide the **distributed identity, discovery and access point** from which semantic resources can be consumed. The Semantic Resource API provides access to their statements and capabilities; TMRM provides the semantic graph substrate; Aggregation, Alignment and Activation interpret those statements; and the semantic execution layer performs the resulting graph transformations.
+
+At the service level, the resulting architecture can be summarized as:
+
+DID
+
+  ↓
+
+Registry / DID Resolution
+
+  ↓
+
+Service Endpoint Discovery
+
+  ↓
+
+Semantic Resource API
+
+  ↓
+
+Datasource Adapter
+
+  ↓
+
+TMRM / Base Model
+
+  ↓
+
+Aggregation → Alignment → Activation
+
+  ↓
+
+Context / Interaction
+
+  ↓
+
+Semantic Execution / Events
+
+DIDs consequently provide a mechanism for turning the proposed system from a locally hosted semantic graph into a **distributed semantic application environment**, in which independently managed Resources can publish discoverable semantic services and participate in the same Resource, Statement, Augmentation and Activation infrastructure.
+
+In the architecture described in the document, **the owner/operator of the distributed semantic resource implements its Semantic Resource API**. The DID mechanism does not implement the business functionality; it provides the identity and discovery mechanism that allows the rest of the system to find that API.
+
+For the `Customer buys Album` example:
+
+* **Music Catalog / Album owner** implements the API for `did:example:album-42`, exposing album statements and capabilities.  
+* **Customer service** implements the API for `did:example:customer-123`, exposing the customer's relevant semantic state.  
+* **Inventory service** implements the API for `did:example:inventory-7`, exposing inventory statements and potentially inventory operations.  
+* The **Registry Service** registers these DIDs and makes their service endpoints discoverable.  
+* The **Datasource/semantic adapters** translate the underlying systems' data into the document's Resource/Statement model.  
+* The **semantic runtime**—TMRM, Aggregation, Alignment and Activation agents—consumes those APIs; it does not need to know how the underlying resource is implemented. The document explicitly separates datasource integration, registry services, and the augmentation pipeline.
+
+So architecturally:
+
+Resource Owner
+
+     │
+
+     │ implements
+
+     ▼
+
+Semantic Resource API
+
+     │
+
+     │ registered as
+
+     ▼
+
+DID \+ DID Document
+
+     │
+
+     │ discovered by
+
+     ▼
+
+Registry / Semantic Runtime
+
+     │
+
+     ▼
+
+TMRM → Aggregation → Alignment → Activation
+
+There is one important distinction for the **`Purchase` operation**. The Album resource does not necessarily implement `purchase()` itself. The document's model suggests that **behavior belongs to semantic Contexts and Interactions**, rather than being owned by individual data objects.
+
+Thus, the Album service might expose **data capabilities** such as:
+
+getStatements()
+
+query()
+
+subscribe()
+
+while a **Purchase/Store service** could expose the executable capability:
+
+purchase(customerDID, albumDID)
+
+The Activation Agent discovers that this capability is applicable, and the Purchase service executes the resulting semantic primitives.
+
+**In short:** the resource owner implements the resource API; the Registry/DID infrastructure publishes and discovers it; and the semantic runtime orchestrates those distributed capabilities. The uploaded document does not yet specify which concrete component should host the executable `Purchase` API, so that is an architectural decision still to be defined.
+
+Yes. This changes the architecture in an important way: **the DID identifies a domain service, rather than exposing an API for manipulating an individual resource**.
+
+For the document's model, I think this is actually a better fit. The DID becomes the distributed identity of a **business capability/service**, while the resources (`Customer`, `Album`, `Inventory`) remain semantic entities referenced by that service.
+
+### **Example: Music Store service**
+
+Instead of:
+
+did:example:album-42
+
+    └── /semantic/album-42
+
+          ├── getStatements()
+
+          └── query()
+
+the domain could expose:
+
+did:example:music-store-7
+
+    └── MusicStoreService
+
+          ├── discoverProducts()
+
+          ├── purchaseAlbum()
+
+          ├── reserveInventory()
+
+          ├── createOrder()
+
+          └── subscribeToSales()
+
+The DID Document would therefore advertise **business capabilities**:
+
+{
+
+  "id": "did:example:music-store-7",
+
+  "service": \[
+
+    {
+
+      "id": "did:example:music-store-7\#api",
+
+      "type": "MusicStoreDomainService",
+
+      "serviceEndpoint": "https://store.example/api",
+
+      "capabilities": \[
+
+        "discoverProducts",
+
+        "purchaseAlbum",
+
+        "reserveInventory",
+
+        "createOrder"
+
+      \]
+
+    }
+
+  \]
+
+}
+
+The important shift is:
+
+> **The DID identifies “who provides this business capability?” rather than “where is this particular resource?”**
+
+### **The API becomes domain-driven**
+
+The API would consequently look more like:
+
+POST /products/query
+
+POST /purchases
+
+POST /inventory/reservations
+
+POST /orders
+
+GET  /events
+
+For example:
+
+POST /purchases
+
+{
+
+  "customer": "did:example:customer-123",
+
+  "product": "did:example:album-42"
+
+}
+
+The service implementation then uses its own domain logic and semantic graph to determine whether the purchase is valid.
+
+It might retrieve:
+
+Customer123 → state → Available
+
+Album42     → type  → Product
+
+Album42     → state → InStock
+
+and invoke the semantic pipeline:
+
+Purchase Request
+
+       ↓
+
+Domain Service
+
+       ↓
+
+TMRM / Semantic Graph
+
+       ↓
+
+Aggregation
+
+       ↓
+
+Alignment
+
+       ↓
+
+Activation
+
+       ↓
+
+Purchase Context
+
+       ↓
+
+Execution
+
+This is particularly consistent with the document's later distinction between **data**, **contexts**, and **interactions**. A `Purchase` is not merely a property of an Album; it is a domain interaction involving Customer, Product, Inventory and potentially Order.
+
+### **Where the semantic model fits**
+
+The domain API does **not replace** the semantic layer. Instead, the API becomes the **business-facing boundary over the semantic runtime**.
+
+For example:
+
+                DID
+
+                  │
+
+                  ▼
+
+        MusicStoreDomainService
+
+                  │
+
+        ┌─────────┴─────────┐
+
+        │                   │
+
+  Domain API          Semantic Graph
+
+        │                   │
+
+ purchaseAlbum()       Customer
+
+ reserveInventory()    Product
+
+ createOrder()         Inventory
+
+        │                   │
+
+        └─────────┬─────────┘
+
+                  ▼
+
+       Aggregation / Alignment
+
+                  ▼
+
+             Activation
+
+                  ▼
+
+          Semantic Execution
+
+Thus `purchaseAlbum()` is a **business capability**, while the semantic graph determines the entities, states, relationships and Context under which that capability can be activated.
+
+### **This also gives DIDs a stronger role**
+
+A distributed application could discover a suitable service by DID:
+
+did:example:music-store-7
+
+        ↓
+
+MusicStoreDomainService
+
+        ↓
+
+capability: purchaseAlbum
+
+        ↓
+
+endpoint: https://store.example/api/purchases
+
+Another application could have its own implementation:
+
+did:example:another-store-9
+
+        ↓
+
+MusicStoreDomainService
+
+        ↓
+
+capability: purchaseAlbum
+
+        ↓
+
+endpoint: https://another.example/api/purchases
+
+Both can expose the **same semantic business capability**, while their internal implementations are completely different.
+
+This is where the approach connects strongly to the document's idea of **semantic composition**: the runtime can discover that independently defined domains expose compatible concepts and interactions, align them, and potentially compose them into a larger application.
+
+### **The resulting principle**
+
+I would therefore define the architecture as:
+
+> **DIDs identify distributed domain services and advertise their semantic business capabilities. Domain APIs provide the invocation boundary for those capabilities. The semantic graph provides the shared representation of the domain entities and their state. Aggregation, Alignment and Activation determine how a requested business interaction maps onto that semantic graph, while deterministic semantic primitives perform the resulting state changes.**
+
+This is arguably a better match for the document than a purely resource-oriented DID API because the document ultimately aims at **contexts, interactions and executable behaviors**, not merely distributed CRUD over resources.
+
+# Appendix
 
 ### The key insight: behavior as inferred graph structure
 
