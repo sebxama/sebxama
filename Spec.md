@@ -6,7 +6,7 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 # Summary:
 
-This document describes a data integration and intelligence framework.
+This document describes a semantic RDF based data integration and intelligence framework by means of Aggregation, Alignment and Activation of ontologies.
 
 # Base Model
 
@@ -136,7 +136,7 @@ Augmentation Pipeline Agents consume Statements produced by any other Agent, inc
 
 # Quad Layer Types by Augmentation Agents Pipeline Layers
 
-Each Layer Statement type builds upon upper Layer Statement types. Lower Layer Statements can be decomposed into the upper layers Statements who were the source they were built upon, until reaching DOM Layer Data / Instance SPO Layer Statements.
+Each Layer Statement type builds upon upper Layer Statement types. Lower Layer Statements can be decomposed into the upper layers Statements who were the source they were built upon, until reaching DOM Layer Data / Instance SPO Layer Statements. Also, lower layer statements types can be aggregated / composed into upper layers statements types. One layer output Statement (SK, PK, OK) is next layer input Statement (S, P, O) and vice versa.
 
 ## Aggregation Agent (Data / Schema Statements. DOM Layer). Roles / Types
 
@@ -200,9 +200,16 @@ S, P, O: Dimensional Layer Rule SK, PK, OK
 **Context:**  
 (Context, SK, PK, OK)
 
+# Datasources
+
+Anything (any backend format) to RDF SPO Triples.  
+Synchronization features via Event Bus
+
+Configuration as instance data..
+
 # Semantic Services Architecture
 
-Each Service Pipeline Layer Agent is tailored for the Augmentation phase it is configured on by means of augmentation instance data themselves: Production statements (functional matching / traversal).
+Each Service Pipeline Layer Agent is tailored for the Augmentation phase it is configured on by means of augmentation instance data themselves: Production statements (functional matching / traversal). They are the product of previous Augmentations and are of the type of each Statement Layer topmost types.
 
 Layer processing of streams of input Statements is performed by a set of “processing” Statements (stream) configured (inferred) for each Layer Service Agent phase by means of actual instance data (inference), being applied to input statements 
 
@@ -232,13 +239,6 @@ TODO: Determine Augmentation layers Statements into layers processing Statements
 TODO: Determine inferred layers processing statement types.  
 TODO: Determine primitives (raw triples SPO?)
 
-# Datasources
-
-Anything (any backend format) to RDF SPO Triples.  
-Synchronization features via Event Bus
-
-Configuration as instance data..
-
 # Augmentation Pipeline
 
 Each Augmentation Pipeline Service Agent performs transformations over their messaging backbone ingested data and publishes results back to the messaging backbone in a Blackboard messaging infrastructure fashion.
@@ -254,6 +254,66 @@ According to its layer of responsibilities, each layer is aware of its “Produc
 Property Statements for Aggregation Layer.  
 Rule Statements for the Alignment Layer.  
 Context Statements for the Activation Layer. 
+
+## Augmentation Pipeline Streams Processing
+
+Each pipeline processing agent processes the input Statements of their corresponding processing phase Statement layer types. They do by stream matching of new input data with already “known” Processing Statements from layers previous inference aggregated knowledge. Input and Processing Statements for each layer phase:
+
+Property Statements for Aggregation Layer.  
+Rule Statements for the Alignment Layer.  
+Context Statements for the Activation Layer.
+
+The streaming augmentation is performed in base a “merge” operation of Input and Production Statements at the same “level” in the Statements Layers Hierarchy in two phases: Unfolding and Folding.
+
+For the Unfolding example, for the Alignment Layer for example, Rule Input Statements are “merged” with Rule Processing Statements. Then, both Statement streams are “unfolded” into their upper layer (Transitions in this case) aggregation layer originating statements and then these source statements are “merged” in turn into this layer level statements. This “unfolding” and “merge” occurs until reaching the layer's initial Statement type.
+
+In the Folding case, Input and Production Statements of the same layer level type are “merged” and merge produced layers Statements are aggregated into the next Statement layer Statement type. Then, aggregated merged statements are merged in turn with the Production Statements corresponding unfolded layer until reaching the layer’s final statement type (State in the case of Alignment).
+
+## Possible Merge Approaches
+
+Identity Resolution driven. TODO: Find the way of unambiguously identifying concepts (Resources, Occurrences, Statements, SPOs, Kinds) in a given context. 
+
+### RDF Merge
+
+This approach relies on graph theory. It essentially performs a graph union of multiple RDF datasets. A critical function of an RDF merge is the standardization and renaming of "blank nodes" (anonymous resources) across different graphs to avoid collisions, resulting in a single, unified knowledge graph of subject-predicate-object triples.
+
+### TMRM Merge
+
+TMRM merging is driven strictly by subject identity. If two topics (entities) across different data streams share the same subject locator, subject identifier, or item identifier, they are deterministically merged into a single topic. The resulting merged topic accumulates all the names, occurrences, and associations of the original topics.
+
+### FCA Merge
+
+This approach merges data at the conceptual level by combining "formal contexts" (mappings of objects to their attributes). When two concept lattices are merged, the FCA algorithm recalculates the matrix to build a new, unified lattice. This is highly effective for discovering new structural hierarchies and implicit relationships that weren't visible in the isolated data streams.
+
+### CPPE Based FCA / Model Primitives Merge
+
+Operating at the most atomic level of a data architecture, this approach aligns the fundamental structural primitives (e.g., core entities, base properties, and semantic rules) of the models. By merging the structural primitives *first*, the pipeline creates a standardized baseline context, which is then fed into an FCA merge to build highly accurate, normalized concept lattices.
+
+### Sets Model Based Merge
+
+Rooted in classic set theory, this methodology uses strict mathematical operations (unions, intersections, and relative differences) to combine data. It treats data streams as collections of elements, making it an incredibly fast, deterministic, and highly scalable approach for deduplication and exact-match aggregations.
+
+### Integration into Streams Processing
+
+## To apply these distinct methodologies within the stream processing architecture described previously, they must be orchestrated across the **Unfolding (decomposition)** and **Folding (aggregation)** phases. Because each merge type excels at a different level of semantic complexity, they can be layered sequentially.
+
+#### **1\. The Unfolding Phase (Decomposition & Identity)**
+
+## During unfolding, complex incoming data must be broken down into its foundational components and matched against known processing statements.
+
+* ## **Sets Model Merge (The Filter):** As the high-velocity stream enters, a Sets Model merge can be applied first to perform rapid deduplication (intersections) and isolate novel data (differences).
+
+* ## **TMRM Merge (The Anchor):** Once the data is broken into discrete sets, TMRM is used to determine exact subject identity. By breaking complex input statements down until subject identifiers are found, the pipeline ensures that incoming data is accurately anchored to the correct foundational entities in the Aggregation Layer.
+
+#### **2\. The Folding Phase (Aggregation & Inference)**
+
+## During folding, the pipeline rebuilds the decomposed data, merging it with processing statements to infer new, higher-level contexts.
+
+* ## **Model Primitives & CPPE Merge (The Baseline):** As folding begins, primitive merging aligns the foundational rules and properties (Property Statements). This ensures that disparate data streams are speaking the same structural language before complex relationships are inferred.
+
+* ## **RDF Merge (The Graph Builder):** As statements are aggregated into the Alignment Layer, an RDF merge combines the localized graphs. This establishes the dimensional order and creates new rules (Rule Statements) by linking entities based on their standardized properties.
+
+* ## **FCA Merge (The Activator):** Finally, as the data reaches the Activation Layer, FCA merging is applied to the newly unified RDF graphs. By analyzing the attributes and objects, FCA computes the final conceptual lattice, inferring the overarching use cases, behaviors, and Context Statements required by the system.
 
 ## Messaging Infrastructure
 
