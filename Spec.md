@@ -271,7 +271,27 @@ In the Folding case, Input and Production Statements of the same layer level typ
 
 ## Possible Merge Approaches
 
-Identity Resolution driven. TODO: Find the way of unambiguously identifying concepts (Resources, Occurrences, Statements, SPOs, Kinds) in a given context. 
+Identity Resolution driven. TODO: Find the way of unambiguously identifying concepts (Resources, Occurrences, Statements, SPOs, Kinds) equivalent (in a given role occurrence in a given context).
+
+Merge: Reify as Resources Occurrences, Statements, SPOs, Kinds. Resolve ID of Resources, Contexts (ID, Type), Occurrences (IDs, Contexts, Roles).
+
+Aggregated Processing / Production Statements acts as Templates / Upper ontology alignment schemas.
+
+Layers context merged entities propagate upstream (unfolding) and downstream (folding).
+
+Identity Encoding:
+
+**CPPE Embeddings**  
+Index API.
+
+**FCA / Set Assertion Statements:**  
+(Context, Concept, Role, Occurrence);  
+Concept, Context, Role, Occurrence recursively instance of Set Statements.
+
+Naming Scheme:
+
+Name assignment for inferred entities.  
+Registry Mapping of Merge encodings.
 
 ### RDF Merge
 
