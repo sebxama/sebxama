@@ -123,9 +123,11 @@ Base Model class hierarchy is represented by different meta model approaches (ke
 
 ## RDF Model Representation
 
+Raw RDF Statements Triple (Quad) Store. SPARQL Endpoint.
+
 ## Sets Based Model Representation
 
-Contexts Set
+Contexts Set (Subjects Set, Predicates Set and Objects Set union).
 
 Subjects Set.
 
@@ -133,23 +135,23 @@ Predicates Set.
 
 Objects Set.
 
+Context Kinds Set (Subject Kinds Set, Predicate Kinds Set, Object Kinds Set union).
+
 Subject Kinds Set (Predicates Set intersection with Objects Set).  
       
 Predicate Kinds Set (Subjects Set intersection with Objects Set).  
       
-Object Kinds Set (Subjects Set intersection with Predicates Set).  
-      
-Contexts Set (Subjects Set, Predicates Set and Objects Set union).
-
-Context Kinds Set (Subject Kinds Set, Predicate Kinds Set, Object Kinds Set interaction).
+Object Kinds Set (Subjects Set intersection with Predicates Set).
 
 ## ISO TMRM Model Representation
+
+Underlying common metamodel.
 
 ## FCA Context Lattices Model Representation
 
 ## XML Model Representation
 
-TreeGraph for Statements Stream Processing.
+TreeGraph for nested Statements structures Stream Processing. Pipeline messages format.
 
 # Execution Model: Augmentation Agents Pipeline 
 
@@ -198,7 +200,13 @@ Further Statements layers composition downstream in the hierarchy.
 
 ## Augmentation Layers Domain Model
 
-Augmentation Pipeline Layers Statements aggregation levels encoded messages.
+Augmentation Pipeline Layers Statements aggregation levels encoded messages structure.
+
+Each layer encoding structure leverages the representation of Kinds / Roles as functional extension definitions.
+
+Each layer resembles the same aggregation / folding structures, being each layer topmost input statement format (S, P, O) the previous layers structure (SK, PK, OK). For unfolding / de-aggregation of layer statements each layer (S, P, O) is fed into the upper layer (SK, PK, OK) bottom layer.
+
+Subsequent layers Kinds are aggregated from previous layer Statements CSPOs.
 
 ### Data Layer: Aggregation Agent
 
@@ -208,31 +216,36 @@ Aggregation phase consumes Data / Instance Statements, produces Property Stateme
 
 Layer Types: Instance / Type / Attribute / Property
 
-**Data / Instance:**  
+**Data / Instance Statements:**
+
+Raw CSPO Quad Statements.
+
 (Context, S, P, O)
 
-**Type:**  
-(CK, S,  P, O)  
-(SK, S,  P, O)  
-(PK, S,  P, O)  
-(OK, S,  P, O)
+**Type Statements:**
 
-**Attribute:**  
-(CK, SK,  P, OK)  
-(SK, S,  PK, O)  
-(PK, SK,  P, O)  
-(OK, S,  PK, O)
+Layer Kinds.  
+Kinds in Statement Context Role aggregation of Kind Statements enumeration (Kind functional definition).
 
-**Property:**  
-(Property, SK, PK, OK)
+(CK, S,  P, O): (Employment, :Peter, :worksFor, :anEnterprise)  
+(SK, S,  P, O): (Employee, :Peter, :employer, :anEnterprise)  
+(PK, S,  P, O): (Employment, :Peter, :worksFor, :anEnterprise)  
+(OK, S,  P, O): (Employer, :Peter, :employedBy, :anEnterprise)
 
-Statement Predicates are the Type or Instance of an Action / Verb
+**Attribute Statements:**
 
-:name instanceOf :naming
+Layer Kinds AttributeType(s) as functional Kind definitions. State traversal enumeration.
 
-The Power Set of every attribute contains the sets of attributes of every possible class / concept. Includes relation defines an ordering over the power set. Power Sets (CSPO / Reified Types Sets). All possible Subjects, Predicate, Objects, Kinds Grouped Types. Order Relationship (Includes). CSPO Sets Intersection: All possible Statements. Grammar (production from possible rules).
+(CK, SK,  P, OK): (Employment, Employee, :worksFor, Employer)  
+(SK, S,  PK, O):  (Employee, :Peter, EmploymentRelationship, :anEnterprise)  
+(PK, SK,  P, O):  (EmploymentRelationship, Employee, :worksFor, :anEnterprise)  
+(OK, S,  PK, O): (Employer, :Peter, EmploymentRelationship, :anEnterprise)
 
-Order and hierarchies are defined by subset / superset relationships. An object having attributes who are a superset of another object attributes is “extending” or “after” this object.
+**Property Statements:**
+
+Kinds “static schema / class” property definitions. Information Layer Axis CSPO.
+
+(Kind, SK, PK, OK): (Employment, Employee, EmploymentRelationship, Employer)
 
 ### Information Layer: Alignment Agent
 
@@ -243,40 +256,37 @@ Alignment phase consumes Aggregation Property Statements, produces Rule Statemen
 
 Layer Types: Axis / State / Transition / Rule
 
-**Axis:**  
-S, P, O: Data Layer Property SK, PK, OK  
-(Axis, S, P, O)
+**Axis Statements:**
 
-**State:**  
-(CK, S,  P, O)  
-(SK, S,  P, O)  
-(PK, S,  P, O)  
-(OK, S,  P, O)
+Consumes Data Layer Property Statements as input.
 
-**Transition:**  
-(CK, SK,  P, OK)  
-(SK, S,  PK, O)  
-(PK, SK,  P, O)  
-(OK, S,  PK, O)
+(AxisKindContext, S, P, O): Data Layer (Kind, SK, PK, OK) Property Statement.  
+(Sales, Region, Product, AmountSold)
 
-**Rule:**  
-(Rule, SK, PK, OK)
+**State Statements:**
 
-Dimensional (Contexts) Features
+Layer Kinds.  
+Kinds in Statement Context Role aggregation of Kind Statements enumeration (Kind functional definition).
 
-Kinds, type / state hierarchy / order inference and materialization into Statements. 
+(CK, S,  P, O): (SalesByRegion, Region, Product, AmountSold)  
+(SK, S,  P, O): (ProductByRegion, Region, Product, AmountSold)  
+(PK, S,  P, O): (AmountByProduct, Product, Region, AmountSold)  
+(OK, S,  P, O): (AmountByRegion, Region, Product, AmountSold)
 
-Alignment. Order (axis arrangements). State transitions flow. Infer and encode types / instances state transition networks on a given context on a given event: 
+**Transition Statements:**
 
-* PCN (Previous, Current, Next) in axis / scope Graph Traversal Node Types: Individuals, States (occurrences role types), Associations (events). Order Hierachies. Contexts:  
-  * (Single, Marriage, Married);  
-  * (Marriage, Divorce, Marriage);  
-  * (Single, Married, Divorced);  
-  * (Junior, Promotion, Semisenior);  
-  * (Junior, Semisenior, Senior);  
-  * (Unemployed, Employment, Employee);  
-  * (Unemployed, Employed, Unemployed);  
-  * (John, successor, Peter);
+Layer Kinds AttributeType(s) as functional Kind definitions. Dimensional traversal enumeration.
+
+(CK, SK,  P, OK): (SalesByRegion, ProductByRegion, Region, AmountByRegion)  
+(SK, S,  PK, O): (ProductByRegion, Region, AmountByProduct, Product)  
+(PK, SK,  P, O): (AmountByProduct, ProductByRegion, Product, AmountSold)  
+(OK, S,  PK, O)::(AmountByRegion, Product, AmountByProduct, AmountSold)
+
+**Rule:**
+
+Kinds “static schema / class” property definitions. Knowledge Layer Actor CSPO input.
+
+(Rule, SK, PK, OK): (SalesByRegion, ProductByRegion, AmountByProduct, AmountByRegion)
 
 ### Knowledge Layer: Activation Agent
 
@@ -285,57 +295,66 @@ DCI Layer: Interaction / Context Statements (Transforms, Rules)
 
 Activation phase consumes Alignment Rule Statements, produces Context Statements.
 
-Layer Types: Actor / Role / Verb / Context
+**Actor Statements:**
 
-**Actor:**  
-S, P, O: Dimensional Layer Rule SK, PK, OK  
-(Actor, S, P, O)
+Consumes Information Layer Rule Statements as input.
 
-**Role:**  
-(CK, S,  P, O)  
-(SK, S,  P, O)  
-(PK, S,  P, O)  
-(OK, S,  P, O)
+(ActorKindContext, S, P, O): Information Layer (Rule, SK, PK, OK) Rule Statement.  
+(SalesByRegion, ProductByRegion, AmountByProduct, AmountByRegion)
 
-**Verb:**  
-(CK, SK,  P, OK)  
-(SK, S,  PK, O)  
-(PK, SK,  P, O)  
-(OK, S,  PK, O)
+**Role Statements:**
 
-**Context:**  
-(Context, SK, PK, OK)
+Layer Kinds.  
+Kinds in Statement Context Role aggregation of Kind Statements enumeration (Kind functional definition).
 
-Leveraging Grammars as an LLM Interaction tool
+(CK, S,  P, O): (Store  
+(SK, S,  P, O): (Customer  
+(PK, S,  P, O): (Sale  
+(OK, S,  P, O): (Product
 
-Possible contexts / functional transitions (behavior) as formal grammars rules / productions.  
-Possible Prompts in context. Contexts Roles behaviors Flows. Inference context productions from grammars. Statements as grammars rules / productions.
+**Verb Statements:**
+
+Layer Kinds AttributeType(s) as functional Kind definitions. Interactions enumeration.
+
+(CK, SK,  P, OK): (Store, Customer, :buys, Product)  
+(SK, S,  PK, O): (Customer, ?, Sale, ?)  
+(PK, SK,  P, O): (Sale, Customer, ?, ?)  
+(OK, S,  PK, O): (Product, ?, Sale, ?)
+
+**Context Statements:**
+
+Kinds “static schema / class” property definitions.
+
+(Context, SK, PK, OK) : (Store, Customer, Sale, Product)
 
 # Streaming Agents
 
-Each Service Pipeline Layer Agent is tailored for the Augmentation phase it is configured on by means of augmentation instance data themselves: Production statements (functional matching / traversal). They are the product of previous Augmentations and are of the type of each Statement Layer topmost types.
+Augmentation Pipeline consumes streaming data of XML serialized layers Statements (XML Format).  
+Each layer consumes its corresponding layer encoded Statements from the messaging backbone. Then, augmentation is performed by means of merging input data with previously known data encoded in each layer domain format.
 
-Layer processing of streams of input Statements is performed by a set of “processing” Statements (stream) configured (inferred) for each Layer Service Agent phase by means of actual instance data (inference), being applied to input statements 
+Each layer merged data is “unfolded” into the corresponding previous layer originating Statements. Then, merging is performed again with already known data in the format of the corresponding unfolded layer Statements. This is repeated until the source Data layer (CSPO) raw Statements layer is reached and merged.
 
-Application of layer’s set of processing Statements against input Statements streams is given by means of functionally “applying” processing Statements (Templates / Rules) to input Statements, obtaining Production(s) until reaching “terminal” nodes (output Statements).
+The process continues in a fan in / fan out fashion, folding again merge results Statements into corresponding upper layer Statements formats, merging in each step again with the corresponding already known data of the layer and folding back again into another upper layer until Knowledge Context layer format (the topmost layer) is reached.
 
-Processing layer streams of Statements are “inferred” and “applied” to and from other Statements streams in a functional fashion, matching input Statements to possible processing Statements, and destructuring inputs for matching and applying corresponding processing statements components recursively.
+Each merge / unfold / merge; merge / fold / merge step consumes already known data of each layer for merging by means of an streaming endpoint. Each step also produces output Statements in the messaging backbone for further processing.
+
+This approach functionally “applies” already known data to new / ingested data by means of merging in the sense of considering already known knowledge as templates, rules or an “upper” ontology for matching mechanisms for incorporating new knowledge into the knowledge base. This way, already known data behaves as “code” for new knowledge ingestion and augmentation.
 
 Pipeline Layers Processing Statements:
 
-Matching with input Statements. Produces Layers Statements.
+**Matching layers input Statements. Produced layers output Statements:**
 
-Aggregation (DOM Layer): Aggregated Property Statements as Processing Statements:  
-**Property:**  
-(Property, SK, PK, OK): Kinds are given by the aggregated layer statements SPOs as stated in: Quad Layer Types by Augmentation Agents Pipeline Layers.
+Data Layer (Aggregation):  
+Input: Raw (CSPO) Quad Statements.  
+Output: (CK; SK, PK, OK) Property Quad Statements.
 
-Alignment (Dimensional Layer): Aligned Rule Statements as Processing Statements:  
-**Rule:**  
-(Rule, SK, PK, OK): Kinds are given by the aggregated layer statements SPOs as stated in: Quad Layer Types by Augmentation Agents Pipeline Layers.
+Information Layer (Alignment):  
+Input: Axis Statements (Aggregation Data Layer outputs)  
+Output: Rule Statements.: 
 
-Activation (DCI Layer): Activated Context Statements as Processing Statements:  
-**Context:**  
-(Context, SK, PK, OK): Kinds are given by the aggregated layer statements SPOs as stated in: Quad Layer Types by Augmentation Agents Pipeline Layers.
+Knowledge Layer (Activation):  
+Input: Actor Statements (Alignment Information Layer outputs)  
+Output: Context Statements (DCI Pattern).
 
 TODO: Determine Resource, Occurrence, Kind, Statement application semantics (functional)  
 TODO: Determine Statement traversal / destructuring for individual components contextual applications.  
@@ -345,33 +364,44 @@ TODO: Determine primitives (raw triples SPO?)
 
 ## Augmentation Pipeline
 
-Each Augmentation Pipeline Service Agent performs transformations over their messaging backbone ingested data and publishes results back to the messaging backbone in a Blackboard messaging infrastructure fashion.
+Each Augmentation Pipeline Service Agent consumes Statements from the messaging backbone, applies the processing defined for its layer, and publishes the resulting Statements back to the backbone using the Blackboard messaging pattern.
 
-Each pipeline layer phase performs transformations given their layer responsibilities:
+The pipeline is organized into three augmentation phases:
 
-Context / Role / Type inference in the Aggregation Layer.  
-Ontology Matching / Links / Dimensional / Order and Attributes inference in the Alignment Layer.  
-Contexts (Use Cases) and behaviors (Interactions) in the Activation Layer.
+* **Aggregation (DOM Layer):** infers Context, Role, Type, and Property structures from Data / Instance Statements.  
+* **Alignment (Dimensional Layer):** performs ontology matching, links, dimensional and order inference, producing State, Transition, and Rule structures.  
+* **Activation (DCI Layer):** derives Contexts, Use Cases, and Interactions from Alignment Rules.
 
-According to its layer of responsibilities, each layer is aware of its “Production” statements, which are the augmented results of previous layers' statements processing. These “Productions” are not static but are a representation of the results of prior augmentations:
+Each layer uses **Production Statements** representing the results of previous augmentation processing. These are the layer's inferred knowledge and become the basis for subsequent processing:
 
-Property Statements for Aggregation Layer.  
-Rule Statements for the Alignment Layer.  
-Context Statements for the Activation Layer. 
+* Aggregation → **Property Statements**  
+* Alignment → **Rule Statements**  
+* Activation → **Context Statements**
+
+Production Statements are therefore not static configuration; they represent the current results of augmentation and can be consumed by other pipeline agents, including agents in the same phase.
 
 ## Augmentation Pipeline Streams Processing
 
-Each pipeline processing agent processes the input Statements of their corresponding processing phase Statement layer types. They do by stream matching of new input data with already “known” Processing Statements from layers previous inference aggregated knowledge. Input and Processing Statements for each layer phase:
+Each pipeline agent processes incoming Statement streams by matching them against the **Processing Statements** inferred from previously aggregated knowledge. Processing Statements act as functional templates or rules: when an input Statement matches, the agent applies the corresponding processing Statement to produce new Statements.
 
-Property Statements for Aggregation Layer.  
-Rule Statements for the Alignment Layer.  
-Context Statements for the Activation Layer.
+The Processing Statement type is determined by the pipeline phase:
 
-The streaming augmentation is performed in base a “merge” operation of Input and Production Statements at the same “level” in the Statements Layers Hierarchy in two phases: Unfolding and Folding.
+* **Aggregation:** Property Statements  
+* **Alignment:** Rule Statements  
+* **Activation:** Context Statements
 
-For the Unfolding example, for the Alignment Layer for example, Rule Input Statements are “merged” with Rule Processing Statements. Then, both Statement streams are “unfolded” into their upper layer (Transitions in this case) aggregation layer originating statements and then these source statements are “merged” in turn into this layer level statements. This “unfolding” and “merge” occurs until reaching the layer's initial Statement type.
+Streaming augmentation combines the incoming **Input Statements** with the corresponding **Production Statements** at the same hierarchy level. Processing then occurs in two complementary phases:
 
-In the Folding case, Input and Production Statements of the same layer level type are “merged” and merge produced layers Statements are aggregated into the next Statement layer Statement type. Then, aggregated merged statements are merged in turn with the Production Statements corresponding unfolded layer until reaching the layer’s final statement type (State in the case of Alignment).
+1. **Unfolding** — decompose the input and processing Statements into their source Statements at progressively higher levels of the Statement hierarchy. At each level, the corresponding Statements are merged until the layer's initial Statement type is reached.  
+2. **Folding** — aggregate the merged source Statements back down through the hierarchy, combining each result with the corresponding Production Statements until the layer's final Statement type is reached.
+
+This allows an input Statement to be matched against known processing knowledge while preserving the hierarchical relationship between the Statement and the lower-level Statements from which it was composed.
+
+The resulting stream operations therefore follow a common pattern:
+
+**Input Statements → Match Processing Statements → Unfold / Merge → Fold / Produce → Output Statements**
+
+The specific merge mechanism remains an implementation choice and may use RDF, TMRM, FCA, CPPE-based, or Sets Model approaches.
 
 ## Aggregation Service Agent
 
@@ -421,21 +451,31 @@ Registry Mapping of Merge encodings.
 
 This approach relies on graph theory. It essentially performs a graph union of multiple RDF datasets. A critical function of an RDF merge is the standardization and renaming of "blank nodes" (anonymous resources) across different graphs to avoid collisions, resulting in a single, unified knowledge graph of subject-predicate-object triples.
 
+Merge Statements as RDF graph patterns, combining compatible subjects, predicates, and objects while preserving graph identity and provenance. This provides a straightforward representation for stream-level graph merging and interoperability with RDF-based tooling.
+
 ## TMRM Merge
 
 TMRM merging is driven strictly by subject identity. If two topics (entities) across different data streams share the same subject locator, subject identifier, or item identifier, they are deterministically merged into a single topic. The resulting merged topic accumulates all the names, occurrences, and associations of the original topics.
+
+Perform merging at the TMRM metamodel level, using Resources, Occurrences, Statements, Subjects, Predicates, Objects, and Kinds as the semantic structures being matched and consolidated. This provides the underlying subject-centric merge and identity model for the pipeline.
 
 ## FCA Merge
 
 This approach merges data at the conceptual level by combining "formal contexts" (mappings of objects to their attributes). When two concept lattices are merged, the FCA algorithm recalculates the matrix to build a new, unified lattice. This is highly effective for discovering new structural hierarchies and implicit relationships that weren't visible in the isolated data streams.
 
+Treat matching Statements as formal contexts and merge compatible contexts to derive shared Properties and higher-level relationships. This is particularly suited to the Aggregation phase, where input Statements are consolidated into Property Statements. 
+
 ## CPPE Based FCA / Model Primitives Merge
 
 Operating at the most atomic level of a data architecture, this approach aligns the fundamental structural primitives (e.g., core entities, base properties, and semantic rules) of the models. By merging the structural primitives *first*, the pipeline creates a standardized baseline context, which is then fed into an FCA merge to build highly accurate, normalized concept lattices.
 
+Combine FCA context merging with CPPE/model primitives to support higher-level semantic matching and inference. This approach can be used in the Alignment phase to derive ontology matches, links, dimensions, ordering, and related Rule Statements. 
+
 ## Sets Model Based Merge
 
 Rooted in classic set theory, this methodology uses strict mathematical operations (unions, intersections, and relative differences) to combine data. It treats data streams as collections of elements, making it an incredibly fast, deterministic, and highly scalable approach for deduplication and exact-match aggregations.
+
+Represent Statement components and their relationships as sets and apply set operations such as union, intersection, difference, and compatibility matching. This provides a simple compositional mechanism that can be used as a lower-level merge primitive within the other approaches.
 
 ## Integration into Streams Processing
 
@@ -459,6 +499,37 @@ Rooted in classic set theory, this methodology uses strict mathematical operatio
 
 * ## **FCA Merge (The Activator):** Finally, as the data reaches the Activation Layer, FCA merging is applied to the newly unified RDF graphs. By analyzing the attributes and objects, FCA computes the final conceptual lattice, inferring the overarching use cases, behaviors, and Context Statements required by the system.
 
+### Combining the Approaches for Stream Processing
+
+These approaches can be combined rather than treated as mutually exclusive. A practical streams-processing flow would be:
+
+**1\. Receive and match**  
+ An agent receives an Input Statement and matches it against the applicable Processing and Production Statements.
+
+**2\. Unfold and normalize**  
+ The matched Statements are unfolded into their source-layer Statements. TMRM or RDF can provide the graph representation, while Sets Model operations can perform basic component matching and compatibility checks.
+
+**3\. Merge at the appropriate layer**  
+ The merge mechanism is selected according to the layer's responsibility:
+
+* **Aggregation:** RDF/TMRM representation \+ FCA context merge → Property Statements.  
+* **Alignment:** TMRM/RDF representation \+ CPPE/FCA matching → Rule Statements.  
+* **Activation:** TMRM/RDF representation \+ model/set composition → Context Statements.
+
+**4\. Fold and produce**  
+ The merged source Statements are folded back through the hierarchy. At each level, the resulting Statements are merged with the corresponding Production Statements until the layer's output Statement type is reached.
+
+**5\. Publish the result**  
+ The resulting Production Statements are published to the messaging backbone and become available as processing knowledge for subsequent stream events or downstream agents.
+
+This gives the pipeline a common processing pattern:
+
+> **Input Stream → Match → Unfold → Merge → Infer → Fold → Production Stream**
+
+The important distinction is that **RDF/TMRM provide the graph and semantic representation**, while **FCA, CPPE/model primitives, and Sets Model operations provide progressively higher-level mechanisms for matching, merging, and inference**. This is consistent with the document's existing separation between the messaging/graph infrastructure and the Aggregation, Alignment, and Activation semantics.
+
+I would also add a short note that **the merge approach is an implementation concern, while the Unfolding/Folding stream model is the common processing model**. That keeps the architecture flexible without committing the specification prematurely to one merge technology.
+
 # Leverage TMRM
 
 Underlying graph metamodel.
@@ -479,6 +550,44 @@ TMRM can therefore provide the semantic graph substrate and generic graph operat
 The TMRM layer is thus primarily responsible for **representing and accessing the semantic graph**, rather than implementing the Aggregation, Alignment or Activation semantics themselves. Those services consume and produce the graph structures through the metamodel APIs, allowing the same underlying graph representation to support the DOM, Dimensional and DCI layers described by the Augmentation Pipeline.
 
 This also provides a natural foundation for the existing FCA and CPPE components: FCA can operate over the subject/property structures exposed by the graph, while CPPE can use Resource/Statement identities and identifiers as inputs to its numerical inference mechanisms.
+
+# Dimensional Features
+
+Statement Predicates are the Type or Instance of an Action / Verb
+
+:name instanceOf :naming
+
+The Power Set of every attribute contains the sets of attributes of every possible class / concept. Includes relation defines an ordering over the power set. Power Sets (CSPO / Reified Types Sets). All possible Subjects, Predicate, Objects, Kinds Grouped Types. Order Relationship (Includes). CSPO Sets Intersection: All possible Statements. Grammar (production from possible rules).
+
+Order and hierarchies are defined by subset / superset relationships. An object having attributes who are a superset of another object attributes is “extending” or “after” this object.  
+Dimensional (Contexts) Features
+
+Kinds, type / state hierarchy / order inference and materialization into Statements. 
+
+Alignment. Order (axis arrangements). State transitions flow. Infer and encode types / instances state transition networks on a given context on a given event: 
+
+* PCN (Previous, Current, Next) in axis / scope Graph Traversal Node Types: Individuals, States (occurrences role types), Associations (events). Order Hierachies. Contexts:  
+  * (Single, Marriage, Married);  
+  * (Marriage, Divorce, Marriage);  
+  * (Single, Married, Divorced);  
+  * (Junior, Promotion, Semisenior);  
+  * (Junior, Semisenior, Senior);  
+  * (Unemployed, Employment, Employee);  
+  * (Unemployed, Employed, Unemployed);  
+  * (John, successor, Peter);
+
+Leveraging Grammars as an LLM Interaction tool
+
+Possible contexts / functional transitions (behavior) as formal grammars rules / productions.  
+Possible Prompts in context. Contexts Roles behaviors Flows. Inference context productions from grammars. Statements as grammars rules / productions.
+
+# Leverage RDF
+
+Complete.
+
+# Leverage Sets Model
+
+Complete.
 
 # Leverage FCA
 
