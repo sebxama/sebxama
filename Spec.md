@@ -42,7 +42,7 @@ interface Kind\<PlayerType extends Occurrence,
           AttributeType extends Occurrence,  
           ValueType extends Occurrence\>
 
-class ContextKind extends Context implements Kind\<Context, Subject, Predicate\>
+class ContextKind extends Context implements Kind\<Context, Object, Subject\>
 
 class SubjectKind extends Subject implements Kind\<Subject, Predicate, Object\>
 
@@ -155,7 +155,7 @@ TreeGraph for nested Statements structures Stream Processing. Pipeline messages 
 
 # Execution Model: Augmentation Agents Pipeline 
 
-A layered Data / Information / Knowledge approach which is intended to consume raw RDF data serialized or obtained by data sources connectors which provides synchronization mechanisms for later integration of processed and aggregated Data (Aggregation Layer), inferred matching, completion and dimensional arrangement of Information (Alignment Layer) and activated interactions from API behavior exposure of inferred contexts (Knowledge).
+A layered Data / Information / Knowledge approach which is intended to consume raw RDF data serialized or obtained by data sources connectors which shall provide synchronization mechanisms for later integration of processed and aggregated Data (Aggregation Layer), inferred matching, completion and dimensional arrangement of Information (Alignment Layer) and activated interactions from API behavior exposure of inferred contexts (Knowledge).
 
 Processing of input Data into activated Knowledge through the Alignment phase is performed by means of stream processing of input Statements by each of the Augmentation Pipeline Layers which performs merging of Statements of each layer Statements into the corresponding already known Statements of those layers and “folding” (aggregating) merge result Statements into the next layer Statement type in the hierarchy and then merging again this next layer acquired knowledge with already known Statements of the corresponding layer until reaching the top (bottom) of the layers hierarchy.
 
@@ -214,38 +214,34 @@ DOM Layer: Data / Schema Statements (Roles, Types)
 
 Aggregation phase consumes Data / Instance Statements, produces Property Statements.
 
-Layer Types: Instance / Type / Attribute / Property
+Folding: From input Statements through Property Statements by means of Kinds Aggregation.
+
+Unfolding: From aggregated Property Kind Statements into their originating Kind Statements.
+
+Layer Types: Instance / Type / Property
 
 **Data / Instance Statements:**
 
 Raw CSPO Quad Statements.
 
-(Context, S, P, O)
+(C, S, P, O)
 
 **Type Statements:**
 
-Layer Kinds.  
-Kinds in Statement Context Role aggregation of Kind Statements enumeration (Kind functional definition).
+Layer Kinds.
 
-(CK, S,  P, O): (Employment, :Peter, :worksFor, :anEnterprise)  
-(SK, S,  P, O): (Employee, :Peter, :employer, :anEnterprise)  
-(PK, S,  P, O): (Employment, :Peter, :worksFor, :anEnterprise)  
-(OK, S,  P, O): (Employer, :Peter, :employedBy, :anEnterprise)
+Each layer calculates its corresponding Kinds from their input CSPO Statements from their above input  layer aggregating inputs into their corresponding layer CSPO Kinds (Raw CSPO Statements  in this layer).
 
-**Attribute Statements:**
-
-Layer Kinds AttributeType(s) as functional Kind definitions. State traversal enumeration.
-
-(CK, SK,  P, OK): (Employment, Employee, :worksFor, Employer)  
-(SK, S,  PK, O):  (Employee, :Peter, EmploymentRelationship, :anEnterprise)  
-(PK, SK,  P, O):  (EmploymentRelationship, Employee, :worksFor, :anEnterprise)  
-(OK, S,  PK, O): (Employer, :Peter, EmploymentRelationship, :anEnterprise)
+(CK, S,  P, O): (EmploymentContextKind, :Peter, :worksFor, :anEnterprise)  
+(SK, S,  P, O): (EmployeeSubjectKind, :Peter, :employer, :anEnterprise)  
+(PK, S,  P, O): (EmploymentRelationshipPredicateKind, :Peter, :worksFor, :anEnterprise)  
+(OK, S,  P, O): (EmployerObjectKind, :Peter, :employedBy, :anEnterprise)
 
 **Property Statements:**
 
 Kinds “static schema / class” property definitions. Information Layer Axis CSPO.
 
-(Kind, SK, PK, OK): (Employment, Employee, EmploymentRelationship, Employer)
+(CK, SK, PK, OK): (EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
 
 ### Information Layer: Alignment Agent
 
@@ -254,39 +250,37 @@ Alignment Agent (State / Transition Statements. Dimensional Layer). Matching / O
 
 Alignment phase consumes Aggregation Property Statements, produces Rule Statements.
 
-Layer Types: Axis / State / Transition / Rule
+Folding: From input Statements through Rule Statements by means of Kinds Aggregation.
+
+Unfolding: From aggregated Rule Kind Statements into their originating Kind Statements.
+
+Layer Types: Axis / State / Rule
 
 **Axis Statements:**
 
-Consumes Data Layer Property Statements as input.
+Consumes Data Layer Property CSPO Quad Statements.
 
-(AxisKindContext, S, P, O): Data Layer (Kind, SK, PK, OK) Property Statement.  
-(Sales, Region, Product, AmountSold)
+(C, S, P, O)
+
+Consumes Data Layer Property Statements as input:  
+(CK, SK, PK, OK): (EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind) is an example of  the source (C, S, P, O) of this layer.
 
 **State Statements:**
 
-Layer Kinds.  
-Kinds in Statement Context Role aggregation of Kind Statements enumeration (Kind functional definition).
+Layer Kinds.
 
-(CK, S,  P, O): (SalesByRegion, Region, Product, AmountSold)  
-(SK, S,  P, O): (ProductByRegion, Region, Product, AmountSold)  
-(PK, S,  P, O): (AmountByProduct, Product, Region, AmountSold)  
-(OK, S,  P, O): (AmountByRegion, Region, Product, AmountSold)
+Each layer calculates its corresponding Kinds from their input CSPO Statements from their above input  layer aggregating inputs into their corresponding layer CSPO Kinds (Axis CSPO Statements  in this layer).
 
-**Transition Statements:**
-
-Layer Kinds AttributeType(s) as functional Kind definitions. Dimensional traversal enumeration.
-
-(CK, SK,  P, OK): (SalesByRegion, ProductByRegion, Region, AmountByRegion)  
-(SK, S,  PK, O): (ProductByRegion, Region, AmountByProduct, Product)  
-(PK, SK,  P, O): (AmountByProduct, ProductByRegion, Product, AmountSold)  
-(OK, S,  PK, O)::(AmountByRegion, Product, AmountByProduct, AmountSold)
+(CK, S,  P, O): (AggregatedEmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)  
+(SK, S,  P, O):  (AggregatedEmployeeSubjectKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)  
+(PK, S,  P, O): (AggregatedEmploymentRelationshipPredicateKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)  
+(OK, S,  P, O): (AggregatedEmployerObjectKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
 
 **Rule:**
 
 Kinds “static schema / class” property definitions. Knowledge Layer Actor CSPO input.
 
-(Rule, SK, PK, OK): (SalesByRegion, ProductByRegion, AmountByProduct, AmountByRegion)
+(CK, SK, PK, OK): (AggregatedEmploymentContextKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind)
 
 ### Knowledge Layer: Activation Agent
 
@@ -295,37 +289,37 @@ DCI Layer: Interaction / Context Statements (Transforms, Rules)
 
 Activation phase consumes Alignment Rule Statements, produces Context Statements.
 
+Folding: From input Statements through Context Statements by means of Kinds Aggregation.
+
+Unfolding: From aggregated Context Kind Statements into their originating Kind Statements.
+
+Layer Types: Actor / Role / Context
+
 **Actor Statements:**
 
-Consumes Information Layer Rule Statements as input.
+Consumes Information Layer Property CSPO Quad Statements.
 
-(ActorKindContext, S, P, O): Information Layer (Rule, SK, PK, OK) Rule Statement.  
-(SalesByRegion, ProductByRegion, AmountByProduct, AmountByRegion)
+(C, S, P, O)
+
+Consumes Information Layer Rule Statements as input:  
+(CK, SK, PK, OK): (AggregatedEmploymentContextKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind) is an example of  the source (C, S, P, O) of this layer.
 
 **Role Statements:**
 
-Layer Kinds.  
-Kinds in Statement Context Role aggregation of Kind Statements enumeration (Kind functional definition).
+Layer Kinds.
 
-(CK, S,  P, O): (Store  
-(SK, S,  P, O): (Customer  
-(PK, S,  P, O): (Sale  
-(OK, S,  P, O): (Product
+Each layer calculates its corresponding Kinds from their input CSPO Statements from their above input  layer aggregating inputs into their corresponding layer CSPO Kinds (Actor CSPO Statements  in this layer).
 
-**Verb Statements:**
-
-Layer Kinds AttributeType(s) as functional Kind definitions. Interactions enumeration.
-
-(CK, SK,  P, OK): (Store, Customer, :buys, Product)  
-(SK, S,  PK, O): (Customer, ?, Sale, ?)  
-(PK, SK,  P, O): (Sale, Customer, ?, ?)  
-(OK, S,  PK, O): (Product, ?, Sale, ?)
+(CK, S,  P, O): (EmploymentRoleKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind)  
+(SK, S,  P, O): (EmployeeRoleKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind)  
+(PK, S,  P, O): (EmploymentRelationshipRoleKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind)  
+(OK, S,  P, O): (EmploymentProviderRoleKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind)
 
 **Context Statements:**
 
 Kinds “static schema / class” property definitions.
 
-(Context, SK, PK, OK) : (Store, Customer, Sale, Product)
+(CK, SK, PK, OK) : (EmploymentRoleKind, EmployeeRoleKind, EmploymentRelationshipRoleKind, EmploymentProviderRoleKind)
 
 # Streaming Agents
 
@@ -336,7 +330,7 @@ Each layer merged data is “unfolded” into the corresponding previous layer o
 
 The process continues in a fan in / fan out fashion, folding again merge results Statements into corresponding upper layer Statements formats, merging in each step again with the corresponding already known data of the layer and folding back again into another upper layer until Knowledge Context layer format (the topmost layer) is reached.
 
-Each merge / unfold / merge; merge / fold / merge step consumes already known data of each layer for merging by means of an streaming endpoint. Each step also produces output Statements in the messaging backbone for further processing.
+Each merge / unfold / merge; merge / fold / merge step consumes already known data of each layer for merging by means of a streaming endpoint. Each step also produces output Statements in the messaging backbone for further processing.
 
 This approach functionally “applies” already known data to new / ingested data by means of merging in the sense of considering already known knowledge as templates, rules or an “upper” ontology for matching mechanisms for incorporating new knowledge into the knowledge base. This way, already known data behaves as “code” for new knowledge ingestion and augmentation.
 
@@ -372,17 +366,17 @@ The pipeline is organized into three augmentation phases:
 * **Alignment (Dimensional Layer):** performs ontology matching, links, dimensional and order inference, producing State, Transition, and Rule structures.  
 * **Activation (DCI Layer):** derives Contexts, Use Cases, and Interactions from Alignment Rules.
 
-Each layer uses **Production Statements** representing the results of previous augmentation processing. These are the layer's inferred knowledge and become the basis for subsequent processing:
+Each layer uses **Previously known Statements** representing the results of previous augmentation processing. These are the layer's inferred knowledge and become the basis for subsequent processing:
 
 * Aggregation → **Property Statements**  
 * Alignment → **Rule Statements**  
 * Activation → **Context Statements**
 
-Production Statements are therefore not static configuration; they represent the current results of augmentation and can be consumed by other pipeline agents, including agents in the same phase.
+Layer Statements are therefore not static configuration; they represent the current results of augmentation and can be consumed by other pipeline agents, including agents in the same phase.
 
 ## Augmentation Pipeline Streams Processing
 
-Each pipeline agent processes incoming Statement streams by matching them against the **Processing Statements** inferred from previously aggregated knowledge. Processing Statements act as functional templates or rules: when an input Statement matches, the agent applies the corresponding processing Statement to produce new Statements.
+Each pipeline agent processes incoming Statement streams by matching them against the **Previously known Statements** inferred from previously aggregated knowledge. This Statements act as functional templates or rules: when an input Statement matches, the agent applies the corresponding processing Statement to produce new Statements.
 
 The Processing Statement type is determined by the pipeline phase:
 
@@ -390,18 +384,18 @@ The Processing Statement type is determined by the pipeline phase:
 * **Alignment:** Rule Statements  
 * **Activation:** Context Statements
 
-Streaming augmentation combines the incoming **Input Statements** with the corresponding **Production Statements** at the same hierarchy level. Processing then occurs in two complementary phases:
+Streaming augmentation combines the incoming **Input Statements** with the corresponding **Previously known Statements** at the same hierarchy level. Processing then occurs in two complementary phases:
 
-1. **Unfolding** — decompose the input and processing Statements into their source Statements at progressively higher levels of the Statement hierarchy. At each level, the corresponding Statements are merged until the layer's initial Statement type is reached.  
-2. **Folding** — aggregate the merged source Statements back down through the hierarchy, combining each result with the corresponding Production Statements until the layer's final Statement type is reached.
+1. **Unfolding** — decompose the input and processing Statements into their source Statements at progressively higher levels of the Statement hierarchy. At each level, the corresponding Statements are merged with layers of types of the previously known augmentation state  until the layer's initial Statement type is reached.  
+2. **Folding** — aggregate the merged source Statements back down through the hierarchy, combining each result with the corresponding previous augmentation Statements until the layer's final Statement type is reached.
 
 This allows an input Statement to be matched against known processing knowledge while preserving the hierarchical relationship between the Statement and the lower-level Statements from which it was composed.
 
 The resulting stream operations therefore follow a common pattern:
 
-**Input Statements → Match Processing Statements → Unfold / Merge → Fold / Produce → Output Statements**
+**Input Statements → Match Processed Statements → Unfold / Merge → Fold / Produce → Output Processed Statements**
 
-The specific merge mechanism remains an implementation choice and may use RDF, TMRM, FCA, CPPE-based, or Sets Model approaches.
+The specific merge mechanism remains an implementation choice and may use RDF, TMRM, FCA, CPPE-based, or Sets Model approaches. Each layer performs augmentation based on their merge approaches and implementation.
 
 ## Aggregation Service Agent
 
@@ -1395,7 +1389,2239 @@ I would therefore define the architecture as:
 
 This is arguably a better match for the document than a purely resource-oriented DID API because the document ultimately aims at **contexts, interactions and executable behaviors**, not merely distributed CRUD over resources.
 
-# Appendix
+## **Appendix — Layered Statement Folding, Unfolding, and TreeGraph Representation**
+
+### **A. Purpose**
+
+This appendix elaborates the **Augmentation Layers Domain Model** through a concrete *Music Store* example. It describes how independently expressed **Music** and **Store** domain statements can be merged into a composite, executable semantic model through the layered **Data → Information → Knowledge** pipeline, and how the resulting higher-layer statements can subsequently be unfolded back to their composing lower-layer statements.
+
+The appendix also proposes an XML/TreeGraph representation capable of preserving the complete folded/unfolded structure for downstream and upstream processing.
+
+The approach follows the document's existing model in which lower-layer statements are aggregated into higher-layer statement types, while higher-layer statements can be decomposed back into their originating statements. The pipeline operates as a streaming merge/fold/unfold process over statements.
+
+---
+
+### **B. Music Store as a Composed Domain**
+
+The **Music** and **Store** domains may initially provide independent CSPO statements.
+
+Example Music-domain input:
+
+(Catalog, Album42, type, Album)
+
+(Catalog, Album42, createdBy, Artist7)
+
+(Catalog, Album42, containsTrack, Track421)
+
+(Catalog, Track421, genre, Rock)
+
+Example Store-domain input:
+
+(StoreCatalog, Product42, type, Product)
+
+(StoreCatalog, Product42, availableIn, StoreA)
+
+(StoreCatalog, Product42, inventoryState, InStock)
+
+(StoreCatalog, Customer123, type, Customer)
+
+(StoreTransactions, Customer123, asksFor, Product42)
+
+The two domains do not need to have been designed as a single ontology. Through aggregation, alignment and identity/semantic matching, compatible structures can be composed into a **Music Store** semantic model.
+
+For example, an Album may be aligned with a Product, while Music-specific properties such as Artist and Track are retained alongside Store-specific properties such as Price, Inventory and Availability. This follows the document's Music Store example, where Music concepts such as *Artist, Album, Track, Genre* are composed with Store concepts such as *Product, Inventory, Supplier, Order, Customer*.
+
+The resulting model can consequently express a structure such as:
+
+MusicProduct
+
+ ├── Album
+
+ ├── createdBy → Artist
+
+ ├── containsTrack → Track
+
+ ├── availableIn → Store
+
+ └── inventoryState → InStock
+
+The important distinction is that **Music Store is the result of semantic composition**, rather than necessarily being a predefined domain schema.
+
+---
+
+### **C. Data Layer — Instance, Type and Property**
+
+The Data layer performs **Aggregation**.
+
+Its statement types are:
+
+Instance
+
+Type
+
+Property
+
+The layer consumes raw Data/Instance statements and aggregates them into progressively higher-level Kind and Property structures.
+
+#### **C.1 Instance statements**
+
+The source CSPO statements are concrete observations:
+
+(Album42, type, Album)
+
+(Album42, createdBy, Artist7)
+
+(Album42, containsTrack, Track421)
+
+(Product42, type, Product)
+
+(Product42, availableIn, StoreA)
+
+(Product42, inventoryState, InStock)
+
+These are merged with other known statements and used to infer recurring structures.
+
+#### **C.2 Type statements**
+
+The resulting structures can establish Kinds such as:
+
+AlbumKind
+
+ProductKind
+
+MusicProductKind
+
+ArtistKind
+
+TrackKind
+
+StoreKind
+
+CustomerKind
+
+For example:
+
+MusicProductKind
+
+    type → Album
+
+    createdBy → Artist
+
+    containsTrack → Track
+
+    availableIn → Store
+
+    inventoryState → InventoryState
+
+#### **C.3 Property statements**
+
+The recurring Kind relationships are folded into Property statements describing the static structure of the resulting domain:
+
+MusicProductProperty
+
+    hasArtist
+
+    hasTrack
+
+    hasPrice
+
+    availableIn
+
+    inventoryState
+
+Thus the Data layer answers:
+
+> **What entities, kinds and structural properties emerge from merging the Music and Store data?**
+
+---
+
+### **D. Information Layer — Axis, State and Rule**
+
+The Information layer performs **Alignment**.
+
+Its statement types are:
+
+Axis
+
+State
+
+Rule
+
+The document describes this stage as transforming Data-layer Property structures into dimensional arrangements, states and rules through matching, completion and inference.
+
+#### **D.1 Axis**
+
+A composite Music Store axis can establish dimensions such as:
+
+MusicProduct × Store × Availability × Customer
+
+#### **D.2 State**
+
+Concrete observations can then be represented as states:
+
+Album42
+
+    inventoryState → InStock
+
+Album42
+
+    availableIn → StoreA
+
+Customer123
+
+    asksFor → Album42
+
+These may be folded into a composite state:
+
+AvailableMusicProductState
+
+representing:
+
+MusicProduct
+
+\+ Album
+
+\+ Product
+
+\+ InStock
+
+\+ AvailableIn(Store)
+
+#### **D.3 Rule**
+
+Compatible states can subsequently form a Rule:
+
+MusicStorePurchaseRule
+
+IF
+
+    Customer requests Product
+
+AND Product is InStock
+
+AND Product is availableIn Store
+
+THEN
+
+    Purchase is possible
+
+The Rule is therefore an upper-layer semantic structure derived from the lower-layer properties and states rather than necessarily being an independently programmed business rule.
+
+The Information layer answers:
+
+> **How do the structures from Music and Store align, what states can they form, and what rules follow from those states?**
+
+---
+
+### **E. Knowledge Layer — Actor, Role and Context**
+
+The Knowledge layer performs **Activation**.
+
+Its statement types are:
+
+Actor
+
+Role
+
+Context
+
+Information-layer Rules are folded into Context structures capable of representing executable interactions.
+
+For the Music Store example:
+
+Actors:
+
+Customer123
+
+Album42 / Product42
+
+StoreA
+
+Inventory7
+
+Order77
+
+can participate in roles such as:
+
+CustomerRole
+
+ProductRole
+
+StoreRole
+
+InventoryRole
+
+OrderRole
+
+These can be composed into:
+
+MusicStorePurchaseContext
+
+which can expose an executable interaction such as:
+
+Purchase
+
+ ├── CreateOrder
+
+ ├── ReserveInventory
+
+ ├── RecordPurchase
+
+ └── EmitEvent
+
+This corresponds to the document's broader example in which a semantic structure involving Customer, Product and Inventory produces a potential **Sale** Context and executable interactions such as `CreateOrder`, `ReserveInventory` and `GenerateInvoice`.
+
+The Knowledge layer therefore answers:
+
+> **Given the aligned Music Store semantics, what executable context and interaction can be activated?**
+
+---
+
+### **F. Complete Folding Chain**
+
+The resulting composition can be summarized as:
+
+Music CSPO ──────┐
+
+                 │
+
+                 ├──→ Data Instance
+
+Store CSPO ──────┘
+
+                      ↓
+
+                 Data Type
+
+                      ↓
+
+                 Data Property
+
+                      ↓
+
+                 Information Axis
+
+                      ↓
+
+                 Information State
+
+                      ↓
+
+                 Information Rule
+
+                      ↓
+
+                 Knowledge Actor
+
+                      ↓
+
+                 Knowledge Role
+
+                      ↓
+
+                 Knowledge Context
+
+                      ↓
+
+             Executable Interaction
+
+Thus the **Music Store executable semantic model** is progressively folded from lower-level observations.
+
+This follows the document's principle that each layer consumes the previous layer's statement structure and produces the corresponding higher-level statement structure.
+
+---
+
+### **G. Unfolding / De-aggregation**
+
+The same structure supports the reverse operation.
+
+Starting with:
+
+MusicStorePurchaseContext
+
+the runtime can unfold it into:
+
+CustomerRole
+
+ProductRole
+
+StoreRole
+
+PurchaseRole
+
+which can be unfolded into the Information structures:
+
+MusicStorePurchaseRule
+
+AvailableMusicProductState
+
+which can be unfolded into Data structures:
+
+MusicProductProperty
+
+MusicProductKind
+
+StoreKind
+
+and ultimately into the source CSPO statements:
+
+(Album42, type, Album)
+
+(Album42, createdBy, Artist7)
+
+(Album42, containsTrack, Track421)
+
+(Product42, type, Product)
+
+(Product42, availableIn, StoreA)
+
+(Product42, inventoryState, InStock)
+
+(Customer123, asksFor, Product42)
+
+The important property is that unfolding does not merely discard the higher-level statement. It exposes the **statements that composed it**, allowing each recovered statement to be merged with the already-known statements at its own layer before continuing upstream.
+
+The document explicitly describes this as a backwards process in which deeper statements are merged and unfolded until the raw S/P/O statements are reached.
+
+---
+
+### **H. TreeGraph XML Representation**
+
+The document proposes **TreeGraph** as the pipeline message format, with nested layer statements representing composition.
+
+A suitable representation is therefore a nested `statement` structure:
+
+\<statement
+
+    id="K-CONTEXT-001"
+
+    layer="knowledge"
+
+    type="context"
+
+    kind="MusicStorePurchaseContext"
+
+    operation="fold"\>
+
+    \<c\>
+
+        \<kindRef ref="MusicStorePurchaseContextKind"/\>
+
+    \</c\>
+
+    \<s\>
+
+        \<resource ref="Customer123"/\>
+
+    \</s\>
+
+    \<p\>
+
+        \<predicate ref="purchases"/\>
+
+    \</p\>
+
+    \<o\>
+
+        \<resource ref="Album42"/\>
+
+    \</o\>
+
+    \<composedOf\>
+
+        \<statement
+
+            id="I-RULE-001"
+
+            layer="information"
+
+            type="rule"
+
+            kind="MusicStorePurchaseRule"\>
+
+            \<c\>
+
+                \<kindRef ref="MusicStorePurchaseRuleKind"/\>
+
+            \</c\>
+
+            \<s\>
+
+                \<kindRef ref="CustomerKind"/\>
+
+            \</s\>
+
+            \<p\>
+
+                \<kindRef ref="PurchasePredicateKind"/\>
+
+            \</p\>
+
+            \<o\>
+
+                \<kindRef ref="MusicProductKind"/\>
+
+            \</o\>
+
+            \<composedOf\>
+
+                \<statement
+
+                    id="I-STATE-001"
+
+                    layer="information"
+
+                    type="state"
+
+                    kind="AvailableMusicProductState"\>
+
+                    \<s\>
+
+                        \<resource ref="Album42"/\>
+
+                    \</s\>
+
+                    \<p\>
+
+                        \<predicate ref="inventoryState"/\>
+
+                    \</p\>
+
+                    \<o\>
+
+                        \<value\>InStock\</value\>
+
+                    \</o\>
+
+                    \<composedOf\>
+
+                        \<statement
+
+                            id="D-PROPERTY-001"
+
+                            layer="data"
+
+                            type="property"
+
+                            kind="MusicProductProperty"\>
+
+                            \<composedOf\>
+
+                                \<statement
+
+                                    id="D-INSTANCE-001"
+
+                                    layer="data"
+
+                                    type="instance"
+
+                                    source="music"\>
+
+                                    \<c ref="MusicCatalog"/\>
+
+                                    \<s ref="Album42"/\>
+
+                                    \<p ref="type"/\>
+
+                                    \<o ref="Album"/\>
+
+                                \</statement\>
+
+                                \<statement
+
+                                    id="D-INSTANCE-002"
+
+                                    layer="data"
+
+                                    type="instance"
+
+                                    source="store"\>
+
+                                    \<c ref="StoreCatalog"/\>
+
+                                    \<s ref="Album42"/\>
+
+                                    \<p ref="inventoryState"/\>
+
+                                    \<o value="InStock"/\>
+
+                                \</statement\>
+
+                            \</composedOf\>
+
+                        \</statement\>
+
+                    \</composedOf\>
+
+                \</statement\>
+
+            \</composedOf\>
+
+        \</statement\>
+
+    \</composedOf\>
+
+\</statement\>
+
+This representation preserves the **semantic statement itself** and the **composition relationship through which it was produced**.
+
+---
+
+### **I. Statement Identity and Graph References**
+
+Although TreeGraph is naturally nested, the underlying semantic structure may be a graph rather than a strict tree because one lower-layer statement can contribute to multiple higher-layer statements.
+
+For example:
+
+(Album42, inventoryState, InStock)
+
+could contribute simultaneously to:
+
+AvailableMusicProductState
+
+PurchasableProductState
+
+MusicStorePurchaseRule
+
+Consequently, a production representation should support references:
+
+\<composedOf\>
+
+    \<statementRef ref="D-INSTANCE-002"/\>
+
+\</composedOf\>
+
+rather than requiring every statement to be duplicated.
+
+The underlying structure can therefore be understood as a **DAG serialized as a TreeGraph**, with stable statement IDs preserving semantic identity.
+
+This is consistent with the document's emphasis on statement identity, recursive traversal, merging and context-preserving graph access.
+
+---
+
+### **J. Fold/Unfold Processing Metadata**
+
+The TreeGraph can additionally preserve how a statement was produced:
+
+\<fold
+
+    id="FOLD-001"
+
+    agent="AggregationAgent"
+
+    operation="aggregate"\>
+
+    \<input ref="D-INSTANCE-001"/\>
+
+    \<input ref="D-INSTANCE-002"/\>
+
+    \<output ref="D-PROPERTY-001"/\>
+
+\</fold\>
+
+followed by:
+
+\<fold
+
+    id="FOLD-002"
+
+    agent="AlignmentAgent"
+
+    operation="align"\>
+
+    \<input ref="D-PROPERTY-001"/\>
+
+    \<output ref="I-RULE-001"/\>
+
+\</fold\>
+
+and:
+
+\<fold
+
+    id="FOLD-003"
+
+    agent="ActivationAgent"
+
+    operation="activate"\>
+
+    \<input ref="I-RULE-001"/\>
+
+    \<output ref="K-CONTEXT-001"/\>
+
+\</fold\>
+
+This allows the representation to retain not only **what knowledge exists**, but also **which lower-layer statements contributed to it and which transformation produced it**.
+
+It is particularly appropriate to the document's blackboard/stream-processing model, where agents merge incoming statements with already-known statements and publish the resulting augmented statements for further processing.
+
+---
+
+### **K. Layer Transformation Summary**
+
+The resulting transformation model is:
+
+| Layer | Statement types | Main operation | Output |
+| ----- | ----- | ----- | ----- |
+| **Data** | Instance → Type → Property | Aggregation / Folding | Structural semantic model |
+| **Information** | Axis → State → Rule | Alignment / Folding | Dimensional/state/rule model |
+| **Knowledge** | Actor → Role → Context | Activation / Folding | Executable semantic context |
+| **Reverse** | Context → … → Instance | Unfolding / De-aggregation | Source/composing statements |
+
+The forward path is:
+
+CSPO
+
+ → Type
+
+ → Property
+
+ → Axis
+
+ → State
+
+ → Rule
+
+ → Actor
+
+ → Role
+
+ → Context
+
+The reverse path is:
+
+Context
+
+ → Role
+
+ → Actor / Rule
+
+ → State / Axis
+
+ → Property
+
+ → Type
+
+ → CSPO
+
+Each intermediate statement can therefore be treated simultaneously as:
+
+1. **knowledge at its own layer,**  
+2. **input to the next layer,**  
+3. **a composition of lower-layer knowledge, and**  
+4. **a decomposition target for upstream processing.**
+
+---
+
+### **L. Architectural Principle**
+
+The combined model can consequently be summarized as:
+
+            FOLD / AGGREGATE
+
+Music CSPO ───────┐
+
+                  ├── Data → Information → Knowledge
+
+Store CSPO ───────┘
+
+                            ↓
+
+                  MusicStore Context
+
+                            ↓
+
+                    Executable Behavior
+
+             UNFOLD / DE-AGGREGATE
+
+                    MusicStore Context
+
+                            ↓
+
+                  Information / Data
+
+                            ↓
+
+                       Source CSPO
+
+The central principle is that **the executable Music Store model does not have to be a separately authored artifact**. It can emerge from the composition of independently sourced semantic statements, with each augmentation layer adding a new level of abstraction while retaining the lower-level statements that justify that abstraction.
+
+The TreeGraph representation makes this layering explicit and makes the same message structure usable for both directions:
+
+> **fold upward to infer and activate; unfold downward to explain, trace, transform, or recover source statements.**
+
+This is consistent with the document's existing description of lower-layer composition, upper-layer aggregation, upstream decomposition, and the use of TreeGraph/XSLT for nested statement processing.
+
+**Note:** the exact XML vocabulary, identity-resolution rules, and reference/graph semantics proposed in this appendix are design elaborations of the document's TreeGraph and folding/unfolding concepts; they are not specified as a finalized XML schema in the source document.
+
+# Appendix — Layered Statement Folding, Unfolding, and TreeGraph Representation
+
+### **A. Purpose**
+
+This appendix elaborates the **Augmentation Layers Domain Model** through a concrete *Music Store* example. It describes how independently expressed **Music** and **Store** domain statements can be merged into a composite, executable semantic model through the layered **Data → Information → Knowledge** pipeline, and how the resulting higher-layer statements can subsequently be unfolded back to their composing lower-layer statements.
+
+The appendix also proposes an XML/TreeGraph representation capable of preserving the complete folded/unfolded structure for downstream and upstream processing.
+
+The approach follows the document's existing model in which lower-layer statements are aggregated into higher-layer statement types, while higher-layer statements can be decomposed back into their originating statements. The pipeline operates as a streaming merge/fold/unfold process over statements.
+
+---
+
+### **B. Music Store as a Composed Domain**
+
+The **Music** and **Store** domains may initially provide independent CSPO statements.
+
+Example Music-domain input:
+
+(Catalog, Album42, type, Album)
+
+(Catalog, Album42, createdBy, Artist7)
+
+(Catalog, Album42, containsTrack, Track421)
+
+(Catalog, Track421, genre, Rock)
+
+Example Store-domain input:
+
+(StoreCatalog, Product42, type, Product)
+
+(StoreCatalog, Product42, availableIn, StoreA)
+
+(StoreCatalog, Product42, inventoryState, InStock)
+
+(StoreCatalog, Customer123, type, Customer)
+
+(StoreTransactions, Customer123, asksFor, Product42)
+
+The two domains do not need to have been designed as a single ontology. Through aggregation, alignment and identity/semantic matching, compatible structures can be composed into a **Music Store** semantic model.
+
+For example, an Album may be aligned with a Product, while Music-specific properties such as Artist and Track are retained alongside Store-specific properties such as Price, Inventory and Availability. This follows the document's Music Store example, where Music concepts such as *Artist, Album, Track, Genre* are composed with Store concepts such as *Product, Inventory, Supplier, Order, Customer*.
+
+The resulting model can consequently express a structure such as:
+
+MusicProduct
+
+ ├── Album
+
+ ├── createdBy → Artist
+
+ ├── containsTrack → Track
+
+ ├── availableIn → Store
+
+ └── inventoryState → InStock
+
+The important distinction is that **Music Store is the result of semantic composition**, rather than necessarily being a predefined domain schema.
+
+---
+
+### **C. Data Layer — Instance, Type and Property**
+
+The Data layer performs **Aggregation**.
+
+Its statement types are:
+
+Instance
+
+Type
+
+Property
+
+The layer consumes raw Data/Instance statements and aggregates them into progressively higher-level Kind and Property structures.
+
+#### **C.1 Instance statements**
+
+The source CSPO statements are concrete observations:
+
+(Album42, type, Album)
+
+(Album42, createdBy, Artist7)
+
+(Album42, containsTrack, Track421)
+
+(Product42, type, Product)
+
+(Product42, availableIn, StoreA)
+
+(Product42, inventoryState, InStock)
+
+These are merged with other known statements and used to infer recurring structures.
+
+#### **C.2 Type statements**
+
+The resulting structures can establish Kinds such as:
+
+AlbumKind
+
+ProductKind
+
+MusicProductKind
+
+ArtistKind
+
+TrackKind
+
+StoreKind
+
+CustomerKind
+
+For example:
+
+MusicProductKind
+
+    type → Album
+
+    createdBy → Artist
+
+    containsTrack → Track
+
+    availableIn → Store
+
+    inventoryState → InventoryState
+
+#### **C.3 Property statements**
+
+The recurring Kind relationships are folded into Property statements describing the static structure of the resulting domain:
+
+MusicProductProperty
+
+    hasArtist
+
+    hasTrack
+
+    hasPrice
+
+    availableIn
+
+    inventoryState
+
+Thus the Data layer answers:
+
+> **What entities, kinds and structural properties emerge from merging the Music and Store data?**
+
+---
+
+### **D. Information Layer — Axis, State and Rule**
+
+The Information layer performs **Alignment**.
+
+Its statement types are:
+
+Axis
+
+State
+
+Rule
+
+The document describes this stage as transforming Data-layer Property structures into dimensional arrangements, states and rules through matching, completion and inference.
+
+#### **D.1 Axis**
+
+A composite Music Store axis can establish dimensions such as:
+
+MusicProduct × Store × Availability × Customer
+
+#### **D.2 State**
+
+Concrete observations can then be represented as states:
+
+Album42
+
+    inventoryState → InStock
+
+Album42
+
+    availableIn → StoreA
+
+Customer123
+
+    asksFor → Album42
+
+These may be folded into a composite state:
+
+AvailableMusicProductState
+
+representing:
+
+MusicProduct
+
+\+ Album
+
+\+ Product
+
+\+ InStock
+
+\+ AvailableIn(Store)
+
+#### **D.3 Rule**
+
+Compatible states can subsequently form a Rule:
+
+MusicStorePurchaseRule
+
+IF
+
+    Customer requests Product
+
+AND Product is InStock
+
+AND Product is availableIn Store
+
+THEN
+
+    Purchase is possible
+
+The Rule is therefore an upper-layer semantic structure derived from the lower-layer properties and states rather than necessarily being an independently programmed business rule.
+
+The Information layer answers:
+
+> **How do the structures from Music and Store align, what states can they form, and what rules follow from those states?**
+
+---
+
+### **E. Knowledge Layer — Actor, Role and Context**
+
+The Knowledge layer performs **Activation**.
+
+Its statement types are:
+
+Actor
+
+Role
+
+Context
+
+Information-layer Rules are folded into Context structures capable of representing executable interactions.
+
+For the Music Store example:
+
+Actors:
+
+Customer123
+
+Album42 / Product42
+
+StoreA
+
+Inventory7
+
+Order77
+
+can participate in roles such as:
+
+CustomerRole
+
+ProductRole
+
+StoreRole
+
+InventoryRole
+
+OrderRole
+
+These can be composed into:
+
+MusicStorePurchaseContext
+
+which can expose an executable interaction such as:
+
+Purchase
+
+ ├── CreateOrder
+
+ ├── ReserveInventory
+
+ ├── RecordPurchase
+
+ └── EmitEvent
+
+This corresponds to the document's broader example in which a semantic structure involving Customer, Product and Inventory produces a potential **Sale** Context and executable interactions such as `CreateOrder`, `ReserveInventory` and `GenerateInvoice`.
+
+The Knowledge layer therefore answers:
+
+> **Given the aligned Music Store semantics, what executable context and interaction can be activated?**
+
+---
+
+### **F. Complete Folding Chain**
+
+The resulting composition can be summarized as:
+
+Music CSPO ──────┐
+
+                 │
+
+                 ├──→ Data Instance
+
+Store CSPO ──────┘
+
+                      ↓
+
+                 Data Type
+
+                      ↓
+
+                 Data Property
+
+                      ↓
+
+                 Information Axis
+
+                      ↓
+
+                 Information State
+
+                      ↓
+
+                 Information Rule
+
+                      ↓
+
+                 Knowledge Actor
+
+                      ↓
+
+                 Knowledge Role
+
+                      ↓
+
+                 Knowledge Context
+
+                      ↓
+
+             Executable Interaction
+
+Thus the **Music Store executable semantic model** is progressively folded from lower-level observations.
+
+This follows the document's principle that each layer consumes the previous layer's statement structure and produces the corresponding higher-level statement structure.
+
+---
+
+### **G. Unfolding / De-aggregation**
+
+The same structure supports the reverse operation.
+
+Starting with:
+
+MusicStorePurchaseContext
+
+the runtime can unfold it into:
+
+CustomerRole
+
+ProductRole
+
+StoreRole
+
+PurchaseRole
+
+which can be unfolded into the Information structures:
+
+MusicStorePurchaseRule
+
+AvailableMusicProductState
+
+which can be unfolded into Data structures:
+
+MusicProductProperty
+
+MusicProductKind
+
+StoreKind
+
+and ultimately into the source CSPO statements:
+
+(Album42, type, Album)
+
+(Album42, createdBy, Artist7)
+
+(Album42, containsTrack, Track421)
+
+(Product42, type, Product)
+
+(Product42, availableIn, StoreA)
+
+(Product42, inventoryState, InStock)
+
+(Customer123, asksFor, Product42)
+
+The important property is that unfolding does not merely discard the higher-level statement. It exposes the **statements that composed it**, allowing each recovered statement to be merged with the already-known statements at its own layer before continuing upstream.
+
+The document explicitly describes this as a backwards process in which deeper statements are merged and unfolded until the raw S/P/O statements are reached.
+
+---
+
+### **H. TreeGraph XML Representation**
+
+The document proposes **TreeGraph** as the pipeline message format, with nested layer statements representing composition.
+
+A suitable representation is therefore a nested `statement` structure:
+
+\<statement
+
+    id="K-CONTEXT-001"
+
+    layer="knowledge"
+
+    type="context"
+
+    kind="MusicStorePurchaseContext"
+
+    operation="fold"\>
+
+    \<c\>
+
+        \<kindRef ref="MusicStorePurchaseContextKind"/\>
+
+    \</c\>
+
+    \<s\>
+
+        \<resource ref="Customer123"/\>
+
+    \</s\>
+
+    \<p\>
+
+        \<predicate ref="purchases"/\>
+
+    \</p\>
+
+    \<o\>
+
+        \<resource ref="Album42"/\>
+
+    \</o\>
+
+    \<composedOf\>
+
+        \<statement
+
+            id="I-RULE-001"
+
+            layer="information"
+
+            type="rule"
+
+            kind="MusicStorePurchaseRule"\>
+
+            \<c\>
+
+                \<kindRef ref="MusicStorePurchaseRuleKind"/\>
+
+            \</c\>
+
+            \<s\>
+
+                \<kindRef ref="CustomerKind"/\>
+
+            \</s\>
+
+            \<p\>
+
+                \<kindRef ref="PurchasePredicateKind"/\>
+
+            \</p\>
+
+            \<o\>
+
+                \<kindRef ref="MusicProductKind"/\>
+
+            \</o\>
+
+            \<composedOf\>
+
+                \<statement
+
+                    id="I-STATE-001"
+
+                    layer="information"
+
+                    type="state"
+
+                    kind="AvailableMusicProductState"\>
+
+                    \<s\>
+
+                        \<resource ref="Album42"/\>
+
+                    \</s\>
+
+                    \<p\>
+
+                        \<predicate ref="inventoryState"/\>
+
+                    \</p\>
+
+                    \<o\>
+
+                        \<value\>InStock\</value\>
+
+                    \</o\>
+
+                    \<composedOf\>
+
+                        \<statement
+
+                            id="D-PROPERTY-001"
+
+                            layer="data"
+
+                            type="property"
+
+                            kind="MusicProductProperty"\>
+
+                            \<composedOf\>
+
+                                \<statement
+
+                                    id="D-INSTANCE-001"
+
+                                    layer="data"
+
+                                    type="instance"
+
+                                    source="music"\>
+
+                                    \<c ref="MusicCatalog"/\>
+
+                                    \<s ref="Album42"/\>
+
+                                    \<p ref="type"/\>
+
+                                    \<o ref="Album"/\>
+
+                                \</statement\>
+
+                                \<statement
+
+                                    id="D-INSTANCE-002"
+
+                                    layer="data"
+
+                                    type="instance"
+
+                                    source="store"\>
+
+                                    \<c ref="StoreCatalog"/\>
+
+                                    \<s ref="Album42"/\>
+
+                                    \<p ref="inventoryState"/\>
+
+                                    \<o value="InStock"/\>
+
+                                \</statement\>
+
+                            \</composedOf\>
+
+                        \</statement\>
+
+                    \</composedOf\>
+
+                \</statement\>
+
+            \</composedOf\>
+
+        \</statement\>
+
+    \</composedOf\>
+
+\</statement\>
+
+This representation preserves the **semantic statement itself** and the **composition relationship through which it was produced**.
+
+---
+
+### **I. Statement Identity and Graph References**
+
+Although TreeGraph is naturally nested, the underlying semantic structure may be a graph rather than a strict tree because one lower-layer statement can contribute to multiple higher-layer statements.
+
+For example:
+
+(Album42, inventoryState, InStock)
+
+could contribute simultaneously to:
+
+AvailableMusicProductState
+
+PurchasableProductState
+
+MusicStorePurchaseRule
+
+Consequently, a production representation should support references:
+
+\<composedOf\>
+
+    \<statementRef ref="D-INSTANCE-002"/\>
+
+\</composedOf\>
+
+rather than requiring every statement to be duplicated.
+
+The underlying structure can therefore be understood as a **DAG serialized as a TreeGraph**, with stable statement IDs preserving semantic identity.
+
+This is consistent with the document's emphasis on statement identity, recursive traversal, merging and context-preserving graph access.
+
+---
+
+### **J. Fold/Unfold Processing Metadata**
+
+The TreeGraph can additionally preserve how a statement was produced:
+
+\<fold
+
+    id="FOLD-001"
+
+    agent="AggregationAgent"
+
+    operation="aggregate"\>
+
+    \<input ref="D-INSTANCE-001"/\>
+
+    \<input ref="D-INSTANCE-002"/\>
+
+    \<output ref="D-PROPERTY-001"/\>
+
+\</fold\>
+
+followed by:
+
+\<fold
+
+    id="FOLD-002"
+
+    agent="AlignmentAgent"
+
+    operation="align"\>
+
+    \<input ref="D-PROPERTY-001"/\>
+
+    \<output ref="I-RULE-001"/\>
+
+\</fold\>
+
+and:
+
+\<fold
+
+    id="FOLD-003"
+
+    agent="ActivationAgent"
+
+    operation="activate"\>
+
+    \<input ref="I-RULE-001"/\>
+
+    \<output ref="K-CONTEXT-001"/\>
+
+\</fold\>
+
+This allows the representation to retain not only **what knowledge exists**, but also **which lower-layer statements contributed to it and which transformation produced it**.
+
+It is particularly appropriate to the document's blackboard/stream-processing model, where agents merge incoming statements with already-known statements and publish the resulting augmented statements for further processing.
+
+---
+
+### **K. Layer Transformation Summary**
+
+The resulting transformation model is:
+
+| Layer | Statement types | Main operation | Output |
+| ----- | ----- | ----- | ----- |
+| **Data** | Instance → Type → Property | Aggregation / Folding | Structural semantic model |
+| **Information** | Axis → State → Rule | Alignment / Folding | Dimensional/state/rule model |
+| **Knowledge** | Actor → Role → Context | Activation / Folding | Executable semantic context |
+| **Reverse** | Context → … → Instance | Unfolding / De-aggregation | Source/composing statements |
+
+The forward path is:
+
+CSPO
+
+ → Type
+
+ → Property
+
+ → Axis
+
+ → State
+
+ → Rule
+
+ → Actor
+
+ → Role
+
+ → Context
+
+The reverse path is:
+
+Context
+
+ → Role
+
+ → Actor / Rule
+
+ → State / Axis
+
+ → Property
+
+ → Type
+
+ → CSPO
+
+Each intermediate statement can therefore be treated simultaneously as:
+
+1. **knowledge at its own layer,**  
+2. **input to the next layer,**  
+3. **a composition of lower-layer knowledge, and**  
+4. **a decomposition target for upstream processing.**
+
+---
+
+### **L. Architectural Principle**
+
+The combined model can consequently be summarized as:
+
+            FOLD / AGGREGATE
+
+Music CSPO ───────┐
+
+                  ├── Data → Information → Knowledge
+
+Store CSPO ───────┘
+
+                            ↓
+
+                  MusicStore Context
+
+                            ↓
+
+                    Executable Behavior
+
+             UNFOLD / DE-AGGREGATE
+
+                    MusicStore Context
+
+                            ↓
+
+                  Information / Data
+
+                            ↓
+
+                       Source CSPO
+
+The central principle is that **the executable Music Store model does not have to be a separately authored artifact**. It can emerge from the composition of independently sourced semantic statements, with each augmentation layer adding a new level of abstraction while retaining the lower-level statements that justify that abstraction.
+
+The TreeGraph representation makes this layering explicit and makes the same message structure usable for both directions:
+
+> **fold upward to infer and activate; unfold downward to explain, trace, transform, or recover source statements.**
+
+This is consistent with the document's existing description of lower-layer composition, upper-layer aggregation, upstream decomposition, and the use of TreeGraph/XSLT for nested statement processing.
+
+**Note:** the exact XML vocabulary, identity-resolution rules, and reference/graph semantics proposed in this appendix are design elaborations of the document's TreeGraph and folding/unfolding concepts; they are not specified as a finalized XML schema in the source document.
+
+# Appendix — Stream-Oriented Folding and Unfolding of Layered Kinds
+
+### **A. Purpose**
+
+This appendix extends the **Augmentation Layers Domain Model** with an operational view of how statements can be folded and unfolded while flowing through the layered streams.
+
+The central idea is that **Merge, Fold, and Unfold are separate but cooperating operations**:
+
+* **Merge** incorporates an incoming statement into the knowledge already established at its layer.  
+* **Fold** derives higher-layer statements from the newly merged lower-layer knowledge.  
+* **Unfold** recovers the composing lower-layer statements from a higher-layer statement.
+
+This preserves the document's model in which statements are continuously merged with previously known statements, aggregated into higher-layer structures, and potentially decomposed back toward their source statements.
+
+---
+
+### **B. Layer Processing Model**
+
+The three augmentation layers are treated as streams:
+
+Data
+
+ ├── Instance
+
+ ├── Type
+
+ └── Property
+
+Information
+
+ ├── Axis
+
+ ├── State
+
+ └── Rule
+
+Knowledge
+
+ ├── Actor
+
+ ├── Role
+
+ └── Context
+
+The resulting forward folding path is:
+
+Data
+
+  ↓
+
+Information
+
+  ↓
+
+Knowledge
+
+with the conceptual progression:
+
+Instance
+
+   ↓
+
+Type
+
+   ↓
+
+Property
+
+   ↓
+
+Axis
+
+   ↓
+
+State
+
+   ↓
+
+Rule
+
+   ↓
+
+Actor
+
+   ↓
+
+Role
+
+   ↓
+
+Context
+
+The document defines these statement families as the three augmentation layers, while describing the higher layers as increasingly abstract semantic structures derived from lower-layer statements.
+
+---
+
+### **C. Merge as the Central Stream Operation**
+
+Each layer maintains a body of already-known statements.
+
+An incoming statement is first merged with that state:
+
+incoming statement
+
+        │
+
+        ▼
+
+      MERGE
+
+        │
+
+        ▼
+
+updated layer knowledge
+
+        │
+
+        ├──────────────┐
+
+        ▼              ▼
+
+      FOLD          UNFOLD
+
+        │              │
+
+        ▼              ▼
+
+higher layer       lower layer
+
+Conceptually:
+
+function MERGE(layer, statement):
+
+    known \= state\[layer\]
+
+    merged \= merge(known, statement)
+
+    state\[layer\] \= merged.state
+
+    return merged.delta
+
+The `delta` represents newly established knowledge that may justify further folding or unfolding.
+
+This preserves the document's blackboard/stream-processing model, in which agents merge incoming statements with already-known statements and publish resulting augmented statements back into the processing stream.
+
+---
+
+### **D. Folding Kinds**
+
+Folding derives higher-level Kinds from the structural patterns observed in lower-level statements.
+
+A conceptual operation is:
+
+function FOLD\_KINDS(statements):
+
+    group statements by their
+
+        Context
+
+        Subject
+
+        Predicate
+
+        Object
+
+    infer:
+
+        Context Kinds
+
+        Subject Kinds
+
+        Predicate Kinds
+
+        Object Kinds
+
+    return inferred Kinds
+
+This corresponds to the document's description of Kinds as functional extensions over the CSPO dimensions:
+
+CK: Context → Subject → Predicate
+
+SK: Subject → Predicate → Object
+
+PK: Predicate → Subject → Object
+
+OK: Object → Predicate → Subject
+
+The important point is that folding is **incremental**. A higher-level Kind can become more complete as additional statements arrive in the stream.
+
+---
+
+### **E. Data-Layer Folding**
+
+The Data layer starts from concrete CSPO/instance statements.
+
+For the Music Store example:
+
+(MusicCatalog, Album42, type, Album)
+
+(MusicCatalog, Album42, createdBy, Artist7)
+
+(StoreCatalog, Album42, type, Product)
+
+(StoreCatalog, Album42, inventoryState, InStock)
+
+(StoreCatalog, Album42, availableIn, StoreA)
+
+The Data stream can progressively fold these into structures such as:
+
+AlbumKind
+
+ProductKind
+
+MusicProductKind
+
+MusicProductProperty
+
+Conceptually:
+
+function processData(statement):
+
+    delta \= MERGE(Data, statement)
+
+    kinds \= FOLD\_KINDS(delta)
+
+    for kind in kinds:
+
+        publish(Data, kind)
+
+    for property in FOLD\_DATA\_PROPERTIES(delta):
+
+        publish(Information, property)
+
+Thus independently supplied Music and Store statements can progressively contribute to a common **Music Product** semantic structure.
+
+The document's Music Store example similarly describes Music concepts such as Artist, Album, Track and Genre being composed with Store concepts such as Product, Inventory, Supplier, Order and Customer.
+
+---
+
+### **F. Information-Layer Folding**
+
+The Information layer consumes the Data-layer structures and aligns them into dimensions, states and rules.
+
+Conceptually:
+
+function processInformation(statement):
+
+    delta \= MERGE(Information, statement)
+
+    axis \= FOLD\_AXIS(delta)
+
+    for a in axis:
+
+        publish(Information, a)
+
+    states \= FOLD\_STATES(delta)
+
+    for s in states:
+
+        publish(Information, s)
+
+    rules \= FOLD\_RULES(delta)
+
+    for r in rules:
+
+        publish(Information, r)
+
+For example:
+
+MusicProductProperty
+
+        \+
+
+InventoryProperty
+
+        \+
+
+AvailabilityProperty
+
+        \+
+
+CustomerRequestProperty
+
+        ↓
+
+AvailableMusicProductState
+
+        ↓
+
+MusicStorePurchaseRule
+
+The Information layer therefore transforms structural Data knowledge into **states and rules that describe meaningful situations and possible transitions**. This is consistent with the document's description of Alignment as transforming Property structures into Axis, State, Transition and Rule structures.
+
+---
+
+### **G. Knowledge-Layer Folding**
+
+The Knowledge layer consumes Information Rules and activates them into Actors, Roles and Contexts.
+
+function processKnowledge(statement):
+
+    delta \= MERGE(Knowledge, statement)
+
+    actors \= FOLD\_ACTORS(delta)
+
+    for actor in actors:
+
+        publish(Knowledge, actor)
+
+    roles \= FOLD\_ROLES(delta)
+
+    for role in roles:
+
+        publish(Knowledge, role)
+
+    contexts \= FOLD\_CONTEXTS(delta)
+
+    for context in contexts:
+
+        publish(Knowledge, context)
+
+For the Music Store:
+
+MusicStorePurchaseRule
+
+        ↓
+
+CustomerActor
+
+ProductActor
+
+StoreActor
+
+        ↓
+
+CustomerRole
+
+ProductRole
+
+StoreRole
+
+        ↓
+
+MusicStorePurchaseContext
+
+The Context can then provide the semantic basis for an executable interaction such as:
+
+Purchase
+
+ ├── CreateOrder
+
+ ├── ReserveInventory
+
+ └── RecordPurchase
+
+This follows the document's Activation concept, where Information-layer rules are turned into executable Knowledge-layer contexts and interactions.
+
+---
+
+### **H. Unfolding / De-aggregation**
+
+Folding has a corresponding reverse operation.
+
+A higher-layer statement contains, explicitly or by reference, the statements from which it was composed.
+
+For example:
+
+MusicStorePurchaseContext
+
+        ↓ unfold
+
+MusicStorePurchaseRule
+
+        ↓ unfold
+
+AvailableMusicProductState
+
+        ↓ unfold
+
+MusicProductProperty
+
+        ↓ unfold
+
+MusicProductKind
+
+        ↓ unfold
+
+original CSPO statements
+
+Conceptually:
+
+function UNFOLD(statement):
+
+    if not hasComposition(statement):
+
+        return \[\]
+
+    return compositionOf(statement)
+
+However, the recovered statements should **not simply bypass the normal pipeline**.
+
+Each unfolded statement is reintroduced into its own layer and merged there:
+
+function propagateUnfolded(statement):
+
+    for child in UNFOLD(statement):
+
+        layer \= layerOf(child)
+
+        delta \= MERGE(
+
+            state\[layer\],
+
+            child
+
+        )
+
+        state\[layer\] \= delta.state
+
+        PROCESS\_LAYER(
+
+            layer,
+
+            delta
+
+        )
+
+Consequently, unfolding becomes a recursive process of **de-aggregation followed by normal layer processing**.
+
+The document explicitly describes the reverse operation as merging deeper aggregation statements and unfolding them until the raw S/P/O statements are reached.
+
+---
+
+### **I. Unified Layer Algorithm**
+
+The complete stream operation can therefore be expressed as:
+
+function PROCESS(statement):
+
+    layer \= layerOf(statement)
+
+    \# 1\. Merge into existing knowledge
+
+    delta \= MERGE(
+
+        state\[layer\],
+
+        statement
+
+    )
+
+    state\[layer\] \= delta.state
+
+    \# 2\. Fold toward the next layer
+
+    for s in FOLD\_LAYER(layer, delta):
+
+        PUBLISH(
+
+            nextLayer(layer),
+
+            s
+
+        )
+
+    \# 3\. Unfold toward the previous layer
+
+    for s in UNFOLD\_LAYER(layer, delta):
+
+        PUBLISH(
+
+            previousLayer(layer),
+
+            s
+
+        )
+
+With:
+
+FOLD\_LAYER(Data, ...)
+
+        → Data Type / Property
+
+        → Information
+
+FOLD\_LAYER(Information, ...)
+
+        → Axis / State / Rule
+
+        → Knowledge
+
+FOLD\_LAYER(Knowledge, ...)
+
+        → Context / executable structures
+
+and:
+
+UNFOLD\_LAYER(Knowledge, ...)
+
+        → Information
+
+UNFOLD\_LAYER(Information, ...)
+
+        → Data
+
+UNFOLD\_LAYER(Data, ...)
+
+        → source CSPO
+
+---
+
+### **J. Music Store End-to-End Example**
+
+A simplified forward stream can therefore be represented as:
+
+Music CSPO ─────┐
+
+                │
+
+Store CSPO ─────┼──→ MERGE
+
+                │       ↓
+
+Customer CSPO ──┘    Data Kinds
+
+                        ↓
+
+                  Data Properties
+
+                        ↓
+
+                       MERGE
+
+                        ↓
+
+                   Information Axis
+
+                        ↓
+
+                   Information State
+
+                        ↓
+
+                   Information Rule
+
+                        ↓
+
+                       MERGE
+
+                        ↓
+
+                  Knowledge Actor
+
+                        ↓
+
+                  Knowledge Role
+
+                        ↓
+
+                 MusicStore Context
+
+                        ↓
+
+                   Executable
+
+                   Interaction
+
+The reverse path is:
+
+MusicStore Context
+
+        ↓
+
+      UNFOLD
+
+        ↓
+
+MusicStore Rule
+
+        ↓
+
+      MERGE
+
+        ↓
+
+AvailableProduct State
+
+        ↓
+
+      UNFOLD
+
+        ↓
+
+MusicProduct Property
+
+        ↓
+
+      MERGE
+
+        ↓
+
+MusicProduct Kind
+
+        ↓
+
+      UNFOLD
+
+        ↓
+
+Original Music / Store CSPO
+
+This makes the layered model **bidirectional** rather than simply a one-way hierarchy.
+
+---
+
+### **K. TreeGraph Representation**
+
+The folding/unfolding process can be represented in the proposed TreeGraph format using nested statements:
+
+\<statement
+
+    id="K-CONTEXT-001"
+
+    layer="knowledge"
+
+    type="context"
+
+    kind="MusicStorePurchaseContext"\>
+
+    \<composedOf\>
+
+        \<statementRef ref="I-RULE-001"/\>
+
+    \</composedOf\>
+
+\</statement\>
+
+The referenced Information Rule may contain:
+
+\<statement
+
+    id="I-RULE-001"
+
+    layer="information"
+
+    type="rule"
+
+    kind="MusicStorePurchaseRule"\>
+
+    \<composedOf\>
+
+        \<statementRef ref="I-STATE-001"/\>
+
+    \</composedOf\>
+
+\</statement\>
+
+and so on down to the original Data statements.
+
+This representation should preserve **stable statement identity** through IDs/references, because one lower-layer statement may participate in multiple higher-layer folds. The document's TreeGraph proposal and emphasis on recursive traversal and identity support this interpretation.
+
+---
+
+### **L. Architectural Principle**
+
+The resulting operational model can be summarized as:
+
+                    ┌──────────────┐
+
+                     │    MERGE     │
+
+                     └──────┬───────┘
+
+                            │
+
+                  ┌─────────┴─────────┐
+
+                  │                   │
+
+                FOLD                UNFOLD
+
+                  │                   │
+
+                  ▼                   ▼
+
+            next layer           previous layer
+
+                  │                   │
+
+                  └───────► MERGE ◄──┘
+
+The essential invariant is:
+
+> **Every folded statement is a semantic result that can be consumed at its own layer and can retain enough composition information to be unfolded back into its contributing statements. Every unfolded statement re-enters the ordinary merge/fold/unfold pipeline at its corresponding layer.**
+
+This makes **Merge** the stateful convergence mechanism, **Fold** the upward augmentation mechanism, and **Unfold** the downward de-aggregation mechanism.
+
+Together they provide a stream-oriented implementation of the document's **Aggregation → Alignment → Activation** architecture while preserving the ability to move both downstream toward executable Knowledge and upstream toward the original Data/CSPO statements.
+
+# Appendix: ChatGPT Conversation
 
 ### The key insight: behavior as inferred graph structure
 
