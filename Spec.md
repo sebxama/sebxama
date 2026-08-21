@@ -232,16 +232,24 @@ Layer Kinds.
 
 Each layer calculates its corresponding Kinds from their input CSPO Statements from their above input  layer aggregating inputs into their corresponding layer CSPO Kinds (Raw CSPO Statements  in this layer).
 
-(CK, S,  P, O): (EmploymentContextKind, :Peter, :worksFor, :anEnterprise)  
-(SK, S,  P, O): (EmployeeSubjectKind, :Peter, :employer, :anEnterprise)  
-(PK, S,  P, O): (EmploymentRelationshipPredicateKind, :Peter, :worksFor, :anEnterprise)  
-(OK, S,  P, O): (EmployerObjectKind, :Peter, :employedBy, :anEnterprise)
+(ContextCK, S,  P, O):  
+(EmploymentCK, :Peter, :worksFor, :anEnterprise)
+
+(TypeSK, S,  P, O):  
+(EmployeeTypeSK, :Peter, :employer, :anEnterprise)
+
+(PropertyPK, S,  P, O):  
+(EmploymentRelationshipPropertyPK, :Peter, :worksFor, :anEnterprise)
+
+(ValueOK, S,  P, O):  
+(EmployerValueOK, :Peter, :employedBy, :anEnterprise)
 
 **Property Statements:**
 
 Kinds “static schema / class” property definitions. Information Layer Axis CSPO.
 
-(CK, SK, PK, OK): (EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
+(ContextCK, TypeSK, PropertyPK, ValueOK):  
+(EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
 
 ### Information Layer: Alignment Agent
 
@@ -260,10 +268,8 @@ Layer Types: Axis / State / Rule
 
 Consumes Data Layer Property CSPO Quad Statements.
 
-(C, S, P, O)
-
-Consumes Data Layer Property Statements as input:  
-(CK, SK, PK, OK): (EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind) is an example of  the source (C, S, P, O) of this layer.
+(C, S, P, O) :  
+(ContextCK, TypeSK, PropertyPK, ValueOK) from the previous layer.
 
 **State Statements:**
 
@@ -271,16 +277,19 @@ Layer Kinds.
 
 Each layer calculates its corresponding Kinds from their input CSPO Statements from their above input  layer aggregating inputs into their corresponding layer CSPO Kinds (Axis CSPO Statements  in this layer).
 
-(CK, S,  P, O): (AggregatedEmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)  
-(SK, S,  P, O):  (AggregatedEmployeeSubjectKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)  
-(PK, S,  P, O): (AggregatedEmploymentRelationshipPredicateKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)  
-(OK, S,  P, O): (AggregatedEmployerObjectKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
+(TimeDimensionCK, TypeSK, PropertyPK, ValueOK)
 
-**Rule:**
+(MeasurementSK, TypeSK, PropertyPK, ValueOK)
 
-Kinds “static schema / class” property definitions. Knowledge Layer Actor CSPO input.
+(DimensionPK, TypeSK, PropertyPK, ValueOK)
 
-(CK, SK, PK, OK): (AggregatedEmploymentContextKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind)
+(MeasurementOK, TypeSK,  PropertyPK, ValueOK):
+
+**Rule Traversal Statements:**
+
+Kinds “static schema / class” property definitions. Knowledge Layer Actor CSPO input. Preserver / enforces order and nesting dimensional traversal.
+
+(DimensionCK, MeasurementSK, DimensionPK, MeasurementOK):
 
 ### Knowledge Layer: Activation Agent
 
@@ -299,27 +308,31 @@ Layer Types: Actor / Role / Context
 
 Consumes Information Layer Property CSPO Quad Statements.
 
-(C, S, P, O)
+(C, S, P, O):  
+(DimensionCK, MeasurementSK, DimensionPK, MeasurementOK) from the previous layer.
 
 Consumes Information Layer Rule Statements as input:  
 (CK, SK, PK, OK): (AggregatedEmploymentContextKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind) is an example of  the source (C, S, P, O) of this layer.
 
-**Role Statements:**
+**Role Interaction Statements:**
 
 Layer Kinds.
 
 Each layer calculates its corresponding Kinds from their input CSPO Statements from their above input  layer aggregating inputs into their corresponding layer CSPO Kinds (Actor CSPO Statements  in this layer).
 
-(CK, S,  P, O): (EmploymentRoleKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind)  
-(SK, S,  P, O): (EmployeeRoleKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind)  
-(PK, S,  P, O): (EmploymentRelationshipRoleKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind)  
-(OK, S,  P, O): (EmploymentProviderRoleKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind)
+(DCIContextCK, MeasurementSK, DimensionPK, MeasurementOK)
+
+(RoleSK, MeasurementSK, DimensionPK, MeasurementOK)
+
+(ActorPK, MeasurementSK, DimensionPK, MeasurementOK)
+
+(InteractioOK, MeasurementSK, DimensionPK, MeasurementOK)
 
 **Context Statements:**
 
 Kinds “static schema / class” property definitions.
 
-(CK, SK, PK, OK) : (EmploymentRoleKind, EmployeeRoleKind, EmploymentRelationshipRoleKind, EmploymentProviderRoleKind)
+(DCIContextCK, RoleSK, ActorPK, InteractionOK)
 
 # Streaming Agents
 
