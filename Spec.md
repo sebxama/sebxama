@@ -42,7 +42,7 @@ interface Kind\<PlayerType extends Occurrence,
           AttributeType extends Occurrence,  
           ValueType extends Occurrence\>
 
-class ContextKind extends Context implements Kind\<Context, Object, Subject\>
+class ContextKind extends Context implements Kind\<Context, Subject, Object\>
 
 class SubjectKind extends Subject implements Kind\<Subject, Predicate, Object\>
 
@@ -116,6 +116,12 @@ Kind Statements can be regarded as the definition of a Function by extension. Th
 * SK: Context (Subjects), Domain (Predicates), Range (Objects): aGivenSubjectKind(S, P): O  
 * PK: Context (Predicates), Domain (Subjects), Range (Objects): aGivenPredicateKind(P, S): O  
 * OK: Context (Objects), Domain (Predicate), Range (Subject): aGivenObjectKind(O, P): S
+
+**Kinds based merge:**
+
+If aKind(S1) \= A, and aKind(S2) \= A, S1 and S2 are equivalent in a given context (CPPE).
+
+If aKind(S1) \= A, aKind(next(S1)) \= next(A).. 
 
 # Base Model Representations
 
@@ -210,13 +216,13 @@ Subsequent layers Kinds are aggregated from previous layer Statements CSPOs.
 
 ### Data Layer: Aggregation Agent
 
-DOM Layer: Data / Schema Statements (Roles, Types)
+DOM (Dynamic Object Model) Layer Data / Schema Statements.
 
 Aggregation phase consumes Data / Instance Statements, produces Property Statements.
 
-Folding: From input Statements through Property Statements by means of Kinds Aggregation.
+Folding: From input Data Statements through Property Statements by means of Kinds Aggregation.
 
-Unfolding: From aggregated Property Kind Statements into their originating Kind Statements.
+Unfolding: From aggregated Property Kind Statements into their originating Data / Instance Statements.
 
 Layer Types: Instance / Type / Property
 
@@ -232,16 +238,20 @@ Layer Kinds.
 
 Each layer calculates its corresponding Kinds from their input CSPO Statements from their above input  layer aggregating inputs into their corresponding layer CSPO Kinds (Raw CSPO Statements  in this layer).
 
-(ContextCK, S,  P, O):  
+(ContextCK, S,  P, O): PlayerType: C, AttributeType: S, ValueType: O.   
+Example:  
 (EmploymentCK, :Peter, :worksFor, :anEnterprise)
 
-(TypeSK, S,  P, O):  
+(TypeSK, S,  P, O): PlayerType: S, AttributeType: P, ValueType: O.  
+Example:  
 (EmployeeTypeSK, :Peter, :employer, :anEnterprise)
 
-(PropertyPK, S,  P, O):  
+(PropertyPK, S,  P, O): PlayerType: P, AttributeType: S, ValueType: O.  
+Example:  
 (EmploymentRelationshipPropertyPK, :Peter, :worksFor, :anEnterprise)
 
-(ValueOK, S,  P, O):  
+(ValueOK, S,  P, O): PlayerType: O, AttributeType: P, ValueType: S.  
+Example:  
 (EmployerValueOK, :Peter, :employedBy, :anEnterprise)
 
 **Property Statements:**
@@ -249,16 +259,16 @@ Each layer calculates its corresponding Kinds from their input CSPO Statements f
 Kinds “static schema / class” property definitions. Information Layer Axis CSPO.
 
 (ContextCK, TypeSK, PropertyPK, ValueOK):  
+Example:  
 (EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
 
 ### Information Layer: Alignment Agent
 
-Dimensional Layer: State / Transition Statements (Matching, Order)  
-Alignment Agent (State / Transition Statements. Dimensional Layer). Matching / Order
+Dimensional Layer: Recursive Dimensional State / Traversal Statements (Matching, Completion, Order)
 
-Alignment phase consumes Aggregation Property Statements, produces Rule Statements.
+Alignment phase consumes Aggregation Property Statements (Axis Statements), produces Rule Statements.
 
-Folding: From input Statements through Rule Statements by means of Kinds Aggregation.
+Folding: From input Property Statements (Axis Statements) through Rule Statements by means of Kinds Aggregation.
 
 Unfolding: From aggregated Rule Kind Statements into their originating Kind Statements.
 
@@ -266,41 +276,52 @@ Layer Types: Axis / State / Rule
 
 **Axis Statements:**
 
-Consumes Data Layer Property CSPO Quad Statements.
+Consumed Data Layer Property CSPO Quad Statements.
 
 (C, S, P, O) :  
-(ContextCK, TypeSK, PropertyPK, ValueOK) from the previous layer.
+(ContextCK, TypeSK, PropertyPK, ValueOK) from Data Property Statements.
 
 **State Statements:**
 
-Layer Kinds.
+Layer Kinds. DimensionCK, DimensionPK, MeasurementSK, MeasurementOK are Occurrences of the same Resources. 
 
 Each layer calculates its corresponding Kinds from their input CSPO Statements from their above input  layer aggregating inputs into their corresponding layer CSPO Kinds (Axis CSPO Statements  in this layer).
 
-(TimeDimensionCK, TypeSK, PropertyPK, ValueOK)
+(DimensionCK, TypeSK, PropertyPK, ValueOK): PlayerType: ContextCK, AttributeType: TypeSK, ValueType: ValueOK.  
+Example:  
+(EmploymentDepartmentDimensionCK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployePositionObjectKind)
 
-(MeasurementSK, TypeSK, PropertyPK, ValueOK)
+(MeasurementSK, TypeSK, PropertyPK, ValueOK): PlayerType: TypeSK, AttributeType: PropertyPK, ValueType: ValueOK.  
+Example:  
+(EmploymentDepartmentMeasurementSK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployeePositionObjectKind)
 
-(DimensionPK, TypeSK, PropertyPK, ValueOK)
+(DimensionPK, TypeSK, PropertyPK, ValueOK): PlayerType: PropertyPK, AttributeType: TypeSK, ValueType: ValueOK.  
+Example:  
+(EmploymentRoleDimensionPK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployeePositionObjectKind)
 
-(MeasurementOK, TypeSK,  PropertyPK, ValueOK):
+(MeasurementOK, TypeSK,  PropertyPK, ValueOK): PlayerType: ValueOK, AttributeType: PropertyPK, ValueType: TypeSK.  
+Example:  
+(EmploymentRoleMeasurementOK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployeePositionObjectKind)
 
 **Rule Traversal Statements:**
 
 Kinds “static schema / class” property definitions. Knowledge Layer Actor CSPO input. Preserver / enforces order and nesting dimensional traversal.
 
-(DimensionCK, MeasurementSK, DimensionPK, MeasurementOK):
+(DimensionCK, MeasurementSK, DimensionPK, MeasurementOK):  
+Example:  
+(EmploymentDepartmentDimensionCK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
 
 ### Knowledge Layer: Activation Agent
 
-Activation Agent (Interaction / Context Statements, DCI Layer). Transforms / Rules  
+Activation Agent (Interaction / Context Statements, DCI Layer). Transforms / Rules
+
 DCI Layer: Interaction / Context Statements (Transforms, Rules)
 
-Activation phase consumes Alignment Rule Statements, produces Context Statements.
+Activation phase consumes Alignment Information Rule Statements, produces Context Statements.
 
 Folding: From input Statements through Context Statements by means of Kinds Aggregation.
 
-Unfolding: From aggregated Context Kind Statements into their originating Kind Statements.
+Unfolding: From aggregated Context Kind Statements into their originating Actor Kind Statements.
 
 Layer Types: Actor / Role / Context
 
@@ -312,7 +333,7 @@ Consumes Information Layer Property CSPO Quad Statements.
 (DimensionCK, MeasurementSK, DimensionPK, MeasurementOK) from the previous layer.
 
 Consumes Information Layer Rule Statements as input:  
-(CK, SK, PK, OK): (AggregatedEmploymentContextKind, AggregatedEmployeeSubjectKind, AggregatedEmploymentRelationshipPredicateKind, AggregatedEmployerObjectKind) is an example of  the source (C, S, P, O) of this layer.
+(CK, SK, PK, OK): (EmploymentDepartmentDimensionCK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK) is an example of  the source (C, S, P, O) of this layer.
 
 **Role Interaction Statements:**
 
@@ -320,19 +341,29 @@ Layer Kinds.
 
 Each layer calculates its corresponding Kinds from their input CSPO Statements from their above input  layer aggregating inputs into their corresponding layer CSPO Kinds (Actor CSPO Statements  in this layer).
 
-(DCIContextCK, MeasurementSK, DimensionPK, MeasurementOK)
+(DCIContextCK, MeasurementSK, DimensionPK, MeasurementOK): PlayerType: DCIContexCK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
+Example:  
+(EmploymentDepartmentCK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
 
-(RoleSK, MeasurementSK, DimensionPK, MeasurementOK)
+(RoleSK, MeasurementSK, DimensionPK, MeasurementOK): PlayerType: RoleSK, AttributeType: DimensionPK, ValueType: MeasurementOK.  
+Example:  
+(EmploymentDepartmentRoleSK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
 
-(ActorPK, MeasurementSK, DimensionPK, MeasurementOK)
+(ActorPK, MeasurementSK, DimensionPK, MeasurementOK): PlayerType: DimensionPK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
+Example:  
+(EmploymentDepartmentActorPK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
 
-(InteractioOK, MeasurementSK, DimensionPK, MeasurementOK)
+(InteractionOK, MeasurementSK, DimensionPK, MeasurementOK): PlayerType: MeasurementOK, AttributeType: DimensionPK, ValueType: MeasurementSK.  
+Example:  
+(EmploymentDepartmentRoleOK, EmploymentRoleMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
 
 **Context Statements:**
 
 Kinds “static schema / class” property definitions.
 
-(DCIContextCK, RoleSK, ActorPK, InteractionOK)
+(DCIContextCK, RoleSK, ActorPK, InteractionOK)  
+Example:  
+(DCIContextCK, EmploymentDepartmentRoleSK, EmploymentDepartmentRoleSK, EmploymentDepartamentRoleOK) 
 
 # Streaming Agents
 
