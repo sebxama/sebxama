@@ -13,7 +13,8 @@ This document describes a semantic RDF based data integration and intelligence f
 class Resource    
 \+ ID : URI  
 \+ primeID : BigInteger  
-\+ occurrences : Occurrence\[\]
+\+ occurrences : Occurrence\[\]  
+\+ apply(res: Resource\[\]) : Resource\[\]
 
 class Occurrence extends Resource    
 \+ player : Resource  
@@ -171,17 +172,31 @@ A sequential message driven execution model, the Augmentation Pipeline, performs
 
 Augmentation Agents communicate with each other by means of a Blackboard messaging framework where each layer consumes its input Statements and publishes their output Statements. Layers input and output Statements are of two types: an Augmentation Agent layer can consume both of their source Statements types and their production Statements types.
 
-In the first case, processing a source Statement type input, it “merges” this input source type Statement with its source level type already known processed Statements, then “folds” (aggregates) the resulting merged Statements into its layer corresponding Kind types Statements, then builds and produces its output production (Kinds) Statement types for publishing.
+In the first case, processing a source Statement type input, it “merges” this input source type Statement with its source level type already known processed Statements aggregating, aligning and activating possible new inferred Statements. It then “folds” (aggregates) the resulting merged Statements into its layer corresponding Kind types Statements, then builds and produces its output production (Kinds) Statement types for production publishing.
 
-In the case of a layer’s production Statement type as the consumed input, agents “unfolds” input Statement components (Kinds) into layer’s Kinds aggregated originating Statements (matching / merging input Statement Kinds with already known Kinds) obtaining this way the source Statement type Statements which originated the input (Kinds) Statement message. It then performs, with each “unfolded” Statement, the same way as if it were like those source Statements where consumed source Statements (merging, folding and publishing). Intermediate source type merged (new) Statements are also published.
+In the case of a layer’s production Statement type as the consumed input, agents merges this input with its already known production statement types (matching / merging input Statement Kinds with already known Kinds), it then “unfolds” input Statement components (Kinds) into layer’s Kinds aggregated originating source type Statements obtaining this way the source Statement type Statements which originated the input (Kinds) production Statement message (source Statements). It then performs, with each “unfolded” Statement, the same way as if it were like those source Statements where consumed source Statements (merging, folding and publishing). Intermediate source type merged new inferred Statements are also merged, folded and published.
 
-This fan in / fan out approach is intended to be implemented in a reactive functional streams pipeline where each agent consumes and produces knowledge asynchronously and in parallel. An Agent production type Statement is another Agent source type Statement (including the Agent itself) and an Agent source type Statement is the type of another Agent production Statement type. An Agent “accepts” an Statement (source or production) if it is not known already or if it was further processed (updated) its context since the last consumption (or “acceptance” performance is no-op).
+This Agent pipeline execution model could be depicted as:
+
+source statements input / merge \-\> folding \-\> production statements merge and publishing
+
+production statements input / merge \-\> unfold \-\> source statements merge and publishing
+
+The merge steps in the pipeline is where new knowledge (Statements) are Aggregated, Aligned and Activated, where pipeline layers inference is performed materializing inferred knowledge into new Statements of each type. That is why it makes sense to merge new inputs with previous knowledge and inferred knowledge in a pipeline in / out fashion.
+
+This fan in / fan out approach is intended to be implemented in a reactive functional streams pipeline where each agent consumes and produces knowledge asynchronously and in parallel. An Agent production type Statement is another Agent source type Statement (maybe including the Agent itself) and an Agent source type Statement is the type of another Agent production Statement type. An Agent “accepts” an Statement (source or production) if it is not known already or if it was further processed (updated) its context since the last consumption (or “acceptance” performance is no-op).
 
 ## Homoiconic (code as data) approach
 
-Blackboard messaging pattern.
+Blackboard messaging pattern. Merge, Fold, Unfold phases functional approach.
 
 Merging input data against previously known data, applying previously known data as a Template / Alignment / Transformation for merge over input data is what is meant with “code as data”.
+
+Resources (Occurrences, Statements, Contexts, Subjects, Predicates, Objects and their corresponding Kinds) are “functional” entities that can be “applied” to another Resources. The signature of such functional composition is as follows:
+
+Resource::apply(res: Resource\[\]) : Resource\[\]
+
+The semantics of such “application” (argument types and return types) are to be defined for each Resource type leveraging, by means of Helper Services, the following:
 
 Kinds Functional Application.
 
@@ -189,11 +204,19 @@ FCA Inference / Traversal.
 
 CPPE Contextual Inference.
 
-TODO: Determine Resource, Occurrence, Kind, Statement application semantics (functional)  
-TODO: Determine Statement traversal / destructuring for individual components contextual applications.  
-TODO: Determine Augmentation layers Statements into layers processing Statements.  
-TODO: Determine inferred layers processing statement types.  
-TODO: Determine primitives (raw triples SPO?)
+Sets Model Representation.
+
+Merge phase of pipeline agents processing first applies its input source / production Statement to each corresponding already known Statement. It then recursively applies resulting / inferred application result Resource(s) to the corresponding already known Statement structure composition.
+
+Kinds layers (aggregation Statement types) folding and unfolding may be also defined in terms of Resource(s) functional application. Then the streaming pipeline can be built in terms of those operations (merge, fold and unfold) with streaming flows corresponding to each Augmentation pipeline step.
+
+In this way, folding and unfolding would become “contextualized” operations, where each application’s context is the previously applied Resource.
+
+“Primitive” Resources shall exist which allows for executable composition of streams models. Their signature may be a composite traversal of application invocations. For example, for the “createLink” Resource primitive could be invoked like:
+
+createLinkResource::apply(subjectRes : Resource)::apply(predicateRes : Resource)::apply(objectRes : Resource) : Statement Resource
+
+TODO
 
 ## Messaging Infrastructure
 
@@ -201,11 +224,83 @@ Blackboard style messaging backbone. All services subscribe and publish to the s
 
 ### Messaging Format: TreeGraph
 
-Raw XML Serialization of Base Model Statements and entities. Layers Statements nested composition (tree like structure). Synchronization to and from an eventual TMRM underlying metamodel.
+All Base Model entities Statements of each layer type must encode all of their corresponding composing entities in a single message. A Statement containing a specific Kind must encode all its Kind’s composing aggregation Statements, for example. 
 
 ## Datasources
 
-Raw RDF CSPO URIs Quad Statement Messages Endpoint. Configured to produce configured datasource data and to consume updated Statements. Synchronized state. 
+Raw RDF CSPO URIs Quad Statement Messages Endpoint. Configured to produce configured datasource data and to consume updated Statements synchronizing state. 
+
+## Stream-Oriented Merge, Fold and Unfold of Layered Statements
+
+As Resource functional composition (Homoiconic approach).
+
+TODO
+
+### Fold and Unfold as the Stream Context Resolution Operation
+
+TODO
+
+### Merge as the Central Stream Contexts Operation
+
+TODO
+
+### Possible Merge Approaches
+
+Identity Resolution driven. TODO: Find the way of unambiguously identifying concepts (Resources, Occurrences, Statements, SPOs, Kinds) equivalent (in a given role occurrence in a given context).
+
+Merge: Reify as Resources Occurrences, Statements, SPOs, Kinds. Resolve ID of Resources, Contexts (ID, Type), Occurrences (IDs, Contexts, Roles).
+
+Aggregated Processing / Production Statements acts as Templates / Upper ontology alignment schemas.
+
+Layers context merged entities propagate upstream (unfolding) and downstream (folding).
+
+Identity Encoding:
+
+**CPPE Embeddings**  
+Index API.
+
+**FCA / Set Assertion Statements:**  
+(Context, Concept, Role, Occurrence);  
+Concept, Context, Role, Occurrence recursively instance of Set Statements.
+
+Naming Scheme:
+
+Name assignment for inferred entities.  
+Registry Mapping of Merge encodings.
+
+#### RDF Merge
+
+This approach relies on graph theory. It essentially performs a graph union of multiple RDF datasets. A critical function of an RDF merge is the standardization and renaming of "blank nodes" (anonymous resources) across different graphs to avoid collisions, resulting in a single, unified knowledge graph of subject-predicate-object triples.
+
+Merge Statements as RDF graph patterns, combining compatible subjects, predicates, and objects while preserving graph identity and provenance. This provides a straightforward representation for stream-level graph merging and interoperability with RDF-based tooling.
+
+#### TMRM Merge
+
+TMRM merging is driven strictly by subject identity. If two topics (entities) across different data streams share the same subject locator, subject identifier, or item identifier, they are deterministically merged into a single topic. The resulting merged topic accumulates all the names, occurrences, and associations of the original topics.
+
+Perform merging at the TMRM metamodel level, using Resources, Occurrences, Statements, Subjects, Predicates, Objects, and Kinds as the semantic structures being matched and consolidated. This provides the underlying subject-centric merge and identity model for the pipeline.
+
+#### FCA Merge
+
+This approach merges data at the conceptual level by combining "formal contexts" (mappings of objects to their attributes). When two concept lattices are merged, the FCA algorithm recalculates the matrix to build a new, unified lattice. This is highly effective for discovering new structural hierarchies and implicit relationships that weren't visible in the isolated data streams.
+
+Treat matching Statements as formal contexts and merge compatible contexts to derive shared Properties and higher-level relationships. This is particularly suited to the Aggregation phase, where input Statements are consolidated into Property Statements. 
+
+#### CPPE Based FCA / Model Primitives Merge
+
+Operating at the most atomic level of a data architecture, this approach aligns the fundamental structural primitives (e.g., core entities, base properties, and semantic rules) of the models. By merging the structural primitives *first*, the pipeline creates a standardized baseline context, which is then fed into an FCA merge to build highly accurate, normalized concept lattices.
+
+Combine FCA context merging with CPPE/model primitives to support higher-level semantic matching and inference. This approach can be used in the Alignment phase to derive ontology matches, links, dimensions, ordering, and related Rule Statements. 
+
+#### Sets Model Based Merge
+
+Rooted in classic set theory, this methodology uses strict mathematical operations (unions, intersections, and relative differences) to combine data. It treats data streams as collections of elements, making it an incredibly fast, deterministic, and highly scalable approach for deduplication and exact-match aggregations.
+
+Represent Statement components and their relationships as sets and apply set operations such as union, intersection, difference, and compatibility matching. This provides a simple compositional mechanism that can be used as a lower-level merge primitive within the other approaches.
+
+#### Integration into Streams Processing
+
+TODO
 
 ## Streaming Agents Augmentation Pipeline
 
@@ -232,79 +327,88 @@ Context / Role / Type inference in the Aggregation Layer.
 Data Layer. DOM (Dynamic Object Model)
 
 **Data / Instance layer input Statements:**  
-Source Statement Type. Raw CSPO Quad Statements.
+Source Statement Type. Raw CSPO RDF URIs Quad Statements.
 
 (C, S, P, O)
 
 **Type aggregation Statements:**  
 Kinds aggregation Statement Types.
 
-(ContextCK, S,  P, O): Context Kind, PlayerType: C, AttributeType: S, ValueType: O.   
-Example:  
-(EmploymentCK, :Peter, :worksFor, :anEnterprise)
+(ContextCK, S,  P, O)  
+Context Kind, PlayerType: Context, AttributeType: Subject, ValueType: Object.   
+Example: (EmploymentCK, :Peter, :worksFor, :anEnterprise)
 
-(TypeSK, S,  P, O): SubjectKind, PlayerType: S, AttributeType: P, ValueType: O.  
-Example:  
-(EmployeeTypeSK, :Peter, :employer, :anEnterprise)
+(TypeSK, S,  P, O)  
+SubjectKind, PlayerType: Subject, AttributeType: Predicate, ValueType: Object.  
+Example: (EmployeeTypeSK, :Peter, :employer, :anEnterprise)
 
-(PropertyPK, S,  P, O): Predicate Kind, PlayerType: P, AttributeType: S, ValueType: O.  
-Example:  
-(EmploymentRelationshipPropertyPK, :Peter, :worksFor, :anEnterprise)
+(PropertyPK, S,  P, O)  
+Predicate Kind, PlayerType: Predicate, AttributeType: Subject, ValueType: Object.  
+Example: (EmploymentRelationshipPropertyPK, :Peter, :worksFor, :anEnterprise)
 
-(ValueOK, S,  P, O): Object Kind, PlayerType: O, AttributeType: P, ValueType: S.  
-Example:  
-(EmployerValueOK, :Peter, :employedBy, :anEnterprise)
+(ValueOK, S,  P, O)  
+Object Kind, PlayerType: Object, AttributeType: Predicate, ValueType: Subject.  
+Example: (EmployerValueOK, :Peter, :employedBy, :anEnterprise)
 
 **Property output Statements:**  
 Production Statement Type.
 
-(ContextCK, TypeSK, PropertyPK, ValueOK):  
+(ContextCK, TypeSK, PropertyPK, ValueOK)
+
 Example:  
 (EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
 
+#### Aggregation Agent Merge / Fold / Unfold
+
+See Homoiconic approach. TODO
+
 ### Alignment Service Agent
 
-Ontology Matching / Links / Dimensional / Order and Attributes inference in the Alignment Layer.
-
-Dimensional nesting / hierarchies / order: Dimension Context Kinds and Dimension Predicate Kinds determine paths (traversal) across nested dimensions by means of they being Occurrences of the same Resources. Measurement Subject Kinds and Measurement Object Kinds may also be Occurrences of the same resources. Encoding of those Statements should take into account a parent / child, before / after relationship between Dimensions and Measurements respectively.
+Ontology Matching / Links / Attributes / Dimensional / Order inference in the Alignment Layer.
 
 #### Alignment Agent Domain Model
 
-Dimensional Layer.
+Information Layer. N-ary Dimensional Relationships Modelling.
 
 **Axis layer input Statements:**  
 Source Statement Type. Aggregation Production Statements.
 
 (C, S, P, O)
 
+(ContextCK, TypeSK, PropertyPK, ValueOK) from Aggregation Property Statements.  
 Example:  
-(ContextCK, TypeSK, PropertyPK, ValueOK) from Aggregation Property Statements.
+(EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
 
 **State aggregation Statements:**  
 Kinds aggregation Statement Types.
 
-(DimensionCK, TypeSK, PropertyPK, ValueOK): Context Kind, PlayerType: ContextCK, AttributeType: TypeSK, ValueType: ValueOK.  
-Example:  
-(EmploymentDepartmentDimensionCK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployePositionObjectKind)
+(RelationshipCK, TypeSK, PropertyPK, ValueOK)  
+Context Kind, PlayerType: ContextCK, AttributeType: TypeSK, ValueType: ValueOK.   
+Example: (EmploymentRelationshipCK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
 
-(MeasurementSK, TypeSK, PropertyPK, ValueOK): Subject Kind, PlayerType: TypeSK, AttributeType: PropertyPK, ValueType: ValueOK.  
-Example:  
-(EmploymentDepartmentMeasurementSK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployeePositionObjectKind)
+(SourceEndSK, TypeSK, PropertyPK, ValueOK)  
+Subject Kind, PlayerType: TypeSK, AttributeType: PropertyPK, ValueType: ValueOK.   
+Example: (EmployeeRoleSK, EmployeeSubjectKind, EmploymentRoleRelationshipPredicateKind, EmployeeRoleObjectKind)
 
-(DimensionPK, TypeSK, PropertyPK, ValueOK): Predicate Kind, PlayerType: PropertyPK, AttributeType: TypeSK, ValueType: ValueOK.  
-Example:  
-(EmploymentRoleDimensionPK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployeePositionObjectKind)
+(MeasurementContextPK, TypeSK, PropertyPK, ValueOK)  
+Predicate Kind, PlayerType: PropertySK, AttributeType: TypePK, ValueType: ValueOK.   
+Example: (EmployeePositionAtDatePK, EmployeeSubjectKind, EmploymentPositionRelationshipPredicateKind, EmployeePositionObjectKind)
 
-(MeasurementOK, TypeSK,  PropertyPK, ValueOK): Object Kind, PlayerType: ValueOK, AttributeType: PropertyPK, ValueType: TypeSK.  
-Example:  
-(EmploymentRoleMeasurementOK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployeePositionObjectKind)
+(DestinationEndOK, TypeSK,  PropertyPK, ValueOK)  
+Object Kind, PlayerType: ValueOK, AttributeType: PropertyPK, ValueType: TypeSK.   
+Example: (CurrentEmployeeRoleOK, EmployeeSubjectKind, EmploymentRoleRelationshipPredicateKind, EmployeeRoleObjectKind)
 
 **Rule output Statements:**  
 Production Statement Type.
 
-(DimensionCK, MeasurementSK, DimensionPK, MeasurementOK):  
+(RelationshipCK, SourceEndSK, MeasurementContextPK, DestinationEndOK)
+
 Example:  
-(EmploymentDepartmentDimensionCK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
+(EmploymentRelationshipCK, EmployeeRoleSK, EmployeePositionAtDatePK, CurrentEmployeeRoleOK)
+
+#### Alignment Agent Merge / Fold / Unfold
+
+See Homoiconic approach. TODO
 
 ### Activation Service Agent
 
@@ -318,29 +422,29 @@ Knowledge Layer. DCI Contexts, Roles, Actors, Interactions.
 Source Statement Type. Alignment Rule Statements.
 
 (C, S, P, O):  
-(DimensionCK, MeasurementSK, DimensionPK, MeasurementOK) from Alignment Rule Statements.
+(RelationshipCK, SourceEndSK, MeasurementContextPK, DestinationEndOK) from Alignment Rule Statements.
 
 Example:  
-(EmploymentDepartmentDimensionCK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
+(EmploymentRelationshipCK, EmployeeRoleSK, EmployeePositionAtDatePK, CurrentEmployeeRoleOK)
 
 **Role Interaction aggregation Statements:**  
 Kinds aggregation Statement Types.
 
-(DCIContextCK, MeasurementSK, DimensionPK, MeasurementOK): Context Kind, PlayerType: DCIContexCK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
-Example:  
-(EmploymentDepartmentCK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
+(DCIContextCK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
+Context Kind, PlayerType: DCIContexCK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
+Example: (EmploymentDepartmentCK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
 
-(RoleSK, MeasurementSK, DimensionPK, MeasurementOK): Subject Kind, PlayerType: RoleSK, AttributeType: DimensionPK, ValueType: MeasurementOK.  
-Example:  
-(EmploymentDepartmentRoleSK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
+(RoleSK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
+Subject Kind, PlayerType: RoleSK, AttributeType: DimensionPK, ValueType: MeasurementOK.  
+Example: (EmploymentDepartmentRoleSK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
 
-(ActorPK, MeasurementSK, DimensionPK, MeasurementOK): Predicate Kind, PlayerType: DimensionPK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
-Example:  
-(EmploymentDepartmentActorPK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
+(ActorPK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
+Predicate Kind, PlayerType: DimensionPK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
+Example: (EmploymentDepartmentActorPK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
 
-(InteractionOK, MeasurementSK, DimensionPK, MeasurementOK): Object Kind, PlayerType: MeasurementOK, AttributeType: DimensionPK, ValueType: MeasurementSK.  
-Example:  
-(EmploymentDepartmentRoleOK, EmploymentRoleMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
+(InteractionOK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
+Object Kind, PlayerType: MeasurementOK, AttributeType: DimensionPK, ValueType: MeasurementSK.  
+Example: (EmploymentDepartmentRoleOK, EmploymentRoleMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
 
 **Context output Statements:**  
 Production Statement Type.
@@ -349,6 +453,10 @@ Production Statement Type.
 
 Example:  
 (DCIContextCK, EmploymentDepartmentRoleSK, EmploymentDepartmentRoleSK, EmploymentDepartamentRoleOK) 
+
+#### Activation Agent Merge / Fold / Unfold
+
+See Homoiconic approach. TODO
 
 ### Helper Services
 
@@ -374,73 +482,7 @@ Index API Functional Definitions.
 
 ## Dynamic API Endpoints
 
-HAL like or discoverable behavior APIs over Activation activated knowledge statements. Render interfaces for contexts interactions instances. Message driven.
-
-## Stream-Oriented Unfolding, Merge and Folding of Layered Statements
-
-TODO
-
-### Merge as the Central Stream Operation
-
-TODO
-
-# Possible Merge Approaches
-
-Identity Resolution driven. TODO: Find the way of unambiguously identifying concepts (Resources, Occurrences, Statements, SPOs, Kinds) equivalent (in a given role occurrence in a given context).
-
-Merge: Reify as Resources Occurrences, Statements, SPOs, Kinds. Resolve ID of Resources, Contexts (ID, Type), Occurrences (IDs, Contexts, Roles).
-
-Aggregated Processing / Production Statements acts as Templates / Upper ontology alignment schemas.
-
-Layers context merged entities propagate upstream (unfolding) and downstream (folding).
-
-Identity Encoding:
-
-**CPPE Embeddings**  
-Index API.
-
-**FCA / Set Assertion Statements:**  
-(Context, Concept, Role, Occurrence);  
-Concept, Context, Role, Occurrence recursively instance of Set Statements.
-
-Naming Scheme:
-
-Name assignment for inferred entities.  
-Registry Mapping of Merge encodings.
-
-## RDF Merge
-
-This approach relies on graph theory. It essentially performs a graph union of multiple RDF datasets. A critical function of an RDF merge is the standardization and renaming of "blank nodes" (anonymous resources) across different graphs to avoid collisions, resulting in a single, unified knowledge graph of subject-predicate-object triples.
-
-Merge Statements as RDF graph patterns, combining compatible subjects, predicates, and objects while preserving graph identity and provenance. This provides a straightforward representation for stream-level graph merging and interoperability with RDF-based tooling.
-
-## TMRM Merge
-
-TMRM merging is driven strictly by subject identity. If two topics (entities) across different data streams share the same subject locator, subject identifier, or item identifier, they are deterministically merged into a single topic. The resulting merged topic accumulates all the names, occurrences, and associations of the original topics.
-
-Perform merging at the TMRM metamodel level, using Resources, Occurrences, Statements, Subjects, Predicates, Objects, and Kinds as the semantic structures being matched and consolidated. This provides the underlying subject-centric merge and identity model for the pipeline.
-
-## FCA Merge
-
-This approach merges data at the conceptual level by combining "formal contexts" (mappings of objects to their attributes). When two concept lattices are merged, the FCA algorithm recalculates the matrix to build a new, unified lattice. This is highly effective for discovering new structural hierarchies and implicit relationships that weren't visible in the isolated data streams.
-
-Treat matching Statements as formal contexts and merge compatible contexts to derive shared Properties and higher-level relationships. This is particularly suited to the Aggregation phase, where input Statements are consolidated into Property Statements. 
-
-## CPPE Based FCA / Model Primitives Merge
-
-Operating at the most atomic level of a data architecture, this approach aligns the fundamental structural primitives (e.g., core entities, base properties, and semantic rules) of the models. By merging the structural primitives *first*, the pipeline creates a standardized baseline context, which is then fed into an FCA merge to build highly accurate, normalized concept lattices.
-
-Combine FCA context merging with CPPE/model primitives to support higher-level semantic matching and inference. This approach can be used in the Alignment phase to derive ontology matches, links, dimensions, ordering, and related Rule Statements. 
-
-## Sets Model Based Merge
-
-Rooted in classic set theory, this methodology uses strict mathematical operations (unions, intersections, and relative differences) to combine data. It treats data streams as collections of elements, making it an incredibly fast, deterministic, and highly scalable approach for deduplication and exact-match aggregations.
-
-Represent Statement components and their relationships as sets and apply set operations such as union, intersection, difference, and compatibility matching. This provides a simple compositional mechanism that can be used as a lower-level merge primitive within the other approaches.
-
-## Integration into Streams Processing
-
-TODO
+HAL like or discoverable behavior APIs over Activation activated knowledge statements. Render interfaces for contexts interactions instances. Message driven API rendering Contexts Interactions (DCI) behaviors (state) and role executions (verbs).
 
 # Leverage TMRM
 
