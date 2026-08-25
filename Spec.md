@@ -170,7 +170,7 @@ TreeGraph for nested Statements structures Stream Processing. Pipeline messages 
 
 A sequential message driven execution model, the Augmentation Pipeline, performs, by means of message exchange streams processing (unfolding, merging and folding), the Semantic Streams Augmentation of raw RDF CSPO URIs Quads input Statements (from configurable Datasources\*) into executable models of knowledge gathered by means of (1) Aggregation, (2) Alignment and (3) Activation of Statements (messages) encoding corresponding layers domain models Statement types structures.  
 
-Augmentation Agents communicate with each other by means of a Blackboard messaging framework where each layer consumes its input Statements and publishes their output Statements. Layers input and output Statements are of two types: an Augmentation Agent layer can consume both of their source Statements types and their production Statements types.
+Augmentation Agents communicate with each other by means of a series of messaging endpoints where each layer consumes its input (source) Statements and publishes their output (production) Statements. Layers input and output Statements are of two types: an Augmentation Agent layer can consume both of their source Statements types and their production Statements types.
 
 In the first case, processing a source Statement type input, it “merges” this input source type Statement with its source level type already known processed Statements aggregating, aligning and activating possible new inferred Statements. It then “folds” (aggregates) the resulting merged Statements into its layer corresponding Kind types Statements, then builds and produces its output production (Kinds) Statement types for production publishing.
 
@@ -188,13 +188,15 @@ This fan in / fan out approach is intended to be implemented in a reactive funct
 
 ## Homoiconic (code as data) approach
 
-Blackboard messaging pattern. Merge, Fold, Unfold phases functional approach.
+Messaging pipeline oriented resources consumption and publishing. Merge, Fold, Unfold phases functional approach.
 
 Merging input data against previously known data, applying previously known data as a Template / Alignment / Transformation for merge over input data is what is meant with “code as data”.
 
 Resources (Occurrences, Statements, Contexts, Subjects, Predicates, Objects and their corresponding Kinds) are “functional” entities that can be “applied” to another Resources. The signature of such functional composition is as follows:
 
 Resource::apply(res: Resource\[\]) : Resource\[\]
+
+Example: Kind applied to a Resource returns all Statements where the Resource is a player of the Kind.
 
 The semantics of such “application” (argument types and return types) are to be defined for each Resource type leveraging, by means of Helper Services, the following:
 
@@ -216,15 +218,24 @@ In this way, folding and unfolding would become “contextualized” operations,
 
 createLinkResource::apply(subjectRes : Resource)::apply(predicateRes : Resource)::apply(objectRes : Resource) : Statement Resource
 
-TODO
+TODO:  
+Resource hierarchy application semantics. Full layers types hierarchy (implement all layers models kinds). Template methods. Implementation Language? (Resources, Streams Processing), XSLT?
 
 ## Messaging Infrastructure
 
-Blackboard style messaging backbone. All services subscribe and publish to the same topic.
+Messaging pipeline:
+
+aggregationSourceTopic \<-\> Aggregation \<-\> aggregationProductionTopic
+
+aggregationProductionTopic \<-\> Alignment \<-\> alignmentProductionTopic
+
+alignmentProductionTopic \<-\> Activation \<-\> activationProductionTopic
 
 ### Messaging Format: TreeGraph
 
 All Base Model entities Statements of each layer type must encode all of their corresponding composing entities in a single message. A Statement containing a specific Kind must encode all its Kind’s composing aggregation Statements, for example. 
+
+Source, Production Messages includes all Statements hierarchy which compose / lead to produced Statements (TreeGraph). Serialization. References to Resources (Registry Helper Service) to reduce message payload size..
 
 ## Datasources
 
@@ -234,6 +245,8 @@ Raw RDF CSPO URIs Quad Statement Messages Endpoint. Configured to produce config
 
 As Resource functional composition (Homoiconic approach).
 
+Layers inputs / outputs. Layers functional definitions. Rules from source 'terminals' to production 'non-terminals': produce all possible production source Statements given contexts / constraints. Inferences.
+
 TODO
 
 ### Fold and Unfold as the Stream Context Resolution Operation
@@ -242,6 +255,7 @@ TODO
 
 ### Merge as the Central Stream Contexts Operation
 
+Inferred new Statements by Augmentation pipeline phase.  
 TODO
 
 ### Possible Merge Approaches
@@ -263,8 +277,7 @@ Index API.
 (Context, Concept, Role, Occurrence);  
 Concept, Context, Role, Occurrence recursively instance of Set Statements.
 
-Naming Scheme:
-
+Naming Scheme:  
 Name assignment for inferred entities.  
 Registry Mapping of Merge encodings.
 
@@ -306,6 +319,8 @@ TODO
 
 Each pipeline Agent has three types of Statements: its Source Statements (consumes / produces), its internal Kind aggregation Statements (used in the merge phase of its processing) and its Production Statements (produces / consumes).
 
+Any of the three layers can be considered as (sets of) Resources of their types of source and production Statements. Layer state. Streams application processing (layer endpoints, topics).
+
 Aggregation (Data) Agent:  
 Source Statement Type: Raw RDF CSPO URIs Quad Statements.  
 Production Statement Type: (CK, SK, PK, OK) Property Quad Statements.
@@ -317,6 +332,8 @@ Production Statement Type: (CK, SK, PK, OK) Rule Quad Statements.
 Activation (Knowledge) Agent:  
 Source Statement Type: Actor Statements (Alignment Information Layer outputs)  
 Production Statement Type: (CK, SK, PK, OK) Context Quad Statements.
+
+TODO: Cleanup Agents Domain Model Examples.
 
 ### Aggregation Service Agent
 
