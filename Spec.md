@@ -194,11 +194,19 @@ Merging input data against previously known data, applying previously known data
 
 Resources (Occurrences, Statements, Contexts, Subjects, Predicates, Objects and their corresponding Kinds) are “functional” entities that can be “applied” to another Resources. The signature of such functional composition is as follows:
 
-Resource::apply(res: Resource\[\]) : Resource\[\]
+Resource::apply(res: Resource) : Resource  
+Resource::apply(res: Occurrence) : Resource  
+Resource::apply(res: Statement) : Resource  
+Resource::apply(res: Context) : Resource  
+Resource::apply(res: Subject) : Resource  
+Resource::apply(res: Predicate) : Resource  
+Resource::apply(res: Object) : Resource  
+Resource::apply(res: ContextKind) : Resource  
+Resource::apply(res: SubjectKind) : Resource  
+Resource::apply(res: PredicateKind) : Resource  
+Resource::apply(res: ObjectKind) : Resource
 
-Example: Kind applied to a Resource returns all Statements where the Resource is a player of the Kind.
-
-The semantics of such “application” (argument types and return types) are to be defined for each Resource type leveraging, by means of Helper Services, the following:
+Each Resource hierarchy class has their own overridden implementation of those ‘apply’ methods. The semantics of such “applications” (argument types and return types) are to be defined for each Resource type subclass implementing or overriding the corresponding ‘apply’ methods, their internal state and leveraging the following by means of Helper Services:
 
 Kinds Functional Application.
 
@@ -208,15 +216,35 @@ CPPE Contextual Inference.
 
 Sets Model Representation.
 
+Example: Kind applied to a Resource returns all Statements where the Resource is a player of the Kind.
+
+Given a monadic wrapper (Spring Flux, Mono, for example) for handling streams processing:
+
+aWrappedResource.map(aResourceInstance::apply) : Flux\<AResourceInstanceApplyType\>
+
+Then, Resource(s) applications can be chained and combined by means of stream pipelines composition. 
+
+**Materialization of Resources: State / IO**
+
+TODO: Refactor to IO / State Monad. Execution Resource Statements Schema.
+
+“Primitive” Resources (Kinds) shall exist which allows for executable composition of streams models by their types and their internal instance state. Their signature may be a composite traversal of application invocations. For example, for the “createLink” Resource primitive could be invoked like:
+
+createLinkResource::apply(subjectRes : Resource)::apply(predicateRes : Resource)::apply(objectRes : Resource) : Statement Resource
+
+**Merge by means of Resource Application**
+
 Merge phase of pipeline agents processing first applies its input source / production Statement to each corresponding already known Statement. It then recursively applies resulting / inferred application result Resource(s) to the corresponding already known Statement structure composition.
+
+**Folding / Unfolding by means of Resource Application**
 
 Kinds layers (aggregation Statement types) folding and unfolding may be also defined in terms of Resource(s) functional application. Then the streaming pipeline can be built in terms of those operations (merge, fold and unfold) with streaming flows corresponding to each Augmentation pipeline step.
 
 In this way, folding and unfolding would become “contextualized” operations, where each application’s context is the previously applied Resource.
 
-“Primitive” Resources shall exist which allows for executable composition of streams models. Their signature may be a composite traversal of application invocations. For example, for the “createLink” Resource primitive could be invoked like:
+**Persistence and Endpoints Interactions by means of Resource Application**
 
-createLinkResource::apply(subjectRes : Resource)::apply(predicateRes : Resource)::apply(objectRes : Resource) : Statement Resource
+TODO: A schema shall exist which encodes Persistence IO actions and Endpoints Context Interactions behaviors and executions into Execution Statements Materialization / State IO performances.
 
 TODO:  
 Resource hierarchy application semantics. Full layers types hierarchy (implement all layers models kinds). Template methods. Implementation Language? (Resources, Streams Processing), XSLT?
