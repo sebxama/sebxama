@@ -126,6 +126,10 @@ If aKind(S1) \= A, aKind(next(S1)) \= next(A).
 
 Functional Composition (align, sort, link completion, merge).
 
+**Kinds Functional Comprehensions:**
+
+Kinds: extensional functions definitions. Functions Comprehensions: infer Kinds Functions from CPPE embeddings vía Helpers / ML. Resource Merge / Apply: Kinds inferred Functions inference.
+
 # Base Model Representations
 
 Base Model class hierarchy is represented by different meta model approaches (kept in sync with each other) for leveraging the most appropriate inference mechanisms.
@@ -223,6 +227,30 @@ Given a monadic wrapper (Spring Flux, Mono, for example) for handling streams pr
 aWrappedResource.map(aResourceInstance::apply) : Flux\<AResourceInstanceApplyType\>
 
 Then, Resource(s) applications can be chained and combined by means of stream pipelines composition. 
+
+**Kinds Functional Comprehensions:**
+
+Kinds: extensional functions definitions. Functions Comprehensions: infer Kinds Functions from CPPE embeddings vía Helpers / ML. Resource Merge / Apply: Kinds inferred Functions inference.
+
+**Monadic fold / unfold:** 
+
+Aggregate (Kinds map / reduce):   
+key (PlayerType), values (AttributeType, ValueType).
+
+De aggregate: unfold to original Kind Statements (stream scan).
+
+Merge: application of aggregated (folded) / de aggregated (unfolded) Resources to output / input streams (augmented with previous merge results) on each key (fold) aggregation completion and on each unfold stream scan emitted Resource.
+
+TODO: Resource::apply Helpers Services approaches: FCA, CPPE, RDF inference, Sets, etc. ML Models / LLMs (classification : Aggregation, clustering : Alignment, regression : Activation). Unify Augmentation application Helper Services approaches APIs.
+
+Data Structures (Folded Kinds):
+
+\<Map\<Resource, Set\<Map\<Resource, Set\<Resource\>\>\>\>\>
+
+\<Map\<Subject, Set\<Predicate\>\>  
+\<Map\<Set\<Predicate\>, Type\>  
+\<Type, Set\<Map\<Predicate, Value\>\>\>  
+\<Map\<Set\<Map\<Predicate, Value\>\>, State\>
 
 **Materialization of Resources: State / IO**
 
