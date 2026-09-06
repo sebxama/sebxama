@@ -212,6 +212,8 @@ Resource::apply(res: ObjectKind) : Resource
 
 Each Resource hierarchy class has their own overridden implementation of those ‘apply’ methods. The semantics of such “applications” (argument types and return types) are to be defined for each Resource type subclass implementing or overriding the corresponding ‘apply’ methods, their internal state and leveraging the following by means of Helper Services:
 
+Apply as functional graph traversal by invocations compositions.
+
 Kinds Functional Application.
 
 FCA Inference / Traversal.
@@ -276,6 +278,44 @@ TODO: A schema shall exist which encodes Persistence IO actions and Endpoints Co
 
 TODO:  
 Resource hierarchy application semantics. Full layers types hierarchy (implement all layers models kinds). Template methods. Implementation Language? (Resources, Streams Processing), XSLT?
+
+### Comparisons: Dimensional axis Order and Matching
+
+Folding and unfolding Merge operations can leverage comparisons of Resources for sorting and matching. This is sorting in a nested contexts approach where one sorted occurrence may be the ‘parent’ of child sorted occurrences (happened and sorted in the parent occurrence scope). Resource application can be used for sorted structures traversal and further comparisons.
+
+TODO: For leveraging CPPE, Algebraic Embeddings and FCA the comparison results may be encoded in a 3 bit string mask (octal) representation, for example: 001 is less than, 100 is greater than, 111 is equal, etc.
+
+One goal would be to be able to encode comparison results as Merge Materialized Merge Traversal Comparison Statements Results. Example: A to B in Context C is like D to E in Context F.
+
+The means for being able to construct such Statements for comparisons is by means of PredicateKind. Reified Relationships aggregation:
+
+(:subject, :employer / :position / :salary, :objects...)
+
+\-\> (:subject, :employment, :anEmployment)
+
+\-\> (:anEmployment, :attributes..., :values…)
+
+:employment: WorkRelationship PredicateKind (materialize)  
+:anEmployment: Employment Relationship Resource instance Kinds (ObjectKind, SubjectKind).
+
+Attributes: Dimensional Axes. Values: PredicateKind ValueType Aggregation. Infer and materialize :anEmployment reified relationship object / subject for :employment predicate of WorkRelationship PredicateKind.
+
+PredicateKind of SubjectKind Kind Attribute (Employee, Student) / ObjectKind Kind Value (Employer, School).
+
+TODO: Infer  
+Employee is to Employer (in WorkRelationship) as Student is to School (in StudentshipRelationship).
+
+Materialize: (Resource, ComparisonEncoding(axis, binary mask), Resource).
+
+Merge (materialize) Resources according to their axes binary mask comparison results.
+
+Leverage CPPE, Algebraic Embeddings, FCA.
+
+**Augmentation Layers Kinds Relationships Reification**
+
+Augmentation Layers, particularly the Information or Alignment layer already performs such a PredicateKind relationship, aggregating those Kinds from Subject and Object Kinds. Knowledge Activation Layers performs the aggregation over the previously aggregated layer results. Such arrangements should allow for: Information Alignment axes ordering and matching and Knowledge Activation axes ordering and matching.
+
+The examples shown so far may be appropriate for Information Alignment Layer instance data comparisons and inference. Knowledge Activation layer should materialize ordering and matching of reified contexts and interactions of behavior instance data.
 
 ## Messaging Infrastructure
 
