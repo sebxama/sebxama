@@ -657,7 +657,8 @@ Formal Grammars Rules Productions for Classification, Matching, Completion, Orde
 **Non Terminals:** Kinds  
 **Terminals:** Resources  
 **Production Rules:** Aggregation, Alignment, Activation layers input / source, output / production Statements.  
-**Start Symbol:** (Resource, Resource, Resource, Resource)
+**Start Symbol:** (Occurrence, Occurrence, Occurrence, Occurrence):  
+TODO: Refactor class model. Context, Subject, Predicate, Object are the roles in the Statement determined by the Kind of the Occurrence.
 
 **Rules Productions:** Layered Rules Production Statements materialization. Contextualized, until no non-terminals: Non Terminals: Functional Relationships (functional merge).
 
