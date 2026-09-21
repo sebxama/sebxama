@@ -646,7 +646,32 @@ Alignment. Order (axis arrangements). State transitions flow. Infer and encode t
 Leveraging Grammars as an LLM Interaction tool
 
 Possible contexts / functional transitions (behavior) as formal grammars rules / productions.  
-Possible Prompts in context. Contexts Roles behaviors Flows. Inference context productions from grammars. Statements as grammars rules / productions.
+Possible Prompts in context. Contexts Roles behaviors Flows. Inference context productions from grammars. Statements as grammar rules / productions.
+
+# Leverage Formal Grammars
+
+Layered Production Rules Composition:
+
+Formal Grammars Rules Productions for Classification, Matching, Completion, Order / Comparisons and potential Contexts / Interactions Rules Productions.
+
+**Non Terminals:** Kinds  
+**Terminals:** Resources  
+**Production Rules:** Aggregation, Alignment, Activation layers input / source, output / production Statements.  
+**Start Symbol:** (Resource, Resource, Resource, Resource)
+
+**Rules Productions:** Layered Rules Production Statements materialization. Contextualized, until no non-terminals: Non Terminals: Functional Relationships (functional merge).
+
+**Monadic parser.** Dynamic grammars / DSLs (upper Grammars / Contexts / Kinds aligned). Rules / Productions : Schema / Occurrences.
+
+**Aggregation:**  
+Infer Rules (Grammar) from Productions (Statements).
+
+**Alignment:**  
+All possible Grammar Production Rules Statements, all actual / valid grammar rules production Statements (matches Functional Relationships / Kinds merge).  
+Order / Dimensions: Rules Productions as part / step of another Production Rule.
+
+**Activation:**  
+Prompt: Statement (from contextual possible start statements interactions list), Merge: Abstract Statement Production Rules (Aggregation), Unfold: scan all possible Statements from abstracted Statement Production Rules (Alignment). Perform Productions from Rules starting at scanned possible Statements.
 
 # Leverage RDF
 
