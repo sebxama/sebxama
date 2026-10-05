@@ -110,6 +110,46 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Dynamic API Endpoints](#dynamic-api-endpoints)
 
+[Dynamic API Endpoints Integration](#dynamic-api-endpoints-integration)
+
+[Monadic Context & Interaction Pipeline](#monadic-context-&-interaction-pipeline)
+
+[Protocol Execution & Resource Traversal](#protocol-execution-&-resource-traversal)
+
+[Generic Dynamic API Endpoints Browser / Designer](#generic-dynamic-api-endpoints-browser-/-designer)
+
+[Dynamic API Endpoints API Architecture & Monadic Workflow](#dynamic-api-endpoints-api-architecture-&-monadic-workflow)
+
+[Monadic Execution Model: State and IO Monads](#monadic-execution-model:-state-and-io-monads)
+
+[Activation Statements Transformation Flow](#activation-statements-transformation-flow)
+
+[Conversational Session & Resource Navigation Pattern](#conversational-session-&-resource-navigation-pattern)
+
+[Dynamic API Endpoints Summary](#dynamic-api-endpoints-summary)
+
+[Resource Representation and Navigational State](#resource-representation-and-navigational-state)
+
+[State Monad: API Navigation and Augmentation State](#state-monad:-api-navigation-and-augmentation-state)
+
+[IO Monad: API Representation ↔ Activation Statements](#io-monad:-api-representation-↔-activation-statements)
+
+[Generic Contexts / Roles / Actors / Interactions Resources](#generic-contexts-/-roles-/-actors-/-interactions-resources)
+
+[Browsing a Use Case as REST Resource Navigation](#browsing-a-use-case-as-rest-resource-navigation)
+
+[Resource Rendering from Activation Production Statements](#resource-rendering-from-activation-production-statements)
+
+[Executing an Interaction](#executing-an-interaction)
+
+[Parent, Child and Placeholder Resources](#parent,-child-and-placeholder-resources)
+
+[API Facade and Augmentation Pipeline Feedback](#api-facade-and-augmentation-pipeline-feedback)
+
+[Generic Dynamic API Protocol](#generic-dynamic-api-protocol)
+
+[Generic Dynamic API Endpoints Browser / Designer](#generic-dynamic-api-endpoints-browser-/-designer-1)
+
 [Implementation Techniques](#implementation-techniques)
 
 [Leverage TMRM (ISO Topic Maps Reference Model)](#leverage-tmrm-\(iso-topic-maps-reference-model\))
@@ -1015,7 +1055,610 @@ Index API Functional Definitions.
 
 ## Dynamic API Endpoints {#dynamic-api-endpoints}
 
-HAL like or discoverable behavior APIs over Activation activated knowledge statements. Render interfaces for contexts interactions instances. Message driven API rendering Contexts Interactions (DCI) behaviors (state) and role executions (verbs).
+Activation pipeline layer production messages I/O API Facade for rendering Dynamic API Endpoints:
+
+Render an interface / protocol of discoverable Contexts behavior (Use Cases) and Interactions instances (executions) API of the unified integrated datasources facade by means of Activation activated knowledge message statements.
+
+Develop this interface as a protocol for clients browsing available Contexts, instantiating Contexts Interactions into new Use Cases instances or browsing previous Use Cases Interactions in a conversational (browsing state) manner. Allow for binding produced results or navigation state back into Augmentation pipeline for further Augmentation, Contexts and Interactions inference.
+
+State / IO Monad functional approach for a DCI Contexts Interactions generic API interface consuming and producing Activation pipeline layer production messages. Messages fan in / fan out Augmentation pipeline for further execution and inference (merge, unfold, fold).
+
+Highlight how Activation pipeline layer production messages are rendered as API schema, instances and inferences and how user interactions with this rendered interface modifies or produces new knowledge statements accordingly and how the Dynamic Endpoints communicate with Activation pipeline layer via a State / IO Monad approach for input / output / materialization of Activation production messages.
+
+—
+
+The "Dynamic API Endpoints" section of the document must outline how a generic API Facade could expose Activation layer Contexts, Roles, Interactions and Actors workflows (Use Cases, Use Case Instances) that can be browsed and executed by the API Resources rendered representations navigation means. 
+
+API Facade endpoints produced and consumed API Resources rendered representations (REST) conveys all the navigational “state” of a “session” (State Monad). These representations are built from and rendered to the Activation layer Context production Statements: (DCIContextCK, RoleSK, ActorPK, InteractionOK). Leverage an State Monad pattern for navigational context and Augmentation pipeline state and an IO Monad for Activation layer Context production Statements transforms into API Endpoints rendered resources representations.
+
+The API endpoints receive and produce API Representations rendered resources. They receive an API Representation rendered resource, transforms it into Activation layer Context production Statements, performs Activation (fans in / fans out all the Augmentation pipeline layers for inference) and renders back the updated Activation layer knowledge into API Representations rendered resources format.
+
+This will be the “state” flowing across the rendered API endpoints resource representations and the backend Activation Layer message format in which API endpoints interactions resource representations are transformed back and forth (IO Monad). The initiating message (Resource) from a session could be the selection of a top level Context (Use Case). The client retrieves, inspects and posts back this representation and the response could be a list of the Use Case instances (Interactions) and a “New Interaction…” placeholder Resource. Then follow the same pattern for the other resource types: post a representation and obtain a list of available resources (parent, child, placeholder) for this resource type.
+
+—
+
+The Dynamic API Endpoint layer is the protocol boundary between the Activation layer and external clients. Activation produces Context/Role/Actor/Interaction Statements of the form `(DCIContextCK, RoleSK, ActorPK, InteractionOK)`. The Dynamic API consumes these activated Statements to render discoverable Context and Interaction representations and produces Interaction requests and navigation/binding events that are submitted back to Activation.
+
+A State/IO Monad provides the functional execution model for this boundary. **State** represents the current API/interaction navigation state, including selected Contexts, Context instances, Actors, Roles, Interactions, execution results, bindings and navigation history. **IO** represents communication with the Activation message stream and its asynchronous production/consumption of Activation Statements.
+
+Conceptually:
+
+InteractionRequest  
+      \+  
+ActivationApiState  
+      ↓  
+State / IO computation  
+      ↓  
+Activation input message  
+      ↓  
+Activation processing  
+      ↓  
+Activation production message(s)  
+      ↓  
+updated ActivationApiState  
+      \+  
+InteractionResult
+
+The Dynamic API renderer projects the resulting activated Statements and State into a discoverable HAL-like representation. API operations do not constitute a separate domain model; they are projections and interactions over Activation knowledge.
+
+**Dynamic API Endpoints** define the **runtime protocol** by which activated Contexts, Roles, Actors, Resources and Interactions are discovered, instantiated, executed and observed.
+
+The State/IO Monad applies to the Activation ↔ Dynamic API boundary; persistence and synchronization with underlying datasources remain concerns of the augmentation/data-source integration architecture and are not the responsibility of this API monad.
+
+### Dynamic API Endpoints Integration {#dynamic-api-endpoints-integration}
+
+The Dynamic API Endpoints section defines the runtime execution boundary between external consumers and the underlying semantic stream processing infrastructure. Implemented as an I/O API Facade, this layer projects activated knowledge statements into discoverable, executable interface representations while capturing client interactions and state transitions to feed back into the reactive augmentation stream.
+
+#### Monadic Context & Interaction Pipeline {#monadic-context-&-interaction-pipeline}
+
+The boundary between the Activation layer and the Dynamic API is governed by a combined **State / IO Monad** operational model:
+
+* **State Monad**: Manages the runtime navigational state of a client session. It encapsulates active session variables, selected top-level Contexts (Use Cases), Interaction instances, Actor assignments, active Roles, execution parameters, and historical navigation paths across resource representations.  
+* **IO Monad**: Handles the asynchronous, message-driven transformations between rendered REST/HAL resource representations and the backend Activation layer production Statements:
+
+$ActivationStatement=(DCIContextCK,RoleSK,ActorPK,InteractionOK)$
+
+                  \[ API Resource Representation \]  
+                                │  
+                                │ (IO Monad Input Transformation)  
+                                ▼  
+              \[ (DCIContextCK, RoleSK, ActorPK, InteractionOK) \]  
+                                │  
+                                │ (Augmentation Pipeline Fan-In)  
+                                ▼  
+                      \[ Activation Layer \]  
+          (Inference / Merge / Fold / Unfold Execution)  
+                                │  
+                                │ (Augmentation Pipeline Fan-Out)  
+                                ▼  
+              \[ (DCIContextCK, RoleSK, ActorPK, InteractionOK) \]  
+                                │  
+                                │ (IO Monad Output Transformation)  
+                                ▼  
+                \[ Updated Navigation State Monad \]  
+                                │  
+                                ▼  
+               \[ Rendered API Resource / Actions \]
+
+#### Protocol Execution & Resource Traversal {#protocol-execution-&-resource-traversal}
+
+The API Facade operates through a continuous RESTful resource navigation loop. Navigational state is conveyed entirely within the rendered resource representations, allowing clients to browse, inspect, and execute domain behaviors dynamically:
+
+1. **Top-Level Discovery**: The client initiates a session by requesting the top-level Context root. The API responds with a representation listing available top-level Use Cases ($DCIContextCK$) and discovery hypermedia links.  
+2. **Context Selection & Instance Enumeration**: Inspecting and posting a selected Use Case Context statement transforms the representation via the IO Monad into an Activation layer message. The Activation layer processes the message across the augmentation pipeline (fanning in/out through Aggregation, Alignment, and Activation) and returns updated knowledge statements.  
+3. **Resource & Interaction Navigation**: The response renders a representation containing:  
+   * A list of active Use Case instances ($Interactions$).  
+   * Available participant Roles ($RoleSK$) and bound Actors ($ActorPK$).  
+   * A "New Interaction..." placeholder Resource representing potential execution boundaries.  
+4. **State Transition & Action Execution**: Submitting a payload to a placeholder or interaction resource triggers backend execution. The payload is converted into Activation production Statements, evaluated for state transitions (leveraging Previous, Current, Next networks and CPPE state transition products), and persisted across synchronized datasources. The updated state is rendered back to the client as new hypermedia controls and resource representations.
+
+#### Generic Dynamic API Endpoints Browser / Designer {#generic-dynamic-api-endpoints-browser-/-designer}
+
+The dynamic endpoints facade exposes two primary operational modes for generic client interaction:
+
+* **Generic Semantic Browser**: A discoverable, hypermedia-driven UI layer that allows users to traverse available Use Cases, inspect active Context instances, view bound Roles/Actors, and trigger executable Interactions interactively.  
+* **Context / Alignment Designer**: An interactive interface enabling administrators and domain designers to bind newly discovered graph resources, interaction results, and navigation states back into the reactive Augmentation Pipeline. These bindings generate new aligned rules, refine DCI Context definitions, and establish updated execution templates for continuous semantic augmentation.
+
+### Dynamic API Endpoints API Architecture & Monadic Workflow {#dynamic-api-endpoints-api-architecture-&-monadic-workflow}
+
+The generic **API Facade** exposes the Activation layer’s Contexts, Roles, Interactions, and Actors workflows (representing Use Cases and Use Case Instances) through discoverable REST resource representations. Client applications navigate, inspect, and execute these workflows directly via hypermedia navigation controls embedded within the rendered resource representations.
+
+#### Monadic Execution Model: State and IO Monads {#monadic-execution-model:-state-and-io-monads}
+
+The API Facade operates on a dual Monadic functional foundation:
+
+* **State Monad**: Encapsulates all navigational state and session context across API resource interactions, tracking current Context selections, active Roles, bound Actors, execution histories, and Augmentation pipeline state.  
+* **IO Monad**: Handles the asynchronous side-effects, message transformations, and I/O streams between the REST endpoints and the backend Activation Layer message pipeline.
+
+API Resource Representation (REST)  
+        │  (IO Monad: Unfold / Transform)  
+        ▼  
+Activation Production Statements: (DCIContextCK, RoleSK, ActorPK, InteractionOK)  
+        │  (Fan-In / Fan-Out: Augmentation Pipeline Inference)  
+        ▼  
+Updated Knowledge & Inferred State  
+        │  (IO Monad: Fold / Render)  
+        ▼  
+Updated API Resource Representation \+ Navigation Means (State Monad)
+
+#### Activation Statements Transformation Flow {#activation-statements-transformation-flow}
+
+The REST representations consumed and produced by API endpoints are anchored to the Activation layer production Quad Statements:
+
+$ActivationStatement=(DCIContextCK,RoleSK,ActorPK,InteractionOK)$
+
+The transformation and execution pipeline across the API endpoints proceeds as follows:
+
+1. **Receive Resource Representation**: The endpoint receives an incoming API Representation resource conveying the client's current session state, submitted parameters, or selected navigational action.  
+2. **Transform to Activation Statements (IO Monad)**: The IO Monad transforms the REST resource representation into Activation layer Context production Statements $(DCIContextCK,RoleSK,ActorPK,InteractionOK)$.  
+3. **Activation & Augmentation Pipeline Processing**: The statement is submitted into the Activation layer, triggering a fan-in/fan-out across all Augmentation pipeline layers (Aggregation, Alignment, Activation) to perform inference, type resolution, link completion, and state transition calculations.  
+4. **Render Updated Knowledge (IO Monad)**: The updated knowledge statements and inferred states produced by the pipeline are rendered back into API Resource rendered representations.  
+5. **Navigational State Projection (State Monad)**: The State Monad threads updated hypermedia navigation controls, parent/child relationships, available actions, and placeholder resources back to the client representation.
+
+#### Conversational Session & Resource Navigation Pattern {#conversational-session-&-resource-navigation-pattern}
+
+The API Facade enforces a uniform, stateful REST browsing pattern across all resource types (Context, Role, Actor, Interaction):
+
+1. **Top-Level Context Selection (Use Case Discovery)**:  
+   * **Initiating Request**: A session begins when the client selects a top-level Context resource representing a Use Case (e.g., :CustomerOnboardingDCIContextCK).  
+   * **Client Inspection**: The client retrieves and inspects this representation, which embeds available Roles, bound Actors, and state transition choices.  
+2. **Context Instances & Interactions Listing**:  
+   * **Post Representation**: The client posts back the Context representation to instantiate or navigate the selected Use Case.  
+   * **Facaded Response**: The API responds with a list of active Use Case instances (Interactions) along with a canonical **"New Interaction..."** placeholder Resource.  
+3. **Recursive Sub-Resource Traversal**:  
+   * Following the same pattern for all other resource types (Role, Actor, Interaction), posting a resource representation yields a list of available related resources:  
+     * **Parent Resources**: Enclosing Contexts and parent Roles.  
+     * **Child Resources**: Active sub-interactions, bound Actors, and child state transitions.  
+     * **Placeholder Resources**: Uninstantiated template representations (e.g., "New Role...", "New Actor...", "New Interaction...") enabling dynamic binding and creation.
+
+By projecting Activation Statements into REST hypermedia, the API Facade maintains bidirectional synchronization between UI interactions and backend pipeline knowledge graphs.
+
+### Dynamic API Endpoints Summary {#dynamic-api-endpoints-summary}
+
+The Dynamic API Endpoint layer is the protocol boundary between the Activation layer and external clients. Activation production messages provide the executable knowledge from which the API Facade dynamically renders discoverable resources and interaction affordances. The fundamental Activation Context production Statement is:
+
+(DCIContextCK, RoleSK, ActorPK, InteractionOK)
+
+where the Context represents a Use Case, Roles represent the participating behavioral roles, Actors represent the participating execution resources, and Interactions represent executable Use Case behavior. The existing facade objective is therefore extended from merely exposing activated Statements to exposing their **rendered Resource representations as the navigational state of a REST session**.
+
+A generic API Facade does not introduce another domain model. It renders Activation Resources, Contexts, Roles, Actors and Interactions as API Resources and exposes the relationships between those resources as navigational links and executable affordances. A client discovers a Use Case by following representations rather than by knowing a fixed endpoint vocabulary in advance. This preserves the HAL-like, discoverable character already established for the Unified Systems Facade.
+
+#### Resource Representation and Navigational State {#resource-representation-and-navigational-state}
+
+An API Resource representation is the externally visible projection of an Activation-layer Resource and its current navigational context. The representation contains both the resource data and the links or affordances through which the client may continue browsing or execute an Interaction.
+
+Conceptually:
+
+Activation Statements  
+        ↓  
+Resource / Occurrence / Statement materialization  
+        ↓  
+API Resource representation  
+        ↓  
+client inspects representation  
+        ↓  
+client follows a navigational affordance  
+        ↓  
+next API Resource representation
+
+The representation therefore carries the **state of the session**. The URL alone is not the complete state of the interaction; the current representation, its selected Context, resource identity, available child resources, execution bindings, results and navigation affordances together constitute the navigational state.
+
+A representation may consequently contain relations such as:
+
+self  
+parent  
+context  
+roles  
+actors  
+interactions  
+instances  
+new  
+result  
+next  
+previous
+
+The concrete URI layout is implementation-defined. The semantic identity of the resources and the transition between them is determined by the Activation Statements and by the current API State.
+
+#### State Monad: API Navigation and Augmentation State {#state-monad:-api-navigation-and-augmentation-state}
+
+The API Facade uses a **State Monad** to model the navigational state flowing across successive rendered API representations.
+
+Conceptually:
+
+State \=  
+{  
+    selected Context,  
+    selected Role,  
+    selected Actor,  
+    selected Interaction,  
+    Context instance,  
+    Interaction instance,  
+    bound Resources,  
+    execution Result,  
+    navigation history,  
+    Augmentation bindings  
+}
+
+A navigation operation transforms one API State into another:
+
+navigate(State, Representation)  
+        → State'
+
+The resulting State is then rendered into the next API Resource representation. Consequently, a representation returned by one endpoint can become the input representation to the next endpoint without requiring the client to reconstruct hidden session information.
+
+This makes the API Resource representation itself the transferable **navigation state** of the session. The client retrieves a representation, inspects its available Resources and affordances, selects or modifies a representation, and posts that representation to request the corresponding next state.
+
+The same State Monad also carries the state accumulated by the Augmentation pipeline interaction: selected Contexts, inferred Roles, bound Actors, discovered Interactions, produced results and any new statements that become available through execution.
+
+#### IO Monad: API Representation ↔ Activation Statements {#io-monad:-api-representation-↔-activation-statements}
+
+The **IO Monad** models the effectful boundary between the rendered REST resources and the Activation message stream.
+
+The transformation is bidirectional:
+
+API Representation  
+        ↓  
+Activation Context Production Statements  
+        ↓  
+Activation  
+        ↓  
+fan-in / fan-out Augmentation Pipeline  
+        ↓  
+new / updated Activation Statements  
+        ↓  
+API Representation
+
+The API therefore does not directly execute business logic independently of the Augmentation Pipeline. An incoming API Resource representation is transformed into Activation-layer Context production Statements. Activation then merges, unfolds, folds and publishes the resulting knowledge through the same message-driven pipeline used by the other augmentation layers. The resulting Activation production messages are materialized back into API Resources and rendered as the response representation. The pipeline is explicitly defined as an asynchronous fan-in/fan-out stream in which production Statements may become inputs to subsequent processing and inference.
+
+Conceptually:
+
+InteractionRequest  
+      \+  
+ActivationApiState  
+      ↓  
+State / IO computation  
+      ↓  
+API Representation → Activation Statements  
+      ↓  
+Activation processing  
+      ↓  
+merge / unfold / fold  
+      ↓  
+Activation production Statement(s)  
+      ↓  
+Activation Statements → API Representation  
+      ↓  
+updated ActivationApiState  
+      \+  
+InteractionResult
+
+Thus:
+
+State \= navigational and augmentation session state
+
+IO    \= effectful transformation and communication  
+        between API Resources and Activation Statements
+
+The State Monad determines **where the client is and what is currently known in the session**. The IO Monad determines **how that state is materialized into and out of the Activation message stream**.
+
+#### Generic Contexts / Roles / Actors / Interactions Resources {#generic-contexts-/-roles-/-actors-/-interactions-resources}
+
+The generic facade exposes the Activation hierarchy as navigable API Resources rather than as fixed application-specific controller methods.
+
+A top-level Context Resource represents an inferred Use Case:
+
+Context  
+  ↓  
+Roles  
+  ↓  
+Actors  
+  ↓  
+Interactions  
+  ↓  
+Interaction instances
+
+A Context representation may therefore expose:
+
+/context/{context-id}
+
+{  
+    "id": "...",  
+    "kind": "DCIContextCK",  
+    "name": "...",  
+    "state": "...",  
+    "\_links": {  
+        "self": "...",  
+        "parent": "...",  
+        "roles": "...",  
+        "actors": "...",  
+        "interactions": "...",  
+        "new": "..."  
+    }  
+}
+
+The exact representation format is not normative; the important property is that the rendered Resource contains sufficient state and navigation information to continue the interaction.
+
+A Role Resource identifies the Role participating in the selected Context:
+
+/context/{context-id}/roles/{role-id}
+
+An Actor Resource identifies the Actor associated with that Role and Context:
+
+/context/{context-id}/actors/{actor-id}
+
+An Interaction Resource identifies an executable behavior:
+
+/context/{context-id}/interactions/{interaction-id}
+
+An Interaction instance represents a concrete execution of a Use Case:
+
+/context/{context-id}/interactions/{interaction-id}/instances/{instance-id}
+
+The `new` affordance is itself a Resource representation rather than a special out-of-band command. Following or posting to this Resource requests materialization of a new Context, Role, Actor or Interaction instance.
+
+#### Browsing a Use Case as REST Resource Navigation {#browsing-a-use-case-as-rest-resource-navigation}
+
+The initiating Resource for a session may be the selection of a top-level Context, which corresponds to a Use Case.
+
+For example:
+
+GET /contexts  
+        ↓  
+list of Context Resources  
+        \+  
+"New Context..." Resource
+
+The client retrieves a Context representation:
+
+GET /contexts/{context}
+
+and receives a representation containing the Context state and the available navigation affordances:
+
+Context Resource  
+    parent  
+    child Roles  
+    child Actors  
+    child Interactions  
+    previous instances  
+    "New Interaction..." placeholder
+
+The client then posts the inspected representation, or the representation of the selected Context state:
+
+POST /contexts/{context}  
+        ↓  
+Activation Context production Statements  
+        ↓  
+Activation  
+        ↓  
+Interaction Resources
+
+The resulting representation may contain:
+
+{  
+    "context": "...",  
+    "instances": \[  
+        "...InteractionInstance1...",  
+        "...InteractionInstance2..."  
+    \],  
+    "\_links": {  
+        "parent": "...",  
+        "context": "...",  
+        "new": ".../interactions/new"  
+    }  
+}
+
+The important property is that the response is **not merely a collection returned by a query**. It is the next navigational state of the session. It contains the available parent, child, previous-instance and placeholder Resources from which the client can continue.
+
+The same protocol applies recursively to all resource types:
+
+POST representation  
+        ↓  
+Activation transformation / execution  
+        ↓  
+list of available Resources  
+        ↓  
+(parent)  
+(child)  
+(previous instance)  
+(new placeholder)  
+(next affordance)
+
+Consequently, a generic client need not contain prior knowledge of the individual application's Context, Role, Actor or Interaction endpoint structure. It follows the Resources rendered by the current representation.
+
+#### Resource Rendering from Activation Production Statements {#resource-rendering-from-activation-production-statements}
+
+The Activation production Statement:
+
+(DCIContextCK, RoleSK, ActorPK, InteractionOK)
+
+is the source structure from which the facade renders Context and Interaction Resources.
+
+The rendering process may be understood as:
+
+(DCIContextCK, RoleSK, ActorPK, InteractionOK)  
+                         ↓  
+                 Resource materialization  
+                         ↓  
+              Context Resource representation  
+                         ↓  
+       Roles / Actors / Interactions links  
+                         ↓  
+        executable Interaction affordances
+
+Conversely, when a client posts an Interaction representation:
+
+API Interaction Resource  
+        ↓  
+Resource → Occurrence → Statement transformation  
+        ↓  
+(DCIContextCK, RoleSK, ActorPK, InteractionOK)  
+        ↓  
+Activation
+
+the posted representation becomes an Activation message rather than being treated as an unrelated REST command.
+
+This preserves the document's homoiconic principle: Resources, Statements and Kinds can participate in functional application and composition, while fold/unfold and merge operations provide the means for carrying those transformations through the streaming pipeline.
+
+#### Executing an Interaction {#executing-an-interaction}
+
+An Interaction Resource is both descriptive and executable. Its representation identifies the currently applicable Context, Role and Actor state and exposes an execution affordance.
+
+Conceptually:
+
+GET /contexts/{context}/interactions/{interaction}  
+        ↓  
+Interaction Resource representation  
+        ↓  
+POST representation  
+        ↓  
+Interaction execution request  
+        ↓  
+Activation input message  
+        ↓  
+Activation  
+        ↓  
+updated Context / Interaction state  
+        ↓  
+result representation
+
+Execution may cause the Activation layer to unfold the selected production Statement into the underlying Rule and Property Statements, infer or complete additional state, and fan the resulting messages back through the pipeline. This is consistent with the existing execution model in which Activation production Statements can be consumed again as inputs and unfolded into their originating structures.
+
+The response therefore renders the **updated Activation knowledge**, not merely an acknowledgment that the HTTP request was accepted.
+
+For example:
+
+POST /contexts/customer-onboarding/interactions/initiate
+
+request:  
+    Interaction Resource representation
+
+response:  
+    Interaction Instance Resource representation
+
+    {  
+        "state": "...",  
+        "result": "...",  
+        "\_links": {  
+            "self": "...",  
+            "context": "...",  
+            "parent": "...",  
+            "next": "...",  
+            "previous": "..."  
+        }  
+    }
+
+An executed Interaction becomes a navigable Resource that can be inspected, revisited and used as the starting representation for the next interaction.
+
+#### Parent, Child and Placeholder Resources {#parent,-child-and-placeholder-resources}
+
+The generic facade treats browsing as a uniform operation over Resource representations.
+
+For each current Resource representation, the facade may render:
+
+Current Resource  
+      ├── parent Resource  
+      ├── current Resource  
+      ├── child Resources  
+      ├── previous instance Resources  
+      └── "New ..." placeholder Resource
+
+The placeholder is significant because it represents an **available state transition** rather than a missing Resource. A `New Interaction...` Resource means that the current Context supports materialization of another Interaction instance.
+
+The same pattern applies to:
+
+Contexts  
+Roles  
+Actors  
+Interactions  
+Interaction Instances  
+Resources bound to an Interaction  
+Execution Results
+
+The generic API browser can therefore be implemented without specialized screens for each discovered Use Case. It renders the Resources and affordances contained in the current representation and follows the state transitions they describe.
+
+#### API Facade and Augmentation Pipeline Feedback {#api-facade-and-augmentation-pipeline-feedback}
+
+API execution is also an input to the inference architecture. A representation posted by the client can contain selected Resources, bindings and execution results that become new Activation inputs. These messages can fan back into the Augmentation Pipeline so that execution state contributes to subsequent merge, fold and unfold operations and can lead to further inferred Contexts, Roles and Interactions.
+
+API session  
+    ↓  
+rendered Resource representation  
+    ↓  
+Activation production Statement  
+    ↓  
+Activation  
+    ↓  
+Augmentation fan-out  
+    ↓  
+new inferred knowledge  
+    ↓  
+Activation production Statement  
+    ↓  
+API Resource representation
+
+The facade consequently forms a bidirectional boundary rather than a terminal presentation layer:
+
+Datasource statements  
+        ↓  
+Aggregation  
+        ↓  
+Alignment  
+        ↓  
+Activation  
+        ↓  
+Dynamic API  
+        ↓  
+client navigation / execution  
+        ↓  
+Activation  
+        ↓  
+Alignment / Aggregation / Activation  
+        ↓  
+updated knowledge  
+        ↓  
+Dynamic API
+
+This retains the framework's principle that the unified facade is generated from inferred semantic Resources, Kinds, Relationships, Contexts, Roles, Actors and Interactions, while Resource views expose integrated state and Interaction endpoints expose executable Contexts and state transitions.
+
+#### Generic Dynamic API Protocol {#generic-dynamic-api-protocol}
+
+The resulting protocol can therefore be summarized as:
+
+1\. GET a representation  
+2\. Inspect its state and navigation affordances  
+3\. Follow a parent, child, instance or "new" Resource  
+4\. POST the selected Resource representation  
+5\. Transform representation → Activation Statements  
+6\. Activate and fan-in / fan-out the Augmentation Pipeline  
+7\. Materialize resulting Activation Statements  
+8\. Render the updated Resource representation  
+9\. Continue navigation from the returned representation
+
+The API endpoint set is therefore **generic and dynamically generated**. Endpoint behavior derives from the Resources and Activation Context Statements currently known by the system rather than from a statically authored controller hierarchy.
+
+## Generic Dynamic API Endpoints Browser / Designer {#generic-dynamic-api-endpoints-browser-/-designer-1}
+
+Render a default Dynamic API Endpoints User Interface allowing for Use Case Contexts, Behavior Interactions and Augmentation pipeline alignments and bindings browsing of available knowledge.
+
+Allow for binding produced results or navigation state back into Augmentation pipeline for further Augmentation, Contexts and Interactions inference.
+
+**Generic Dynamic API Endpoints Browser / Designer** defines the **reference client** for that protocol: a generic semantic browser for discovering and executing activated capabilities, plus a designer for binding resources, interaction results, navigation state and augmentation outputs into new executable Contexts and Interactions.
+
+The **Generic Dynamic API Endpoints Browser / Designer** is the reference client for this protocol. It renders the current API Resource representation, exposes its navigation affordances, permits Context / Role / Actor / Interaction browsing and execution, and allows produced results, resource bindings and navigation state to be submitted back into the Augmentation Pipeline.
+
+It may consequently act simultaneously as:
+
+Semantic Resource Browser  
+        \+  
+Use Case / Context Browser  
+        \+  
+Interaction Executor  
+        \+  
+Interaction Instance History  
+        \+  
+Augmentation Binding Designer
+
+The browser/designer is not a separate semantic authority. It is a generic client over the Dynamic API protocol; the authoritative semantic state remains the Activation-layer Resources and Statements from which the representations are rendered.
 
 # Implementation Techniques {#implementation-techniques}
 
