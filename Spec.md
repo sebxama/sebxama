@@ -555,7 +555,7 @@ Representations participate in the same **merge / fold / unfold** Augmentation p
 * **Activation:** sets can represent candidate states, possible transitions, or collections of executable structures before they are materialized as Statements.  
 * **Pipeline:** set operations can act as low-level primitives underneath higher-level merge/fold/unfold operations.
 
-Contexts Set: Context Dimensional Point Set.
+Contexts Set (Universal Set: Subjects, Predicates, Objects and Subjects Set, Predicates Set and Objects Set union).
 
 Subjects Set.
 
@@ -563,26 +563,15 @@ Predicates Set.
 
 Objects Set.
 
-Context (Statements) Set: (Subject Set, Predicate Set, Object Set intersection).
+Context Kinds Set (Subject Kinds Set, Predicate Kinds Set, Object Kinds Set union).
 
-Subject Kinds Set (Predicates Set intersection with Objects Set).
-
-Predicate Kinds Set (Subjects Set intersection with Objects Set).
-
+Subject Kinds Set (Predicates Set intersection with Objects Set).  
+      
+Predicate Kinds Set (Subjects Set intersection with Objects Set).  
+      
 Object Kinds Set (Subjects Set intersection with Predicates Set).
 
 ![][image1]
-
-### Sets layout for Dimensional Analysis
-
-The above Sets Layout diagram represents the structure of a snapshot of the Resources occurrences in their corresponding Roles for a given Context Dimensional Point (axes Statements).
-
-Contexts (Statements: SPO Intersection) represents all the possible Statements for an aggregated Context dimensional point. All possible Dimension Point Kinds (SK, PK, OK) are then aggregated. Then all SPO Resource Occurrences are assigned to their corresponding Roles.  
-
-TODO: Encode Context Statements. Resolve Context Statements SPO Statements.  
-TODO: Refactor Base Model for CSPO Contexts representing Dimensional Aggregation Points (axes Statements): ContextKind\<Subject, Predicate, Object\>.  
-TODO: Inference through Sets based operations.  
-TODO: Reify Kinds as SPO Resource Occurrences.
 
 ## ISO TMRM Model Representation {#iso-tmrm-model-representation}
 
@@ -944,8 +933,7 @@ Example:
 
 #### Aggregation Agent Merge / Fold / Unfold {#aggregation-agent-merge-/-fold-/-unfold}
 
-See: Homoiconic (code as data) approach.  
-TODO.
+See Homoiconic approach. TODO
 
 ### Alignment Service Agent {#alignment-service-agent}
 
@@ -993,8 +981,7 @@ Example:
 
 #### Alignment Agent Merge / Fold / Unfold {#alignment-agent-merge-/-fold-/-unfold}
 
-See: Homoiconic (code as data) approach.  
-TODO.
+See Homoiconic approach. TODO
 
 ### Activation Service Agent {#activation-service-agent}
 
@@ -1042,8 +1029,7 @@ Example:
 
 #### Activation Agent Merge / Fold / Unfold {#activation-agent-merge-/-fold-/-unfold}
 
-See: Homoiconic (code as data) approach.  
-TODO.
+See Homoiconic approach. TODO
 
 ### Helper Services {#helper-services}
 
@@ -1710,8 +1696,6 @@ TMRM supplies the semantic substrate; the augmentation layers supply the applica
 
 ## Leverage Dimensional Features {#leverage-dimensional-features}
 
-See: Sets layout for Dimensional Analysis
-
 * **Dimensional & State Modeling**: Utilizes power set attribute inclusions to define ordering and hierarchies, alongside PCN (Previous, Current, Next) state transition networks for graph node flows.  
 * **Contribution to Framework Objective**: Directly powers the **Alignment** (axis ordering and dimensional relationships) and **Activation** (state transition networks and behavioral flows) pipeline stages, enabling raw data mutations to be interpreted as structured, executable business interactions.
 
@@ -1825,8 +1809,6 @@ Exploit existing semantic-web infrastructure for:
 RDF is the representation; RDF / RDFS / OWL / SPARQL are implementation capabilities operating on that representation.
 
 ## Leverage Sets Model {#leverage-sets-model}
-
-See: Sets layout for Dimensional Analysis
 
 **Mathematical Set Primitives**: Defines Contexts, Subjects, Predicates, Objects, and Kinds as mathematical sets, applying union, intersection, and relative difference operations.
 
