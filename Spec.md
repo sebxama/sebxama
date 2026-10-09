@@ -573,7 +573,7 @@ Object Kinds Set (Subjects Set intersection with Predicates Set).
 
 ![][image1]
 
-### Sets layout for Dimensional Analysis {#sets-layout-for-dimensional-analysis}
+### Sets layout for Dimensional Analysis
 
 The above Sets Layout diagram represents the structure of a snapshot of the Resources occurrences in their corresponding Roles for a given Context Dimensional Point (axes Statements).
 
@@ -944,7 +944,7 @@ Example:
 
 #### Aggregation Agent Merge / Fold / Unfold {#aggregation-agent-merge-/-fold-/-unfold}
 
-See: [Homoiconic (code as data) approach](https://docs.google.com/document/d/109MV_uRW2p3Hs7ron3jFQoauKNTv3zjx3HpZMVZQTjQ/edit?pli=1&tab=t.0#heading=h.ecoazujj9rr4).  
+See: Homoiconic (code as data) approach.  
 TODO.
 
 ### Alignment Service Agent {#alignment-service-agent}
@@ -993,7 +993,7 @@ Example:
 
 #### Alignment Agent Merge / Fold / Unfold {#alignment-agent-merge-/-fold-/-unfold}
 
-See: [Homoiconic (code as data) approach](#homoiconic-\(code-as-data\)-approach).  
+See: Homoiconic (code as data) approach.  
 TODO.
 
 ### Activation Service Agent {#activation-service-agent}
@@ -1042,7 +1042,7 @@ Example:
 
 #### Activation Agent Merge / Fold / Unfold {#activation-agent-merge-/-fold-/-unfold}
 
-See: [Homoiconic (code as data) approach](https://docs.google.com/document/d/109MV_uRW2p3Hs7ron3jFQoauKNTv3zjx3HpZMVZQTjQ/edit?pli=1&tab=t.0#heading=h.ecoazujj9rr4).  
+See: Homoiconic (code as data) approach.  
 TODO.
 
 ### Helper Services {#helper-services}
@@ -1710,7 +1710,7 @@ TMRM supplies the semantic substrate; the augmentation layers supply the applica
 
 ## Leverage Dimensional Features {#leverage-dimensional-features}
 
-See: [Sets layout for Dimensional Analysis](#sets-layout-for-dimensional-analysis)
+See: Sets layout for Dimensional Analysis
 
 * **Dimensional & State Modeling**: Utilizes power set attribute inclusions to define ordering and hierarchies, alongside PCN (Previous, Current, Next) state transition networks for graph node flows.  
 * **Contribution to Framework Objective**: Directly powers the **Alignment** (axis ordering and dimensional relationships) and **Activation** (state transition networks and behavioral flows) pipeline stages, enabling raw data mutations to be interpreted as structured, executable business interactions.
@@ -1826,7 +1826,7 @@ RDF is the representation; RDF / RDFS / OWL / SPARQL are implementation capabili
 
 ## Leverage Sets Model {#leverage-sets-model}
 
-See: [Sets layout for Dimensional Analysis](https://docs.google.com/document/d/109MV_uRW2p3Hs7ron3jFQoauKNTv3zjx3HpZMVZQTjQ/edit?pli=1&tab=t.0#heading=h.wrnybev1sdsl)
+See: Sets layout for Dimensional Analysis
 
 **Mathematical Set Primitives**: Defines Contexts, Subjects, Predicates, Objects, and Kinds as mathematical sets, applying union, intersection, and relative difference operations.
 
