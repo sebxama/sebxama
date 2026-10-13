@@ -28,13 +28,17 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Statements](#statements)
 
+[Statement Types](#statement-types)
+
 [Contexts, Subjects, Predicates, Objects](#contexts,-subjects,-predicates,-objects)
 
 [Context, Subject, Predicate, Object Kinds](#context,-subject,-predicate,-object-kinds)
 
 [Kinds as Extensional Functional Definitions](#kinds-as-extensional-functional-definitions)
 
-[Context’s ContextKind(s) Dimensional Roles](#context’s-contextkind\(s\)-dimensional-roles)
+[Kind Context Statements](#kind-context-statements)
+
+[Kind Dimensional Context Statements](#kind-dimensional-context-statements)
 
 [1\. Contexts as Dimensional Points](#1.-contexts-as-dimensional-points)
 
@@ -98,26 +102,6 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Datasources](#datasources)
 
-[Stream-Oriented Merge, Fold and Unfold of Layered Statements](#stream-oriented-merge,-fold-and-unfold-of-layered-statements)
-
-[Fold and Unfold as the Stream Context Resolution Operation](#fold-and-unfold-as-the-stream-context-resolution-operation)
-
-[Merge as the Central Stream Contexts Operation](#merge-as-the-central-stream-contexts-operation)
-
-[Possible Merge Approaches](#possible-merge-approaches)
-
-[RDF Merge](#rdf-merge)
-
-[TMRM Merge](#tmrm-merge)
-
-[FCA Merge](#fca-merge)
-
-[CPPE Based FCA / Model Primitives Merge](#cppe-based-fca-/-model-primitives-merge)
-
-[Sets Model Based Merge](#sets-model-based-merge)
-
-[Integration into Streams Processing](#integration-into-streams-processing)
-
 [Streaming Agents Augmentation Pipeline](#streaming-agents-augmentation-pipeline)
 
 [Aggregation Service Agent](#aggregation-service-agent)
@@ -145,6 +129,28 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 [Naming Service](#naming-service)
 
 [Index Service](#index-service)
+
+[Stream-Oriented Merge, Fold and Unfold of Layered Statements](#stream-oriented-merge,-fold-and-unfold-of-layered-statements)
+
+[Fold](#fold)
+
+[Unfold](#unfold)
+
+[Merge as the Central Stream Contexts Operation](#merge-as-the-central-stream-contexts-operation)
+
+[Possible Merge Approaches](#possible-merge-approaches)
+
+[RDF Merge](#rdf-merge)
+
+[TMRM Merge](#tmrm-merge)
+
+[FCA Merge](#fca-merge)
+
+[CPPE Based FCA / Model Primitives Merge](#cppe-based-fca-/-model-primitives-merge)
+
+[Sets Model Based Merge](#sets-model-based-merge)
+
+[Integration into Streams Processing](#integration-into-streams-processing)
 
 [Dynamic API Endpoints](#dynamic-api-endpoints)
 
@@ -432,7 +438,7 @@ class Resource
 
 class Occurrence extends Resource    
 \+ player : Resource  
-\+ context : Resource    
+\+ context : Resource  
 \+ role : Kind
 
 class Statement extends Resource  
@@ -441,38 +447,26 @@ class Statement extends Resource
 \+ predicate : Occurrence  
 \+ object : Occurrence
 
-@deprecated: Occurrence with role of ContextKind type  
-class Context extends Occurrence  
-\+ role : ContextKind
+// All Resource’s Context Occurrences  
+class Context extends Resource
 
-class Context: Root Context (Dimension Points) ContextKind (all Statements Context’s Occurrences Dimension Points)
+// All Resource’s Subject Occurrences  
+class Subject extends Resource
 
-@deprecated: Occurrence with role of SubjectKind type  
-class Subject extends Occurrence  
-\+ role : SubjectKind
+// All Resource’s Predicate Occurrences  
+class Predicate extends Resource
 
-class Subject: Root Subject SubjectKind (all Statements Subject’s Occurrences)
+// All Resource’s Object Occurrences  
+class Object extends Resource
 
-@deprecated: Occurrence with role of PredicateKind type  
-class Predicate extends Occurrence  
-\+ role : PredicateKind
+class Kind\<PlayerType extends Resource,  
+          AttributeType extends Resource,  
+          ValueType extends Resource\> extends Resource  
+getPlayers : PlayerType\[\]  
+getAttributes(player : PlayerType, context : Kind) : AttributeType\[\]  
+getValues(player : PlayerType, attribute : AttributeType, context : Kind) : ValueType\[\]  
+getStatements() : Statement\[\]
 
-class Predicate: Root Predicate PredicateKind (all Statements Predicate’s Occurrences)
-
-@deprecated: Occurrence with role of ObjectKind type  
-class Object extends Occurrence  
-\+ role : ObjectKind
-
-class Object: Root Object ObjectKind (all Statements Object’s Occurrences)
-
-interface Kind\<PlayerType extends Occurrence,  
-          AttributeType extends Occurrence,  
-          ValueType extends Occurrence\>  
-getPlayers : Occurrence\[\]  
-getAttributes : Occurrence\[\]  
-getValues : Occurrence\[\]
-
-// Aggregates Statements Dimensional Points (Subject Players, Predicate Attributes, Object Values)  
 class ContextKind extends Resource implements Kind\<Subject, Predicate, Object\>
 
 class SubjectKind extends Resource implements Kind\<Subject, Predicate, Object\>
@@ -483,31 +477,27 @@ class ObjectKind extends Resource implements Kind\<Object, Predicate, Subject\>
 
 ## Resources {#resources}
 
-Everything is a Resource identified by an URI, assigned a Prime Number ID, keeping track of its Occurrences and thus enabling the calculation of their CPPE (Prime Number Contextual Embedding) by means of the product of its Prime Number ID by the Prime Number IDs of the other Resources in their Occurrences contexts.
+Everything is a Resource identified by an URI, assigned a Prime Number ID, keeping track of its Occurrences and thus enabling the calculation of their CPPE (Prime Number Contextual Embedding) by means of the product of its Prime Number ID by the Prime Number IDs of the other Resources in their (nested) Occurrences contexts.
 
 ## Occurrences {#occurrences}
 
-Participation of a Resource in an Occurrence in a given Role (Kind) in a given Context (Statement Kind role).
+Participation of a Resource in an Occurrence in a given Role (Kind) in a given Context (Statement).
 
 ### Statement Occurrences {#statement-occurrences}
 
-Statements are Resources whose occurrences are their Subjects, Predicates and Objects in a given Dimensional Context space. Statement Contexts (Quads Contexts) ContextKinds aggregates all of the dimensional axes (SPOs) of the corresponding Statement Occurrence.
+Statements are Resources whose occurrences are their Contexts, Subjects, Predicates and Objects in a given Dimensional Context space. Statement Contexts (Quads Contexts) ContextKinds aggregates all of the dimensional axes (SPOs) of the corresponding Statement Occurrence.
 
 ### CSPO Occurrences {#cspo-occurrences}
 
-@deprecated: CSPOs are Occurrence(s) with their corresponding Statement position Kind types (ContextKind, SubjectKind, PredicateKind, ObjectKind) Statement Occurrence roles.
-
-Context, Subject, Predicate, Object as Resource(s) Occurrences. CSPO occurring Statement Context where they are in Context, Subject, Predicate and Object Kinds Roles.
-
-CSPOs Occurrence instances as wrapped arbitrary Resource Occurrence Context
+CSPO Occurrences (Statements) are to be assigned their corresponding Kind onto this Occurrence.
 
 ### Kinds Occurrences {#kinds-occurrences}
 
-Kinds encodes Player, Attribute, Value triples scoped by their Kind (Resource) Context Occurrence.
+Kinds aggregates Player, Attribute, Value types Player Statement Occurrences by means of their common Attributes (types) and then by their common Attribute Values (states).
 
-Reify as Context, Subject, Predicate, Object. Occurrences of the Kind as Resource. Kinds as Resources: Kinds occurring in Statements in C, S, P, O Roles.
+They are reifiable as Context, Subject, Predicate, Object. Occurrences of the Kind as Resource. Kinds as Resources: Kinds occurring in Statements in C, S, P, O Roles.
 
-Kind Functional Definition: Statement Contexts (occurring Statement Contexts) for a given Player (context) a given Attribute has a corresponding functional Value.
+Kind Functional Definition: Statement Contexts (occurring Statement Contexts) for a given Player (context) a given Attribute has a corresponding functional Value. Kinds are functional given their occurrences in given dimensional contexts. Otherwise, an attribute could have multiple values.
 
 ## Statements {#statements}
 
@@ -515,41 +505,45 @@ Context, Subject, Predicate and Object Occurrences (CSPO) tuples.
 
 Context, Subject, Predicate, Object (CSPO) Statement Occurrences have a role (Kind) in their given Statement Occurrence Context.
 
-Kinds: ContextKind, SubjectKind, PredicateKind, ObjectKind (CK, SK, PK, OK) are themselves CSPOs (Resources) respectively and can participate in a Statement Context as Occurrences. Types of Statements:
+Kinds: ContextKind, SubjectKind, PredicateKind, ObjectKind (CK, SK, PK, OK) are themselves reifiable as CSPOs (Resources) respectively and can participate in a Statement Context as CSPO Occurrences.
 
-* SPO Statements  
-* SPO / Kinds Statements (recursive Kinds)  
-* Kinds only Statements (recursive Kinds)
+### Statement Types {#statement-types}
 
-This is further leveraged in the Augmentation Layers Domain Model definitions section.
+Statements can be interpreted in the following ways:
+
+* Raw CSPO Statements: Resource Instances are CSPOs.  
+* Kind Context Statements: Statement’s Context role Kind type is one of SubjectKind, PredicateKind, ObjectKind. Statements S, P, O are Resource Occurrences. The Statement’s Context role Kind (SK, PK, OK) Resource (URI) aggregates all Kind’s SPO Statements Occurrences.  
+* Dimensional Context Statements: Statement’s Context role Kind type is of ContextKind type. Statements S, P, O are of types SubjectKind, PredicateKind and ObjectKind respectively. They define the ContextKind instance (Resource) aggregated dimensional contexts axes and state (temporal / dimensional parts) addressing “coordinates” of a context Resource. Dimensional Contexts are ContextKind Statements aggregated by their Kind Resource (URI) by means of CSPO and CK, SK, PK, OK Kind Context Statements Sets / Functional relations (intersection, union, complement, difference, etc.).
+
+Kinds are represented and aggregation of Statements whose Statement Contexts are the Kind instance itself (Kind reified Context Resource Occurrence), and their Subjects, Predicates and Objects plays the PlayerType, AttributeType and ValueType of their Kind definition. Thus, the definition of a Kind is the set of Statements of its corresponding Kind as Resource Occurrence of their Statement Contexts.
+
+This is further leveraged in the Augmentation Layers Domain Model Statements definitions section.
 
 ## Contexts, Subjects, Predicates, Objects {#contexts,-subjects,-predicates,-objects}
 
-@deprecated: CSPOs are Occurrence with their corresponding Statement position Kind types (ContextKind, SubjectKind, PredicateKind, ObjectKind) Statement roles.
-
-The role of a Resource Occurrence in a Statement is typed by its Statement Occurrence position. A Resource can occur in more than one role or occurrence type (CSPO) in different Statements. The type of the role (Kind) of the Resource Occurrence is determined by the type of the position it plays in a given Statement.
+The role of a Resource Occurrence in a Statement is typed by its Statement Occurrence position and its Occurrence Role type.. A Resource can occur in more than one role or occurrence type (CSPO) in different Statements. The type of the role (Kind) of the Resource Occurrence is determined by the type of the position it plays in a given Statement.
 
 ## Context, Subject, Predicate, Object Kinds {#context,-subject,-predicate,-object-kinds}
 
-Kinds encodes Player, Attribute, Value triples scoped by their Kind (Resource) Context Occurrence.
+Kinds aggregates Player, Attribute, Value triples scoped by their Kind (Resource) Context Occurrence.
 
 Aggregation of PlayerType(s) Resource Occurrences (SPOs) by common AttributeType(s) (types) and then by common ValueTypes(s) (states). Parameterized interface for each Kind type (CK, SK, PK, OK).
 
 Kinds can be aggregated from raw CSPO Occurrences from any combination of C, S, P, O / CK, SK, PK, OK Statement Occurrence types. This allows for recursive Kinds definitions (folding). This is further leveraged in the Augmentation Layers Domain Model definitions section.
 
-Kinds are a kind of “type inference”: if a Subject shares common attributes with another Subject, it is of the same Kind “type”. If their common attributes share common values, it is of the same Kind “state”.
+Kinds are a kind of “type / state in context inference mechanism”: if a Subject shares common attributes with another Subject, it is of the same Kind “type”. If their common attributes share common values, it is of the same Kind “state”.
 
-Root Kinds are the Kinds corresponding to the CSPO Occurrences Statements positions. They have no attributes nor values, they just tag an Occurrence as being of an CSPO Occurrence position in a Statement.
+**Kinds hierarchies, basic inheritance:**
 
-Kinds hierarchies: basic inheritance, if a Subject attribute set is the superset of another Subject attribute set, it can be regarded as an “extension” of the first Subject. Leverage this with other inference mechanisms (FCA, for example).
+If a Subject attribute set is the superset of another Subject attribute set, it can be regarded as an “extension” of the first Subject. Leverage this with other inference mechanisms (FCA, for example).
 
-Kinds ordering: a Subject “extended” by another Subject attributes set can be regarded as being “before” the first Subject. This assumes the existence of a super type is necessary for the existence of a sub type.
+**Kinds ordering:**
 
-Kinds are represented and serialized by Statements whose Statement Contexts are the Kind instance itself (Kind reified Context Resource Occurrence), and their Subjects, Predicates and Objects plays the PlayerType, AttributeType and ValueType of the Kind definition. Thus, the definition of a Kind is the set of Statements of its corresponding Kind as Resource Occurrence of their Statement Contexts.
+a Subject “extended” by another Subject attributes set can be regarded as being “before” the first Subject. This assumes the existence of a super type is necessary for the existence of a sub type.
 
 ### Kinds as Extensional Functional Definitions {#kinds-as-extensional-functional-definitions}
 
-Kind Statements can be regarded as the definition of a Function by extension. Their Statement Contexts Occurrence Resources are the Function name or signature. Their PlayerType(s) instances group their mappings by “context” and their AttributeType(s) and ValueType(s) instances are the Function domain / range corresponding value pairs. Subject 
+Kind aggregated Statements can be regarded as the definition of a Function by extension. Their Statement Contexts Occurrence Resources are the Function name or signature. Their PlayerType(s) instances group their mappings by “context” and their AttributeType(s) and ValueType(s) instances are the Function domain / range corresponding value pairs. Note: Kinds are functional given their occurrences' dimensional context.
 
 * CK: Context (Contexts), Domain (Subject), Range (Predicates): aGivenContextKind(C, S): P  
 * SK: Context (Subjects), Domain (Predicates), Range (Objects): aGivenSubjectKind(S, P): O  
@@ -566,11 +560,17 @@ Functional Composition (align, sort, link completion, merge).
 
 **Kinds Functional Comprehensions:**
 
-Kinds: extensional functions definitions. Functions Comprehensions: infer Kinds Functions from CPPE embeddings vía Helpers / ML. Resource Merge / Apply: Kinds inferred Functions inference.
+Kinds: extensional functions definitions. Functions Comprehensions: infer Kinds Functions from CPPE embeddings vía Embeddings / Helpers / ML. Resource Merge / Apply: Kinds inferred Functions inference.
 
-### Context’s ContextKind(s) Dimensional Roles {#context’s-contextkind(s)-dimensional-roles}
+### Kind Context Statements {#kind-context-statements}
 
-Statements are dimensionally aggregated through their Context(s) ContextKind(s). A given Context Occurrence of a Context Resource plays the role of its ContextKind which aggregates all the given Statement Context’s Context Point dimensional Statements (Subjects, Predicates, Objects as the Player, Attribute, Value roles of the ContextKind) corresponding to the Statement Dimensional Point..
+Kind Context Statements: Statement’s Context role Kind type is one of SubjectKind, PredicateKind, ObjectKind. Statements S, P, O are Resource Occurrences. The Statement’s Context role Kind (SK, PK, OK) Resource (URI) aggregates all Kind’s SPO Statements Occurrences.
+
+### Kind Dimensional Context Statements {#kind-dimensional-context-statements}
+
+Statement’s Context role Kind type is of ContextKind type. Statements S, P, O are of types SubjectKind, PredicateKind and ObjectKind respectively. They define the ContextKind instance (Resource) aggregated dimensional contexts axes and state (temporal / dimensional parts) addressing “coordinates” of a context Resource. Dimensional Contexts are ContextKind Statements aggregated by their Kind Resource (URI) by means of CSPO and CK, SK, PK, OK Kind Context Statements Sets / Functional relations (intersection, union, complement, difference, etc.).
+
+Dimensional Context Statements are dimensionally aggregated through their Context(s) ContextKind(s). A given Context Occurrence of a Context Resource plays the role of its ContextKind which aggregates all the given Statement Context’s Context Point dimensional Statements (Subjects, Predicates, Objects as the Player, Attribute, Value roles of the ContextKind) corresponding to the Statement Dimensional Point..
 
 TODO: Dimensional Contexts (Context’s Occurrences ContextKind roles) shall encode data, information and knowledge which will allow to reference, classify, relate, order, group and address specific Statement(s).  
 TODO: Infer Order and relationships renderable as a previous, current, next materialized relation statements (containment, time, etc.)  
@@ -601,7 +601,7 @@ ContextKind\<Subject, Predicate, Object\>
 
 A ContextKind can consequently represent the observed functional structure of a Context, including which Players participate, which Attributes characterize them, and which Values occur for those Attributes.
 
-The word *functional* describes the intended Player–Attribute–Value mapping. It does not imply that every Attribute necessarily has a unique Value. Where a Player may have several values for the same Attribute, or where values change over time, the model must preserve the corresponding multiple Statements and contextual distinctions. Single-valuedness, completeness and other functional constraints should be inferred or asserted only where the available evidence supports them.
+The word *functional* describes the intended Player–Attribute–Value mapping. It does not imply that every Attribute necessarily has a unique Value. Where a Player may have several values for the same Attribute, or where values change over time, the model must preserve the corresponding multiple Statements and contextual distinctions. Single-valuedness, completeness and other functional constraints should be inferred or asserted only where the available evidence supports them. Kinds are functional given their occurrences' dimensional context.
 
 Contextual dimensional profiles can be built at two complementary levels:
 
@@ -837,7 +837,7 @@ Representations participate in the same **merge / fold / unfold** Augmentation p
 * **Activation:** sets can represent candidate states, possible transitions, or collections of executable structures before they are materialized as Statements.  
 * **Pipeline:** set operations can act as low-level primitives underneath higher-level merge/fold/unfold operations.
 
-Contexts Set: Context Dimensional Point Set.
+Contexts Set.
 
 Subjects Set.
 
@@ -857,11 +857,14 @@ Object Kinds Set (Subjects Set intersection with Predicates Set).
 
 ### Sets layout for Dimensional Analysis {#sets-layout-for-dimensional-analysis}
 
-See: “Context’s ContextKind(s) Dimensional Roles”
-
 The above Sets Layout diagram represents the structure of the placeholders for a snapshot of the Resources occurrences in their corresponding Roles for a given Context Dimensional Point (Context’s axes Statements).
 
 Contexts (Statements: SPO Intersection) represents all the possible Statements for an aggregated Context dimensional point. All possible Dimension Point Kinds (SK, PK, OK) are then aggregated. Then all SPO Resource Occurrences are assigned to their corresponding Roles.  
+
+**Kind Dimensional Context Statements:**  
+See: “Statement Types”.
+
+Statement’s Context role Kind type is of ContextKind type. Statements S, P, O are of types SubjectKind, PredicateKind and ObjectKind respectively. They define the ContextKind instance (Resource) aggregated dimensional contexts axes and state (temporal / dimensional parts) addressing “coordinates” of a context Resource. Dimensional Contexts are ContextKind Statements aggregated by their Kind Resource (URI) by means of CSPO and CK, SK, PK, OK Kind Context Statements Sets / Functional relations (intersection, union, complement, difference, etc.).
 
 TODO: Encode Context Statements. Resolve Context Statements SPO Statements.  
 TODO: Refactor Base Model for CSPO Contexts representing Dimensional Aggregation Points (axes Statements): ContextKind\<Subject, Predicate, Object\>.  
@@ -1621,6 +1624,195 @@ Source, Production Messages includes all Statements hierarchy which compose / le
 
 Raw RDF CSPO URIs Quad Statement Messages Endpoint. Configured to produce configured datasource data and to consume updated Statements synchronizing state. 
 
+## Streaming Agents Augmentation Pipeline {#streaming-agents-augmentation-pipeline}
+
+The core of the framework is the Augmentation pipeline. It performs Aggregation, Alignment and Activation of input Resources in a streaming fashion.
+
+Each pipeline Agent has three types of Statements: its Source Statements (consumes / produces), its internal Kind aggregation Statements (used in the merge phase of its processing) and its Production Statements (produces / consumes).
+
+Any of the three layers can be considered as (sets of) Resources of their types of source and production Statements. Layer state. Streams application processing (layer endpoints, topics).
+
+See: “Statement Types”.
+
+Aggregation (Data) Agent:  
+Source Statement Type: Raw RDF CSPO URIs Quad Statements. Kind Context Statements.  
+Production Statement Type: (CK, SK, PK, OK) Property Quad Statements. Kind Dimensional Context Statements.
+
+Alignment (Information) Agent:  
+Source Statement Type: (CK, SK, PK, OK) Property Quad Statements. Kind Context Statements.  
+Production Statement Type: (CK, SK, PK, OK) Rule Quad Statements. Kind Dimensional Context Statements.
+
+Activation (Knowledge) Agent:  
+Source Statement Type: Actor Statements (Alignment Information Layer outputs). Kind Context Statements.  
+Production Statement Type: (CK, SK, PK, OK) Context Quad Statements. Kind Dimensional Context Statements.
+
+TODO: Cleanup Agents Domain Model Examples.
+
+### Aggregation Service Agent {#aggregation-service-agent}
+
+Context / Role / Type inference in the Aggregation Layer.
+
+#### Aggregation Agent Domain Model {#aggregation-agent-domain-model}
+
+Data Layer. DOM (Dynamic Object Model)
+
+**Data / Instance layer input Statements:**  
+Source Statement Type. Raw CSPO RDF URIs Quad Statements.
+
+(C, S, P, O)
+
+**Type aggregation Statements (Kind Context Statements):**  
+Kinds aggregation Statement Types.
+
+(ContextCK, S,  P, O)  
+Context Kind, PlayerType: Context, AttributeType: Subject, ValueType: Object.   
+Example: (EmploymentCK, :Peter, :worksFor, :anEnterprise)
+
+(TypeSK, S,  P, O)  
+SubjectKind, PlayerType: Subject, AttributeType: Predicate, ValueType: Object.  
+Example: (EmployeeTypeSK, :Peter, :employer, :anEnterprise)
+
+(PropertyPK, S,  P, O)  
+Predicate Kind, PlayerType: Predicate, AttributeType: Subject, ValueType: Object.  
+Example: (EmploymentRelationshipPropertyPK, :Peter, :worksFor, :anEnterprise)
+
+(ValueOK, S,  P, O)  
+Object Kind, PlayerType: Object, AttributeType: Predicate, ValueType: Subject.  
+Example: (EmployerValueOK, :Peter, :employedBy, :anEnterprise)
+
+**Property output Statements (Kind Dimensional Context Statements):**  
+Production Statement Type.
+
+(ContextCK, TypeSK, PropertyPK, ValueOK)
+
+Example:  
+(EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
+
+#### Aggregation Agent Merge / Fold / Unfold {#aggregation-agent-merge-/-fold-/-unfold}
+
+See: Homoiconic (code as data) approach.  
+TODO.
+
+### Alignment Service Agent {#alignment-service-agent}
+
+Ontology Matching / Links / Attributes / Dimensional / Order inference in the Alignment Layer.
+
+#### Alignment Agent Domain Model {#alignment-agent-domain-model}
+
+Information Layer. N-ary Dimensional Relationships Modelling.
+
+**Axis layer input Statements:**  
+Source Statement Type. Aggregation Production Statements.
+
+(C, S, P, O)
+
+(ContextCK, TypeSK, PropertyPK, ValueOK) from Aggregation Property Statements.  
+Example:  
+(EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
+
+**State aggregation Statements (Kind Context Statements):**  
+Kinds aggregation Statement Types.
+
+(RelationshipCK, TypeSK, PropertyPK, ValueOK)  
+Context Kind, PlayerType: ContextCK, AttributeType: TypeSK, ValueType: ValueOK.   
+Example: (EmploymentRelationshipCK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
+
+(SourceEndSK, TypeSK, PropertyPK, ValueOK)  
+Subject Kind, PlayerType: TypeSK, AttributeType: PropertyPK, ValueType: ValueOK.   
+Example: (EmployeeRoleSK, EmployeeSubjectKind, EmploymentRoleRelationshipPredicateKind, EmployeeRoleObjectKind)
+
+(MeasurementContextPK, TypeSK, PropertyPK, ValueOK)  
+Predicate Kind, PlayerType: PropertySK, AttributeType: TypePK, ValueType: ValueOK.   
+Example: (EmployeePositionAtDatePK, EmployeeSubjectKind, EmploymentPositionRelationshipPredicateKind, EmployeePositionObjectKind)
+
+(DestinationEndOK, TypeSK,  PropertyPK, ValueOK)  
+Object Kind, PlayerType: ValueOK, AttributeType: PropertyPK, ValueType: TypeSK.   
+Example: (CurrentEmployeeRoleOK, EmployeeSubjectKind, EmploymentRoleRelationshipPredicateKind, EmployeeRoleObjectKind)
+
+**Rule output Statements (Kind Dimensional Context Statements):**  
+Production Statement Type.
+
+(RelationshipCK, SourceEndSK, MeasurementContextPK, DestinationEndOK)
+
+Example:  
+(EmploymentRelationshipCK, EmployeeRoleSK, EmployeePositionAtDatePK, CurrentEmployeeRoleOK)
+
+#### Alignment Agent Merge / Fold / Unfold {#alignment-agent-merge-/-fold-/-unfold}
+
+See: Homoiconic (code as data) approach.  
+TODO.
+
+### Activation Service Agent {#activation-service-agent}
+
+Contexts (Use Cases) and behaviors (Interactions) in the Activation Layer.
+
+#### Activation Agent Domain Model {#activation-agent-domain-model}
+
+Knowledge Layer. DCI Contexts, Roles, Actors, Interactions.
+
+**Actor layer input Statements:**  
+Source Statement Type. Alignment Rule Statements.
+
+(C, S, P, O):  
+(RelationshipCK, SourceEndSK, MeasurementContextPK, DestinationEndOK) from Alignment Rule Statements.
+
+Example:  
+(EmploymentRelationshipCK, EmployeeRoleSK, EmployeePositionAtDatePK, CurrentEmployeeRoleOK)
+
+**Role Interaction aggregation Statements (Kind Context Statements):**  
+Kinds aggregation Statement Types.
+
+(DCIContextCK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
+Context Kind, PlayerType: DCIContexCK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
+Example: (EmploymentDepartmentCK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
+
+(RoleSK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
+Subject Kind, PlayerType: RoleSK, AttributeType: DimensionPK, ValueType: MeasurementOK.  
+Example: (EmploymentDepartmentRoleSK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
+
+(ActorPK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
+Predicate Kind, PlayerType: DimensionPK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
+Example: (EmploymentDepartmentActorPK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
+
+(InteractionOK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
+Object Kind, PlayerType: MeasurementOK, AttributeType: DimensionPK, ValueType: MeasurementSK.  
+Example: (EmploymentDepartmentRoleOK, EmploymentRoleMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
+
+**Context output Statements (Kind Dimensional Context Statements):**  
+Production Statement Type.
+
+(DCIContextCK, RoleSK, ActorPK, InteractionOK)
+
+Example:  
+(DCIContextCK, EmploymentDepartmentRoleSK, EmploymentDepartmentRoleSK, EmploymentDepartamentRoleOK) 
+
+#### Activation Agent Merge / Fold / Unfold {#activation-agent-merge-/-fold-/-unfold}
+
+See: Homoiconic (code as data) approach.  
+TODO.
+
+### Helper Services {#helper-services}
+
+Monadic wrapper bound Base Model Entities (Resource, Occurrence, Statement, Context, Subject, Predicate, Object, Kind, ContextKind, SubjectKind, PredicateKind, ObjectKind) Functional APIs Definitions for stream processing.
+
+“Leverage X” Sections Functional APIs.
+
+Kinds as Extensional Function Definitions Functional APIs.
+
+Resource merge / “application” (transform / template) Functional APIs.
+
+#### Registry Service {#registry-service}
+
+Registry API Functional Definitions.
+
+#### Naming Service {#naming-service}
+
+Naming API Functional Definitions.
+
+#### Index Service {#index-service}
+
+Index API Functional Definitions.
+
 ## Stream-Oriented Merge, Fold and Unfold of Layered Statements {#stream-oriented-merge,-fold-and-unfold-of-layered-statements}
 
 As Resource functional composition (Homoiconic approach).
@@ -1629,13 +1821,24 @@ Layers inputs / outputs. Layers functional definitions. Rules from source 'termi
 
 TODO
 
-### Fold and Unfold as the Stream Context Resolution Operation {#fold-and-unfold-as-the-stream-context-resolution-operation}
+### Fold {#fold}
 
-TODO
+Aggregate Kinds (Kind Context Statements).  
+Aggregate Kind Dimensional Context Statements (Sets / Functional features)..  
+Stream reduce operation by means of aggregating by common roles.
+
+TODO.
+
+### Unfold {#unfold}
+
+De-Aggregate Kind Dimensional Context Statements (Sets / Functional features).  
+De-Aggregate Kinds (Kind Context Statements).  
+Streams scan operation emitting every unfolded Resource Statement.
 
 ### Merge as the Central Stream Contexts Operation {#merge-as-the-central-stream-contexts-operation}
 
-Inferred new Statements by Augmentation pipeline phase.  
+Inferred new Statements by Augmentation pipeline phase. Leverage Kind Context Statements and Kind Dimensional Context Statements.
+
 TODO
 
 ### Possible Merge Approaches {#possible-merge-approaches}
@@ -1695,194 +1898,9 @@ Represent Statement components and their relationships as sets and apply set ope
 
 TODO
 
-## Streaming Agents Augmentation Pipeline {#streaming-agents-augmentation-pipeline}
-
-Each pipeline Agent has three types of Statements: its Source Statements (consumes / produces), its internal Kind aggregation Statements (used in the merge phase of its processing) and its Production Statements (produces / consumes).
-
-Any of the three layers can be considered as (sets of) Resources of their types of source and production Statements. Layer state. Streams application processing (layer endpoints, topics).
-
-Aggregation (Data) Agent:  
-Source Statement Type: Raw RDF CSPO URIs Quad Statements.  
-Production Statement Type: (CK, SK, PK, OK) Property Quad Statements.
-
-Alignment (Information) Agent:  
-Source Statement Type: (CK, SK, PK, OK) Property Quad Statements.  
-Production Statement Type: (CK, SK, PK, OK) Rule Quad Statements.
-
-Activation (Knowledge) Agent:  
-Source Statement Type: Actor Statements (Alignment Information Layer outputs)  
-Production Statement Type: (CK, SK, PK, OK) Context Quad Statements.
-
-TODO: Cleanup Agents Domain Model Examples.
-
-### Aggregation Service Agent {#aggregation-service-agent}
-
-Context / Role / Type inference in the Aggregation Layer.
-
-#### Aggregation Agent Domain Model {#aggregation-agent-domain-model}
-
-Data Layer. DOM (Dynamic Object Model)
-
-**Data / Instance layer input Statements:**  
-Source Statement Type. Raw CSPO RDF URIs Quad Statements.
-
-(C, S, P, O)
-
-**Type aggregation Statements:**  
-Kinds aggregation Statement Types.
-
-(ContextCK, S,  P, O)  
-Context Kind, PlayerType: Context, AttributeType: Subject, ValueType: Object.   
-Example: (EmploymentCK, :Peter, :worksFor, :anEnterprise)
-
-(TypeSK, S,  P, O)  
-SubjectKind, PlayerType: Subject, AttributeType: Predicate, ValueType: Object.  
-Example: (EmployeeTypeSK, :Peter, :employer, :anEnterprise)
-
-(PropertyPK, S,  P, O)  
-Predicate Kind, PlayerType: Predicate, AttributeType: Subject, ValueType: Object.  
-Example: (EmploymentRelationshipPropertyPK, :Peter, :worksFor, :anEnterprise)
-
-(ValueOK, S,  P, O)  
-Object Kind, PlayerType: Object, AttributeType: Predicate, ValueType: Subject.  
-Example: (EmployerValueOK, :Peter, :employedBy, :anEnterprise)
-
-**Property output Statements:**  
-Production Statement Type.
-
-(ContextCK, TypeSK, PropertyPK, ValueOK)
-
-Example:  
-(EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
-
-#### Aggregation Agent Merge / Fold / Unfold {#aggregation-agent-merge-/-fold-/-unfold}
-
-See: Homoiconic (code as data) approach.  
-TODO.
-
-### Alignment Service Agent {#alignment-service-agent}
-
-Ontology Matching / Links / Attributes / Dimensional / Order inference in the Alignment Layer.
-
-#### Alignment Agent Domain Model {#alignment-agent-domain-model}
-
-Information Layer. N-ary Dimensional Relationships Modelling.
-
-**Axis layer input Statements:**  
-Source Statement Type. Aggregation Production Statements.
-
-(C, S, P, O)
-
-(ContextCK, TypeSK, PropertyPK, ValueOK) from Aggregation Property Statements.  
-Example:  
-(EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
-
-**State aggregation Statements:**  
-Kinds aggregation Statement Types.
-
-(RelationshipCK, TypeSK, PropertyPK, ValueOK)  
-Context Kind, PlayerType: ContextCK, AttributeType: TypeSK, ValueType: ValueOK.   
-Example: (EmploymentRelationshipCK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
-
-(SourceEndSK, TypeSK, PropertyPK, ValueOK)  
-Subject Kind, PlayerType: TypeSK, AttributeType: PropertyPK, ValueType: ValueOK.   
-Example: (EmployeeRoleSK, EmployeeSubjectKind, EmploymentRoleRelationshipPredicateKind, EmployeeRoleObjectKind)
-
-(MeasurementContextPK, TypeSK, PropertyPK, ValueOK)  
-Predicate Kind, PlayerType: PropertySK, AttributeType: TypePK, ValueType: ValueOK.   
-Example: (EmployeePositionAtDatePK, EmployeeSubjectKind, EmploymentPositionRelationshipPredicateKind, EmployeePositionObjectKind)
-
-(DestinationEndOK, TypeSK,  PropertyPK, ValueOK)  
-Object Kind, PlayerType: ValueOK, AttributeType: PropertyPK, ValueType: TypeSK.   
-Example: (CurrentEmployeeRoleOK, EmployeeSubjectKind, EmploymentRoleRelationshipPredicateKind, EmployeeRoleObjectKind)
-
-**Rule output Statements:**  
-Production Statement Type.
-
-(RelationshipCK, SourceEndSK, MeasurementContextPK, DestinationEndOK)
-
-Example:  
-(EmploymentRelationshipCK, EmployeeRoleSK, EmployeePositionAtDatePK, CurrentEmployeeRoleOK)
-
-#### Alignment Agent Merge / Fold / Unfold {#alignment-agent-merge-/-fold-/-unfold}
-
-See: Homoiconic (code as data) approach.  
-TODO.
-
-### Activation Service Agent {#activation-service-agent}
-
-Contexts (Use Cases) and behaviors (Interactions) in the Activation Layer.
-
-#### Activation Agent Domain Model {#activation-agent-domain-model}
-
-Knowledge Layer. DCI Contexts, Roles, Actors, Interactions.
-
-**Actor layer input Statements:**  
-Source Statement Type. Alignment Rule Statements.
-
-(C, S, P, O):  
-(RelationshipCK, SourceEndSK, MeasurementContextPK, DestinationEndOK) from Alignment Rule Statements.
-
-Example:  
-(EmploymentRelationshipCK, EmployeeRoleSK, EmployeePositionAtDatePK, CurrentEmployeeRoleOK)
-
-**Role Interaction aggregation Statements:**  
-Kinds aggregation Statement Types.
-
-(DCIContextCK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
-Context Kind, PlayerType: DCIContexCK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
-Example: (EmploymentDepartmentCK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
-
-(RoleSK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
-Subject Kind, PlayerType: RoleSK, AttributeType: DimensionPK, ValueType: MeasurementOK.  
-Example: (EmploymentDepartmentRoleSK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
-
-(ActorPK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
-Predicate Kind, PlayerType: DimensionPK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
-Example: (EmploymentDepartmentActorPK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
-
-(InteractionOK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
-Object Kind, PlayerType: MeasurementOK, AttributeType: DimensionPK, ValueType: MeasurementSK.  
-Example: (EmploymentDepartmentRoleOK, EmploymentRoleMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
-
-**Context output Statements:**  
-Production Statement Type.
-
-(DCIContextCK, RoleSK, ActorPK, InteractionOK)
-
-Example:  
-(DCIContextCK, EmploymentDepartmentRoleSK, EmploymentDepartmentRoleSK, EmploymentDepartamentRoleOK) 
-
-#### Activation Agent Merge / Fold / Unfold {#activation-agent-merge-/-fold-/-unfold}
-
-See: Homoiconic (code as data) approach.  
-TODO.
-
-### Helper Services {#helper-services}
-
-Monadic wrapper bound Base Model Entities (Resource, Occurrence, Statement, Context, Subject, Predicate, Object, Kind, ContextKind, SubjectKind, PredicateKind, ObjectKind) Functional APIs Definitions for stream processing.
-
-“Leverage X” Sections Functional APIs.
-
-Kinds as Extensional Function Definitions Functional APIs.
-
-Resource merge / “application” (transform / template) Functional APIs.
-
-#### Registry Service {#registry-service}
-
-Registry API Functional Definitions.
-
-#### Naming Service {#naming-service}
-
-Naming API Functional Definitions.
-
-#### Index Service {#index-service}
-
-Index API Functional Definitions.
-
 ## Dynamic API Endpoints {#dynamic-api-endpoints}
 
-Activation pipeline layer production messages I/O API Facade for rendering Dynamic API Endpoints:
+Activation pipeline layer production messages I/O API Facade for rendering Dynamic API Endpoints. Execution Approach: State / Representational Resources Conversation IO.
 
 Render an interface / protocol of discoverable Contexts behavior (Use Cases) and Interactions instances (executions) API of the unified integrated datasources facade by means of Activation activated knowledge message statements.
 
