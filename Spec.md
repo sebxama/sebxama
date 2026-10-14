@@ -459,7 +459,7 @@ class Predicate extends Resource
 // All Resource’s Object Occurrences  
 class Object extends Resource
 
-class Kind\<PlayerType extends Resource,  
+abstract class Kind\<PlayerType extends Resource,  
           AttributeType extends Resource,  
           ValueType extends Resource\> extends Resource  
 getPlayers : PlayerType\[\]  
@@ -467,13 +467,13 @@ getAttributes(player : PlayerType, context : Kind) : AttributeType\[\]
 getValues(player : PlayerType, attribute : AttributeType, context : Kind) : ValueType\[\]  
 getStatements() : Statement\[\]
 
-class ContextKind extends Resource implements Kind\<Subject, Predicate, Object\>
+class ContextKind extends Kind\<SubjectKind, PredicateKind, ObjectKind\>
 
-class SubjectKind extends Resource implements Kind\<Subject, Predicate, Object\>
+class SubjectKind extends Kind\<Subject, Predicate, Object\>
 
-class PredicateKind extends Resource implements Kind\<Predicate, Subject, Object\>
+class PredicateKind extends Kind\<Predicate, Subject, Object\>
 
-class ObjectKind extends Resource implements Kind\<Object, Predicate, Subject\>
+class ObjectKind extends Kind\<Object, Predicate, Subject\>
 
 ## Resources {#resources}
 
