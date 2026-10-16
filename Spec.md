@@ -44,8 +44,6 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Retrieve Dimensional Contexts Statements (Unfold)](#retrieve-dimensional-contexts-statements-\(unfold\))
 
-[Streams Augmentations (TODO)](#streams-augmentations-\(todo\))
-
 [Kinds as Extensional Functional Definitions](#kinds-as-extensional-functional-definitions)
 
 [Base Model Representations](#base-model-representations)
@@ -68,11 +66,35 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Homoiconic (code as data) approach](#homoiconic-\(code-as-data\)-approach)
 
-[Comparisons: Dimensional axis Order and Matching](#comparisons:-dimensional-axis-order-and-matching)
+[Stream-Oriented Merge, Fold and Unfold of Layered Statements](#stream-oriented-merge,-fold-and-unfold-of-layered-statements)
+
+[Streams Augmentations: Pipeline Agents Merge, Fold, Unfold](#streams-augmentations-agents-model)
+
+[Fold](#fold)
+
+[Unfold](#unfold)
+
+[Merge as the Central Stream Contexts Operation](#merge-as-the-central-stream-contexts-operation)
+
+[Possible Merge Approaches](#possible-merge-approaches)
+
+[RDF Merge](#rdf-merge)
+
+[TMRM Merge](#tmrm-merge)
+
+[FCA Merge](#fca-merge)
+
+[CPPE Based FCA / Model Primitives Merge](#cppe-based-fca-/-model-primitives-merge)
+
+[Sets Model Based Merge](#sets-model-based-merge)
+
+[Integration into Streams Processing](#integration-into-streams-processing)
+
+[Comparisons: Dimensional axis Order and Matching](#comparisons:-dimensional-axis-order-and-matching-\(refactor-as-dimensional-and-ordering-addressing-features\).)
 
 [Messaging Infrastructure](#messaging-infrastructure)
 
-[Messaging Format: TreeGraph](#messaging-format:-treegraph)
+[Messaging Format Representation: TreeGraph](#messaging-format-representation:-treegraph)
 
 [Datasources](#datasources)
 
@@ -103,36 +125,6 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 [Naming Service](#naming-service)
 
 [Index Service](#index-service)
-
-[Stream-Oriented Merge, Fold and Unfold of Layered Statements](#stream-oriented-merge,-fold-and-unfold-of-layered-statements)
-
-[Retrieve Type Kinds Statements (Merge)](#retrieve-type-kinds-statements-\(merge\)-1)
-
-[Retrieve Statements Dimensional Contexts (Fold)](#retrieve-statements-dimensional-contexts-\(fold\)-1)
-
-[Retrieve Dimensional Contexts Statements (Unfold)](#retrieve-dimensional-contexts-statements-\(unfold\)-1)
-
-[Streams Augmentations (TODO)](#streams-augmentations-\(todo\)-1)
-
-[Fold](#fold)
-
-[Unfold](#unfold)
-
-[Merge as the Central Stream Contexts Operation](#merge-as-the-central-stream-contexts-operation)
-
-[Possible Merge Approaches](#possible-merge-approaches)
-
-[RDF Merge](#rdf-merge)
-
-[TMRM Merge](#tmrm-merge)
-
-[FCA Merge](#fca-merge)
-
-[CPPE Based FCA / Model Primitives Merge](#cppe-based-fca-/-model-primitives-merge)
-
-[Sets Model Based Merge](#sets-model-based-merge)
-
-[Integration into Streams Processing](#integration-into-streams-processing)
 
 [Dynamic API Endpoints](#dynamic-api-endpoints)
 
@@ -574,24 +566,6 @@ TODO.
 ContextKind Dimensional Statements de-aggregation: retrieve Dimension source Statements.  
 TODO.
 
-### Streams Augmentations (TODO) {#streams-augmentations-(todo)}
-
-Pipeline:  
-Interface Augmentation (default methods)  
-. apply(Resource\[\]) : Resource  
-. merge(Statement\[\]) : Statement\[\]  
-. fold(Statement\[\]) : Statement\[\]  
-. unfold(Statement\[\]) : Statement\[\]  
-Aggregation : Augmentation  
-Alignment : Augmentation  
-Activation  : Augmentation  
-Resource : Augmentation  
-Occurrence : Augmentation  
-Statement : Augmentation  
-Kind : Augmentation
-
-Each Resource, Occurrence, Statement, Kind, Pipeline layer has its own “template” methods.
-
 ### Kinds as Extensional Functional Definitions {#kinds-as-extensional-functional-definitions}
 
 Kind aggregated Statements can be regarded as the definition of a Function by extension. Their Statement Contexts Occurrence Resources are the Function name or signature. Their PlayerType(s) instances group their mappings by “context” and their AttributeType(s) and ValueType(s) instances are the Function domain / range corresponding value pairs. Note: Kinds are functional given their occurrences' dimensional context.
@@ -737,43 +711,36 @@ The representations should remain semantically synchronized: an entity represent
 
 # Execution Model: Augmentation Agents Pipeline  {#execution-model:-augmentation-agents-pipeline}
 
-A sequential message driven execution model, the Augmentation Pipeline, performs, by means of message exchange streams processing (merge, fold and unfold), the Semantic Streams Augmentation of raw RDF CSPO URIs Quads input Statements (from configurable Datasources\*) into executable models of knowledge gathered by means of (1) Aggregation, (2) Alignment and (3) Activation of Statements (messages) encoding corresponding layers domain models Statement types structures.  
+A sequential message driven execution model, the Augmentation Pipeline, performs, by means of message exchange streams processing (Augmentation Agents Statements merge, fold and unfold), the Semantic Streams Augmentation of raw RDF CSPO URIs Quads input Statements (from configurable Datasources, by means of appropriate system Statements) into executable models of knowledge gathered by means of (1) Aggregation, (2) Alignment and (3) Activation of Statements (messages) encoding corresponding layers domain models Statement types structures.  
 
-Augmentation Agents communicate with each other by means of a series of messaging endpoints where each layer consumes its input (source) Statements and publishes their output (production) Statements. Layers input and output Statements are of two types: an Augmentation Agent layer can consume both of their source Statements types and their production Statements types.
+Augmentation Agents communicate with each other by means of a series of messaging endpoints where each layer consumes its input Statements and publishes their output Statements. Layers input and output Statements are handled in two ways.
 
-In the first case, processing a source Statement type input, it “merges” this input source type Statement with its source level type already known processed Statements aggregating, aligning and activating possible new inferred Statements. It then “folds” (aggregates) the resulting merged Statements into its layer corresponding Kind types Statements, then builds and produces its output production (Kinds) Statement types for production publishing.
+Statements coming from an upper layer (raw Resources for the initial Aggregation layer)  are to be “merged” with existing layer’s knowledge by means of Kinds aggregation (input Statements and layer previously known Statements) and then “folded” with previous knowledge into dimensional statements and publishes them into an output endpoint to be consumed by a lower layer. Merge, fold. Merge of dimensional Statements.
 
-In the case of a layer’s production Statement type as the consumed input, agents merges this input with its already known production statement types (matching / merging input Statement Kinds with already known Kinds), it then “unfolds” input Statement components (Kinds) into layer’s Kinds aggregated originating source type Statements obtaining this way the source Statement type Statements which originated the input (Kinds) production Statement message (source Statements). It then performs, with each “unfolded” Statement, the same way as if it were like those source Statements where consumed source Statements (merging, folding and publishing). Intermediate source type merged new inferred Statements are also merged, folded and published.
+Statements coming from a lower layer (dimensional Statements) are “unfolded” into their source Statements and then “merged” with the layer previous knowledge Statements by means of Kinds aggregation (unfolded Statements and layer previously known Statements) and then performs with the merged Statements as if they were Statements coming from an upper layer. Unfold, merge, fold.
 
 This Agent pipeline execution model could be depicted as:
 
-source statements input / merge \-\> folding \-\> production statements merge and publishing
+source statements input \-\> merge \-\> fold \-\> dimensional statements publishing
 
-production statements input / merge \-\> unfold \-\> source statements merge and publishing
+dimensional statements input \-\> unfold \-\> merge \-\> fold \-\> dimensional statements publishing
 
-The merge steps in the pipeline is where new knowledge (Statements) are Aggregated, Aligned and Activated, where pipeline layers inference is performed materializing inferred knowledge into new Statements of each type. That is why it makes sense to merge new inputs with previous knowledge and inferred knowledge in a pipeline in / out fashion.
+The merge steps in the pipeline is where new knowledge (Statements) are Aggregated, Aligned and Activated, where pipeline layers inference is performed materializing inferred knowledge into new Statements of each type. That is why it makes sense to merge new inputs with previous knowledge and inferred knowledge in a pipeline fan in / fan out fashion.
 
-This fan in / fan out approach is intended to be implemented in a reactive functional streams pipeline where each agent consumes and produces knowledge asynchronously and in parallel. An Agent production type Statement is another Agent source type Statement (maybe including the Agent itself) and an Agent source type Statement is the type of another Agent production Statement type. An Agent “accepts” an Statement (source or production) if it is not known already or if it was further processed (updated) its context since the last consumption (or “acceptance” performance is no-op).
+This fan in / fan out approach is intended to be implemented in a reactive functional streams pipeline where each agent consumes and produces knowledge asynchronously and in parallel. An Agent production type Statement is another Agent source type Statement (including the producing Agent itself) and an Agent production type Statement is the type of another Agent source Statement type. An Agent “accepts” an Statement (source or production) if it is not known already or if it was further processed (updated) its context since the last consumption (or “acceptance” performance is no-op).
 
 ## Homoiconic (code as data) approach {#homoiconic-(code-as-data)-approach}
 
-Messaging pipeline oriented resources consumption and publishing. Merge, Fold, Unfold phases functional approach.
+Messaging pipeline oriented resources consumption and publishing. Merge, Fold, Unfold Augmentation pipeline layer phases functional approach.
 
-Merging input data against previously known data, applying previously known data as a Template / Alignment / Transformation for merge over input data is what is meant with “code as data”.
+Merging (Kind aggregation) input, unfolded and folded data against previously known data, inferring type, state and contextual relationships is what is meant with “code as data”.
 
 Resources (Occurrences, Statements, Contexts, Subjects, Predicates, Objects and their corresponding Kinds) are “functional” entities that can be “applied” to another Resources. The signature of such functional composition is as follows (TODO):
 
-Resource::apply(res: Resource) : Resource  
-Resource::apply(res: Occurrence) : Resource  
-Resource::apply(res: Statement) : Resource  
-Resource::apply(res: Context) : Resource  
-Resource::apply(res: Subject) : Resource  
-Resource::apply(res: Predicate) : Resource  
-Resource::apply(res: Object) : Resource  
-Resource::apply(res: ContextKind) : Resource  
-Resource::apply(res: SubjectKind) : Resource  
-Resource::apply(res: PredicateKind) : Resource  
-Resource::apply(res: ObjectKind) : Resource
+Resource::apply(res: Resource\[\]) : Resource\[\]  
+Resource::merge(res: Resource\[\]) : Resource\[\]  
+Resource::fold(res: Resource\[\]) : Resource\[\]  
+Resource::unfold(res: Resource\[\]) : Resource\[\]
 
 Each Resource hierarchy class has their own overridden implementation of those ‘apply’ methods. The semantics of such “applications” (argument types and return types) are to be defined for each Resource type subclass implementing or overriding the corresponding ‘apply’ methods, their internal state and leveraging the following by means of Helper Services:
 
@@ -785,7 +752,7 @@ FCA Inference / Traversal.
 
 CPPE Contextual Inference.
 
-Sets Model Representation.
+Sets Model Representation Inferences.
 
 Example: Kind applied to a Resource returns all Statements where the Resource is a player of the Kind.
 
@@ -793,31 +760,19 @@ Given a monadic wrapper (Spring Flux, Mono, for example) for handling streams pr
 
 aWrappedResource.map(aResourceInstance::apply) : Flux\<AResourceInstanceApplyType\>
 
-Then, Resource(s) applications can be chained and combined by means of stream pipelines composition. 
+Then, Resource(s) applications can be chained and combined by means of stream pipeline composition. 
 
 **Kinds Functional Comprehensions:**
 
-Kinds: extensional functions definitions. Functions Comprehensions: infer Kinds Functions from CPPE embeddings vía Helpers / ML. Resource Merge / Apply: Kinds inferred Functions inference.
+Kinds: extensional functions definitions. Functions Comprehensions: infer Kinds Functions from CPPE embeddings vía Helpers / ML. Resource Merge / Apply: Kinds inferred Functions inference. Kinds are functional given their occurrences in given dimensional contexts. Otherwise, an attribute could have multiple values.
 
-**Monadic fold / unfold:** 
+**Monadic merge / fold / unfold:** 
 
-Aggregate (Kinds map / reduce):   
-key (PlayerType), values (AttributeType, ValueType).
+Augmentation pipeline wraps Resources in a stream invocation monadic chain where Resource / Augmentation (see below) merge, fold, unfold methods can be invoked in a functional manner.
 
-De aggregate: unfold to original Kind Statements (stream scan).
-
-Merge: application of aggregated (folded) / de aggregated (unfolded) Resources to output / input streams (augmented with previous merge results) on each key (fold) aggregation completion and on each unfold stream scan emitted Resource.
+Merge: application of aggregated (folded) / de aggregated (unfolded) Resources to output / input streams (augmented with previous merge results) on each key Context Kind (fold) aggregation completion and on each unfold stream scan emitted Resource.
 
 TODO: Resource::apply Helpers Services approaches: FCA, CPPE, RDF inference, Sets, etc. ML Models / LLMs (classification : Aggregation, clustering : Alignment, regression : Activation). Unify Augmentation application Helper Services approaches APIs.
-
-Data Structures (Folded Kinds):
-
-\<Map\<Resource, Set\<Map\<Resource, Set\<Resource\>\>\>\>\>
-
-\<Map\<Subject, Set\<Predicate\>\>  
-\<Map\<Set\<Predicate\>, Type\>  
-\<Type, Set\<Map\<Predicate, Value\>\>\>  
-\<Map\<Set\<Map\<Predicate, Value\>\>, State\>
 
 **Materialization of Resources: State / IO**
 
@@ -844,7 +799,114 @@ TODO: A schema shall exist which encodes Persistence IO actions and Endpoints Co
 TODO:  
 Resource hierarchy application semantics. Full layers types hierarchy (implement all layers models kinds). Template methods. Implementation Language? (Resources, Streams Processing), XSLT?
 
-### Comparisons: Dimensional axis Order and Matching {#comparisons:-dimensional-axis-order-and-matching}
+## Stream-Oriented Merge, Fold and Unfold of Layered Statements {#stream-oriented-merge,-fold-and-unfold-of-layered-statements}
+
+As Resource functional composition (Homoiconic approach).
+
+Layers inputs / outputs. Layers functional definitions. Rules from source 'terminals' to production 'non-terminals': produce all possible production source Statements given contexts / constraints. Inferences.
+
+TODO
+
+#### Streams Augmentations Agents Model {#streams-augmentations-agents-model}
+
+abstract class Augmentation  
+apply(input : Statement\[\]) : Statement\[\]  
+merge(input : Statement\[\]) : Statement\[\]  
+fold(input : Statement\[\]) : Statement\[\]  
+unfold(input : Statement\[\]) : Statement\[\]
+
+class Aggregation extends Augmentation
+
+class Alignment extends Augmentation
+
+class Activation extends Augmentation
+
+Each Pipeline layer (Aggregation, Alignment, Activation) has its own “template” methods.
+
+### Fold {#fold}
+
+Aggregate Dimensional Kinds Context Statements.  
+Stream “reduce” operation by means of aggregating by common roles.
+
+TODO.
+
+### Unfold {#unfold}
+
+De-Aggregate Dimensional Kinds Context Statements (Dimensional source Statements).  
+Streams “scan” operation emitting every unfolded Statement.
+
+### Merge as the Central Stream Contexts Operation {#merge-as-the-central-stream-contexts-operation}
+
+Type Kind Statements aggregation.
+
+Inferred new Statements by Augmentation pipeline phase. Leverage Kind Context Statements and Kind Dimensional Context Statements.
+
+TODO
+
+#### Possible Merge Approaches {#possible-merge-approaches}
+
+Identity Resolution driven. TODO: Find the way of unambiguously identifying concepts (Resources, Occurrences, Statements, SPOs, Kinds) equivalent (in a given role occurrence in a given context).
+
+Merge: Reify as Resources Occurrences, Statements, SPOs, Kinds. Resolve ID of Resources, Contexts (ID, Type), Occurrences (IDs, Contexts, Roles).
+
+Aggregated Processing / Production Statements acts as Templates / Upper ontology alignment schemas.
+
+Layers context merged entities propagate upstream (unfolding) and downstream (folding).
+
+Identity Encoding:
+
+**CPPE Embeddings**  
+Index API.
+
+**FCA / Set Assertion Statements:**  
+(Context, Concept, Role, Occurrence);  
+Concept, Context, Role, Occurrence recursively instance of Set Statements.
+
+Naming Scheme:  
+Name assignment for inferred entities.  
+Registry Mapping of Merge encodings.
+
+##### RDF Merge {#rdf-merge}
+
+This approach relies on graph theory. It essentially performs a graph union of multiple RDF datasets. A critical function of an RDF merge is the standardization and renaming of "blank nodes" (anonymous resources) across different graphs to avoid collisions, resulting in a single, unified knowledge graph of subject-predicate-object triples.
+
+Merge Statements as RDF graph patterns, combining compatible subjects, predicates, and objects while preserving graph identity and provenance. This provides a straightforward representation for stream-level graph merging and interoperability with RDF-based tooling.
+
+##### TMRM Merge {#tmrm-merge}
+
+TMRM merging is driven strictly by subject identity. If two topics (entities) across different data streams share the same subject locator, subject identifier, or item identifier, they are deterministically merged into a single topic. The resulting merged topic accumulates all the names, occurrences, and associations of the original topics.
+
+Perform merging at the TMRM metamodel level, using Resources, Occurrences, Statements, Subjects, Predicates, Objects, and Kinds as the semantic structures being matched and consolidated. This provides the underlying subject-centric merge and identity model for the pipeline.
+
+##### FCA Merge {#fca-merge}
+
+This approach merges data at the conceptual level by combining "formal contexts" (mappings of objects to their attributes). When two concept lattices are merged, the FCA algorithm recalculates the matrix to build a new, unified lattice. This is highly effective for discovering new structural hierarchies and implicit relationships that weren't visible in the isolated data streams.
+
+Treat matching Statements as formal contexts and merge compatible contexts to derive shared Properties and higher-level relationships. This is particularly suited to the Aggregation phase, where input Statements are consolidated into Property Statements. 
+
+##### CPPE Based FCA / Model Primitives Merge {#cppe-based-fca-/-model-primitives-merge}
+
+Operating at the most atomic level of a data architecture, this approach aligns the fundamental structural primitives (e.g., core entities, base properties, and semantic rules) of the models. By merging the structural primitives *first*, the pipeline creates a standardized baseline context, which is then fed into an FCA merge to build highly accurate, normalized concept lattices.
+
+Combine FCA context merging with CPPE/model primitives to support higher-level semantic matching and inference. This approach can be used in the Alignment phase to derive ontology matches, links, dimensions, ordering, and related Rule Statements. 
+
+##### Sets Model Based Merge {#sets-model-based-merge}
+
+Rooted in classic set theory, this methodology uses strict mathematical operations (unions, intersections, and relative differences) to combine data. It treats data streams as collections of elements, making it an incredibly fast, deterministic, and highly scalable approach for deduplication and exact-match aggregations.
+
+Represent Statement components and their relationships as sets and apply set operations such as union, intersection, difference, and compatibility matching. This provides a simple compositional mechanism that can be used as a lower-level merge primitive within the other approaches.
+
+##### Integration into Streams Processing {#integration-into-streams-processing}
+
+TODO
+
+## Comparisons: Dimensional axis Order and Matching (refactor as Dimensional and Ordering addressing features). {#comparisons:-dimensional-axis-order-and-matching-(refactor-as-dimensional-and-ordering-addressing-features).}
+
+Infer Occurrence Type.  
+Retrieve Occurrence Types.  
+Infer Statement Dimensions.  
+Retrieve Statement Dimensions.  
+Retrieve Dimension Statements.
 
 Folding and unfolding Merge operations can leverage comparisons of Resources for sorting and matching. This is sorting in a nested contexts approach where one sorted occurrence may be the ‘parent’ of child sorted occurrences (happened and sorted in the parent occurrence scope). Resource application can be used for sorted structures traversal and further comparisons.
 
@@ -892,7 +954,7 @@ aggregationProductionTopic \<-\> Alignment \<-\> alignmentProductionTopic
 
 alignmentProductionTopic \<-\> Activation \<-\> activationProductionTopic
 
-### Messaging Format: TreeGraph {#messaging-format:-treegraph}
+### Messaging Format Representation: TreeGraph {#messaging-format-representation:-treegraph}
 
 All Base Model entities Statements of each layer type must encode all of their corresponding composing entities in a single message. A Statement containing a specific Kind must encode all its Kind’s composing aggregation Statements, for example. 
 
@@ -1083,129 +1145,43 @@ Resource merge / “application” (transform / template) Functional APIs.
 
 Registry API Functional Definitions.
 
+class RegistryService
+
++ getAggregationGraph() : Graph  
++ getAlignmentGraph() : Graph  
++ getActivationGraph() : Graph
+
+class Graph : Unified API view of Base Model Representations features
+
+TODO
+
 #### Naming Service {#naming-service}
 
 Naming API Functional Definitions.
 
+Formal Grammars / LLM Models.  
+Names Relationships in Contexts / Identity Resolution (NER).  
+Representations Rendering / Parsing. Messages Representations.
+
+TODO
+
 #### Index Service {#index-service}
 
-Index API Functional Definitions.
+Index API FCA / CPPE / Sets Functional Definitions.
 
-## Stream-Oriented Merge, Fold and Unfold of Layered Statements {#stream-oriented-merge,-fold-and-unfold-of-layered-statements}
+class IndexService
 
-As Resource functional composition (Homoiconic approach).
++ getAggregationSubjectContext(subject : Resource) : Context  
++ getAggregationPredicateContext(predicate : Resource) : Context  
++ getAggregationObjectContext(object : Resource) : Context  
++ getAlignmentSubjectContext(subject : Resource) : Context  
++ getAlignmentPredicateContext(predicate : Resource) : Context  
++ getAlignmentObjectContext(object : Resource) : Context  
++ getActivationSubjectContext(subject : Resource) : Context  
++ getActivationPredicateContext(predicate : Resource) : Context  
++ getActivationObjectContext(object : Resource) : Context
 
-Layers inputs / outputs. Layers functional definitions. Rules from source 'terminals' to production 'non-terminals': produce all possible production source Statements given contexts / constraints. Inferences.
-
-TODO
-
-#### Retrieve Type Kinds Statements (Merge) {#retrieve-type-kinds-statements-(merge)-1}
-
-Type Kind Statements aggregation.  
-TODO.
-
-#### Retrieve Statements Dimensional Contexts (Fold) {#retrieve-statements-dimensional-contexts-(fold)-1}
-
-ContextKind Dimensional Statements aggregation.  
-TODO.
-
-#### Retrieve Dimensional Contexts Statements (Unfold) {#retrieve-dimensional-contexts-statements-(unfold)-1}
-
-ContextKind Dimensional Statements de-aggregation: retrieve Dimension source Statements.  
-TODO.
-
-### Streams Augmentations (TODO) {#streams-augmentations-(todo)-1}
-
-Pipeline:  
-Interface Augmentation (default methods)  
-. apply(Resource\[\]) : Resource  
-. merge(Statement\[\]) : Statement\[\]  
-. fold(Statement\[\]) : Statement\[\]  
-. unfold(Statement\[\]) : Statement\[\]  
-Aggregation : Augmentation  
-Alignment : Augmentation  
-Activation  : Augmentation  
-Resource : Augmentation  
-Occurrence : Augmentation  
-Statement : Augmentation  
-Kind : Augmentation
-
-Each Resource, Occurrence, Statement, Kind, Pipeline layer has its own “template” methods.
-
-### Fold {#fold}
-
-Aggregate Kinds (Kind Context Statements).  
-Aggregate Kind Dimensional Context Statements (Sets / Functional features)..  
-Stream reduce operation by means of aggregating by common roles.
-
-TODO.
-
-### Unfold {#unfold}
-
-De-Aggregate Kind Dimensional Context Statements (Sets / Functional features).  
-De-Aggregate Kinds (Kind Context Statements).  
-Streams scan operation emitting every unfolded Resource Statement.
-
-### Merge as the Central Stream Contexts Operation {#merge-as-the-central-stream-contexts-operation}
-
-Inferred new Statements by Augmentation pipeline phase. Leverage Kind Context Statements and Kind Dimensional Context Statements.
-
-TODO
-
-### Possible Merge Approaches {#possible-merge-approaches}
-
-Identity Resolution driven. TODO: Find the way of unambiguously identifying concepts (Resources, Occurrences, Statements, SPOs, Kinds) equivalent (in a given role occurrence in a given context).
-
-Merge: Reify as Resources Occurrences, Statements, SPOs, Kinds. Resolve ID of Resources, Contexts (ID, Type), Occurrences (IDs, Contexts, Roles).
-
-Aggregated Processing / Production Statements acts as Templates / Upper ontology alignment schemas.
-
-Layers context merged entities propagate upstream (unfolding) and downstream (folding).
-
-Identity Encoding:
-
-**CPPE Embeddings**  
-Index API.
-
-**FCA / Set Assertion Statements:**  
-(Context, Concept, Role, Occurrence);  
-Concept, Context, Role, Occurrence recursively instance of Set Statements.
-
-Naming Scheme:  
-Name assignment for inferred entities.  
-Registry Mapping of Merge encodings.
-
-#### RDF Merge {#rdf-merge}
-
-This approach relies on graph theory. It essentially performs a graph union of multiple RDF datasets. A critical function of an RDF merge is the standardization and renaming of "blank nodes" (anonymous resources) across different graphs to avoid collisions, resulting in a single, unified knowledge graph of subject-predicate-object triples.
-
-Merge Statements as RDF graph patterns, combining compatible subjects, predicates, and objects while preserving graph identity and provenance. This provides a straightforward representation for stream-level graph merging and interoperability with RDF-based tooling.
-
-#### TMRM Merge {#tmrm-merge}
-
-TMRM merging is driven strictly by subject identity. If two topics (entities) across different data streams share the same subject locator, subject identifier, or item identifier, they are deterministically merged into a single topic. The resulting merged topic accumulates all the names, occurrences, and associations of the original topics.
-
-Perform merging at the TMRM metamodel level, using Resources, Occurrences, Statements, Subjects, Predicates, Objects, and Kinds as the semantic structures being matched and consolidated. This provides the underlying subject-centric merge and identity model for the pipeline.
-
-#### FCA Merge {#fca-merge}
-
-This approach merges data at the conceptual level by combining "formal contexts" (mappings of objects to their attributes). When two concept lattices are merged, the FCA algorithm recalculates the matrix to build a new, unified lattice. This is highly effective for discovering new structural hierarchies and implicit relationships that weren't visible in the isolated data streams.
-
-Treat matching Statements as formal contexts and merge compatible contexts to derive shared Properties and higher-level relationships. This is particularly suited to the Aggregation phase, where input Statements are consolidated into Property Statements. 
-
-#### CPPE Based FCA / Model Primitives Merge {#cppe-based-fca-/-model-primitives-merge}
-
-Operating at the most atomic level of a data architecture, this approach aligns the fundamental structural primitives (e.g., core entities, base properties, and semantic rules) of the models. By merging the structural primitives *first*, the pipeline creates a standardized baseline context, which is then fed into an FCA merge to build highly accurate, normalized concept lattices.
-
-Combine FCA context merging with CPPE/model primitives to support higher-level semantic matching and inference. This approach can be used in the Alignment phase to derive ontology matches, links, dimensions, ordering, and related Rule Statements. 
-
-#### Sets Model Based Merge {#sets-model-based-merge}
-
-Rooted in classic set theory, this methodology uses strict mathematical operations (unions, intersections, and relative differences) to combine data. It treats data streams as collections of elements, making it an incredibly fast, deterministic, and highly scalable approach for deduplication and exact-match aggregations.
-
-Represent Statement components and their relationships as sets and apply set operations such as union, intersection, difference, and compatibility matching. This provides a simple compositional mechanism that can be used as a lower-level merge primitive within the other approaches.
-
-#### Integration into Streams Processing {#integration-into-streams-processing}
+class Context : Unified API view of FCA Contexts
 
 TODO
 
