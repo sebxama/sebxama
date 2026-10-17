@@ -68,7 +68,7 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Stream-Oriented Merge, Fold and Unfold of Layered Statements](#stream-oriented-merge,-fold-and-unfold-of-layered-statements)
 
-[Streams Augmentations: Pipeline Agents Merge, Fold, Unfold](#streams-augmentations-agents-model)
+[Streams Augmentations Agents Model](#streams-augmentations-agents-model)
 
 [Fold](#fold)
 
@@ -90,7 +90,7 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Integration into Streams Processing](#integration-into-streams-processing)
 
-[Comparisons: Dimensional axis Order and Matching](#comparisons:-dimensional-axis-order-and-matching-\(refactor-as-dimensional-and-ordering-addressing-features\).)
+[Comparisons: Dimensional axis Order and Matching (refactor as Dimensional and Ordering addressing features).](#comparisons:-dimensional-axis-order-and-matching-\(refactor-as-dimensional-and-ordering-addressing-features\).)
 
 [Messaging Infrastructure](#messaging-infrastructure)
 
@@ -713,21 +713,39 @@ The representations should remain semantically synchronized: an entity represent
 
 A sequential message driven execution model, the Augmentation Pipeline, performs, by means of message exchange streams processing (Augmentation Agents Statements merge, fold and unfold), the Semantic Streams Augmentation of raw RDF CSPO URIs Quads input Statements (from configurable Datasources, by means of appropriate system Statements) into executable models of knowledge gathered by means of (1) Aggregation, (2) Alignment and (3) Activation of Statements (messages) encoding corresponding layers domain models Statement types structures.  
 
-Augmentation Agents communicate with each other by means of a series of messaging endpoints where each layer consumes its input Statements and publishes their output Statements. Layers input and output Statements are handled in two ways.
+Augmentation Agents communicate with each other by means of a series of messaging endpoints where each layer consumes its input Statements and publishes their output Statements. The main operations a layer performs in a Statements streams are: merge, fold and unfold. Layers input and output Statements are handled in two ways:
 
-Statements coming from an upper layer (raw Resources for the initial Aggregation layer)  are to be “merged” with existing layer’s knowledge by means of Kinds aggregation (input Statements and layer previously known Statements) and then “folded” with previous knowledge into dimensional statements and publishes them into an output endpoint to be consumed by a lower layer. Merge, fold. Merge of dimensional Statements.
+Augmentation layers listen for Statements coming from an upper or lower layer. Augmentation layers publish their fold results and merge results for consumption of following or previous layers respectively. 
 
-Statements coming from a lower layer (dimensional Statements) are “unfolded” into their source Statements and then “merged” with the layer previous knowledge Statements by means of Kinds aggregation (unfolded Statements and layer previously known Statements) and then performs with the merged Statements as if they were Statements coming from an upper layer. Unfold, merge, fold.
+Statements coming from an upper layer (raw Resources for the initial Aggregation layer) are to be “merged” with existing layer’s knowledge by means of Kinds aggregation (input Statements and layer previously known Statements) and then “folded” with previous knowledge into dimensional statements and published into an output endpoint to be consumed by a lower layer.
 
-This Agent pipeline execution model could be depicted as:
+Statements coming from a lower layer (dimensional Statements) are “unfolded” into their source Statements and then “merged” with the layer previous knowledge Statements by means of Kinds aggregation (unfolded Statements and layer previously known Statements) and the merge results are published into an output endpoint to be consumed by an upper layer. The merge result Statements are also processed as if they were Statements coming from an upper layer.
 
-source statements input \-\> merge \-\> fold \-\> dimensional statements publishing
+This fan in / fan out approach is intended to be implemented in a reactive functional streams pipeline where each agent consumes and produces knowledge asynchronously and in parallel. An Agent output type Statement is another Agent source type Statement and an Agent output type Statement is the type of another Agent source Statement type. An Agent “accepts” an Statement if it is not known already or if it was further processed (updated) its context since the last consumption (or “acceptance” performance is no-op).
 
-dimensional statements input \-\> unfold \-\> merge \-\> fold \-\> dimensional statements publishing
+Endpoints are configured in this way:
 
-The merge steps in the pipeline is where new knowledge (Statements) are Aggregated, Aligned and Activated, where pipeline layers inference is performed materializing inferred knowledge into new Statements of each type. That is why it makes sense to merge new inputs with previous knowledge and inferred knowledge in a pipeline fan in / fan out fashion.
+Workflow:  
+Upper layer source consumed Statements: merge, fold \-\> publish (to be consumed by a lower layer).  
+Lower layer source consumed Statements: unfold, merge \-\> publish (to be consumed by an upper layer).
 
-This fan in / fan out approach is intended to be implemented in a reactive functional streams pipeline where each agent consumes and produces knowledge asynchronously and in parallel. An Agent production type Statement is another Agent source type Statement (including the producing Agent itself) and an Agent production type Statement is the type of another Agent source Statement type. An Agent “accepts” an Statement (source or production) if it is not known already or if it was further processed (updated) its context since the last consumption (or “acceptance” performance is no-op).
+Datasources \<-\> Aggregation \<-\> Alignment \<-\> Activation \<-\> Dynamic Endpoints API
+
+Datasources  
+\<-\>  
+(raw Statements)  
+Aggregation  
+(dimensional Aggregation Statements / raw Alignment Statements)  
+\<-\>  
+(dimensional Aggregation Statements / raw Alignment Statements)  
+Alignment  
+(dimensional Alignment Statements / raw Activation Statements)  
+\<-\>  
+(dimensional Alignment Statements / raw Activation Statements)  
+Activation  
+(dimensional Activation Statements)  
+\<-\>  
+Dynamic Endpoints API
 
 ## Homoiconic (code as data) approach {#homoiconic-(code-as-data)-approach}
 
@@ -1002,28 +1020,28 @@ Source Statement Type. Raw CSPO RDF URIs Quad Statements.
 (C, S, P, O)
 
 **Type aggregation Statements (Kind Context Statements):**  
-Kinds aggregation Statement Types.
+Kinds Merge aggregation Statement Types.
 
-(ContextCK, S,  P, O)  
+(ContextKind, S,  P, O)  
 Context Kind, PlayerType: Context, AttributeType: Subject, ValueType: Object.   
 Example: (EmploymentCK, :Peter, :worksFor, :anEnterprise)
 
-(TypeSK, S,  P, O)  
+(SubjectKind, S,  P, O)  
 SubjectKind, PlayerType: Subject, AttributeType: Predicate, ValueType: Object.  
 Example: (EmployeeTypeSK, :Peter, :employer, :anEnterprise)
 
-(PropertyPK, S,  P, O)  
+(PredicateKind, S,  P, O)  
 Predicate Kind, PlayerType: Predicate, AttributeType: Subject, ValueType: Object.  
 Example: (EmploymentRelationshipPropertyPK, :Peter, :worksFor, :anEnterprise)
 
-(ValueOK, S,  P, O)  
+(ObjectKind, S,  P, O)  
 Object Kind, PlayerType: Object, AttributeType: Predicate, ValueType: Subject.  
 Example: (EmployerValueOK, :Peter, :employedBy, :anEnterprise)
 
 **Property output Statements (Kind Dimensional Context Statements):**  
-Production Statement Type.
+Production Fold Statement Type.
 
-(ContextCK, TypeSK, PropertyPK, ValueOK)
+(ContextKind, SubjectKind, PredicateKind, ObjectKind)
 
 Example:  
 (EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
@@ -1046,31 +1064,31 @@ Source Statement Type. Aggregation Production Statements.
 
 (C, S, P, O)
 
-(ContextCK, TypeSK, PropertyPK, ValueOK) from Aggregation Property Statements.  
+(ContextKind, SubjectKind, PredicateKind, ObjectKind) from Aggregation Property Statements.  
 Example:  
 (EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
 
 **State aggregation Statements (Kind Context Statements):**  
-Kinds aggregation Statement Types.
+Kinds Merge aggregation Statement Types.
 
-(RelationshipCK, TypeSK, PropertyPK, ValueOK)  
+(RelationshipCK, SubjectKind, PredicateKind, ObjectKind)  
 Context Kind, PlayerType: ContextCK, AttributeType: TypeSK, ValueType: ValueOK.   
 Example: (EmploymentRelationshipCK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
 
-(SourceEndSK, TypeSK, PropertyPK, ValueOK)  
+(SourceEndSK, SubjectKind, PredicateKind, ObjectKind)  
 Subject Kind, PlayerType: TypeSK, AttributeType: PropertyPK, ValueType: ValueOK.   
 Example: (EmployeeRoleSK, EmployeeSubjectKind, EmploymentRoleRelationshipPredicateKind, EmployeeRoleObjectKind)
 
-(MeasurementContextPK, TypeSK, PropertyPK, ValueOK)  
+(MeasurementContextPK, SubjectKind, PredicateKind, ObjectKind)  
 Predicate Kind, PlayerType: PropertySK, AttributeType: TypePK, ValueType: ValueOK.   
 Example: (EmployeePositionAtDatePK, EmployeeSubjectKind, EmploymentPositionRelationshipPredicateKind, EmployeePositionObjectKind)
 
-(DestinationEndOK, TypeSK,  PropertyPK, ValueOK)  
+(DestinationEndOK, SubjectKind, PredicateKind, ObjectKind)  
 Object Kind, PlayerType: ValueOK, AttributeType: PropertyPK, ValueType: TypeSK.   
 Example: (CurrentEmployeeRoleOK, EmployeeSubjectKind, EmploymentRoleRelationshipPredicateKind, EmployeeRoleObjectKind)
 
 **Rule output Statements (Kind Dimensional Context Statements):**  
-Production Statement Type.
+Production Fold Statement Type.
 
 (RelationshipCK, SourceEndSK, MeasurementContextPK, DestinationEndOK)
 
@@ -1100,7 +1118,7 @@ Example:
 (EmploymentRelationshipCK, EmployeeRoleSK, EmployeePositionAtDatePK, CurrentEmployeeRoleOK)
 
 **Role Interaction aggregation Statements (Kind Context Statements):**  
-Kinds aggregation Statement Types.
+Kinds Merge aggregation Statement Types.
 
 (DCIContextCK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
 Context Kind, PlayerType: DCIContexCK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
@@ -1119,7 +1137,7 @@ Object Kind, PlayerType: MeasurementOK, AttributeType: DimensionPK, ValueType: M
 Example: (EmploymentDepartmentRoleOK, EmploymentRoleMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
 
 **Context output Statements (Kind Dimensional Context Statements):**  
-Production Statement Type.
+Production Fold Statement Type.
 
 (DCIContextCK, RoleSK, ActorPK, InteractionOK)
 
