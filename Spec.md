@@ -20,29 +20,27 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Occurrences](#occurrences)
 
-[Statement Occurrences](#statement-occurrences)
-
-[CSPO Occurrences](#cspo-occurrences)
-
-[Kinds Occurrences](#kinds-occurrences)
-
 [Statements](#statements)
 
-[Statement Types](#statement-types)
+[Context, Subject, Predicate, Object Resources](#context,-subject,-predicate,-object-resources)
 
-[Contexts, Subjects, Predicates, Objects](#heading=h.x4x30fhkgclg)
+[Context](#context)
 
-[Context, Subject, Predicate, Object Kinds](#heading=h.hytyektcnf1l)
+[Subject](#subject)
 
-[Type Kinds Context Statements](#heading=h.kgz1ahvhmxmr)
+[Predicate](#predicate)
 
-[Dimensional Kinds Context Statements](#dimensional-kinds-context-statements)
+[Object](#object)
 
-[Retrieve Type Kinds Statements (Merge)](#retrieve-type-kinds-statements-\(merge\))
+[Kinds](#kinds)
 
-[Retrieve Statements Dimensional Contexts (Fold)](#retrieve-statements-dimensional-contexts-\(fold\))
+[Context Kinds](#context-kinds)
 
-[Retrieve Dimensional Contexts Statements (Unfold)](#retrieve-dimensional-contexts-statements-\(unfold\))
+[Subject Kinds](#subject-kinds)
+
+[Predicate Kinds](#predicate-kinds)
+
+[Object Kinds](#object-kinds)
 
 [Kinds as Extensional Functional Definitions](#kinds-as-extensional-functional-definitions)
 
@@ -52,8 +50,6 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Sets Based Model Representation](#sets-based-model-representation)
 
-[Sets layout for Dimensional Analysis](#sets-layout-for-dimensional-analysis)
-
 [ISO TMRM Model Representation](#iso-tmrm-model-representation)
 
 [FCA Context Lattices Model Representation](#fca-context-lattices-model-representation)
@@ -62,41 +58,21 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Representations Summary](#representations-summary)
 
-[Execution Model: Augmentation Agents Pipeline](#execution-model:-augmentation-agents-pipeline)
+[Execution Model: Augmentation Pipeline Agents](#execution-model:-augmentation-pipeline-agents)
 
-[Homoiconic (code as data) approach](#homoiconic-\(code-as-data\)-approach)
+[Homoiconic (code as data) Approach](#homoiconic-\(code-as-data\)-approach)
 
-[Stream-Oriented Merge, Fold and Unfold of Layered Statements](#stream-oriented-merge,-fold-and-unfold-of-layered-statements)
-
-[Streams Augmentations Agents Model](#streams-augmentations-agents-model)
+[Streams Augmentation Services Agents Model](#streams-augmentation-services-agents-model)
 
 [Fold](#fold)
 
 [Unfold](#unfold)
 
-[Merge as the Central Stream Contexts Operation](#merge-as-the-central-stream-contexts-operation)
-
-[Possible Merge Approaches](#possible-merge-approaches)
-
-[RDF Merge](#rdf-merge)
-
-[TMRM Merge](#tmrm-merge)
-
-[FCA Merge](#fca-merge)
-
-[CPPE Based FCA / Model Primitives Merge](#cppe-based-fca-/-model-primitives-merge)
-
-[Sets Model Based Merge](#sets-model-based-merge)
-
-[Integration into Streams Processing](#integration-into-streams-processing)
-
-[Comparisons: Dimensional axis Order and Matching (refactor as Dimensional and Ordering addressing features).](#comparisons:-dimensional-axis-order-and-matching-\(refactor-as-dimensional-and-ordering-addressing-features\).)
+[Merge](#merge)
 
 [Messaging Infrastructure](#messaging-infrastructure)
 
 [Messaging Format Representation: TreeGraph](#messaging-format-representation:-treegraph)
-
-[Datasources](#datasources)
 
 [Streaming Agents Augmentation Pipeline](#streaming-agents-augmentation-pipeline)
 
@@ -125,6 +101,10 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 [Naming Service](#naming-service)
 
 [Index Service](#index-service)
+
+[State / IO Functional Addressing Features](#state-/-io-functional-addressing-features)
+
+[Datasources](#datasources)
 
 [Dynamic API Endpoints](#dynamic-api-endpoints)
 
@@ -418,29 +398,29 @@ class Occurrence extends Resource
 \+ role : Kind
 
 class Statement extends Resource  
-\+ context : ContextKind  
+\+ context : Occurrence  
 \+ subject : Occurrence  
 \+ predicate : Occurrence  
 \+ object : Occurrence
 
-// Holds all Resource’s Context Occurrences  
+// Holds all a Resource’s Context Occurrences  
 class Context extends Resource
 
-// Holds all Resource’s Subject Occurrences  
+// Holds all a Resource’s Subject Occurrences  
 class Subject extends Resource
 
-// Holds all Resource’s Predicate Occurrences  
+// Holds all a Resource’s Predicate Occurrences  
 class Predicate extends Resource
 
-// Holds all Resource’s Object Occurrences  
+// Holds all a Resource’s Object Occurrences  
 class Object extends Resource
 
 abstract class Kind\<PlayerType extends Resource,  
           AttributeType extends Resource,  
           ValueType extends Resource\> extends Resource  
 getPlayers : PlayerType\[\]  
-getAttributes(player : PlayerType, context : Kind) : AttributeType\[\]  
-getValues(player : PlayerType, attribute : AttributeType, context : Kind) : ValueType\[\]  
+getAttributes(player : PlayerType) : AttributeType\[\]  
+getValues(player : PlayerType, attribute : AttributeType) : ValueType\[\]  
 getStatements() : Statement\[\]  
 getOccurrences() : Occurrence\[\]
 
@@ -458,60 +438,7 @@ Everything is a Resource identified by an URI, assigned a Prime Number ID, keepi
 
 ## Occurrences {#occurrences}
 
-Participation of a Resource in an Occurrence playing a given Role (Kind) in a given occurrence context (Statement).
-
-### CSPO Occurrences {#cspo-occurrences}
-
-Subjects, Predicates and Objects are Occurrences playing those roles in a Statement.
-
-SPO Occurrences (Statements) are to be assigned their corresponding role Kind onto this Occurrence into their occurring Statements by means of Kinds type aggregation.
-
-Subject, Predicate and Object are the positional roles of an Occurrence instance in a Statement occurring context. Statement quad Contexts play the special role of being a ContextKind holding the corresponding SPO Statement Occurrences Kind roles as their Player, Attribute and Value Kind parameters instances.
-
-The role of a Resource Occurrence in a Statement is typed by its Statement Occurrence position and its Occurrence role type (Kind). A Resource can occur in more than one role or occurrence type (SPO) in different Statements with its corresponding occurrence position role Kind type. The type of the role (Kind) of the Resource Occurrence is determined by the type of the position it plays in a given Statement (SK, PK, OK).
-
-### Kinds Occurrences {#kinds-occurrences}
-
-Kinds aggregates Player, Attribute, Value types Statement Occurrences Resources by means of their common Attributes (types) and then by their common Attribute Values (states).
-
-They are Resources, reifiable as Subject, Predicate, Object Occurrence Resources playing the role of the Kind corresponding to its given Kind type aggregation (meta type).
-
-A Kind is defined by all of the Statements on which the Kind Player Resource shares common attributes and Kind’s Attribute Resource shares common values.
-
-A Kind is the definition of the aggregation by type and state of a set of Resource Occurrences (Statements) given its Player type Kind parameter and by its Attribute type and Value type Kind parameters. A Resource Occurrence plays a specific Kind role in a specific Statement Occurrence. Occurrences sharing common Attributes (type) and common Attribute Values (state) are aggregated into the same Kinds.
-
-Kinds aggregation is performed before the merge phase of an Augmentation pipeline layer. Resulting Kinds are merged into the same Kinds until Kinds identifying the same / equivalent instances are found. The Kind role is to be assigned to the Occurrence role type. The Occurrence (Statement) Context (ContextKind) is to be assigned its corresponding SubjectKind, PredicateKind and ObjectKind given those of the Statement SPO Occurrences Kinds.
-
-TODO.
-
-Kinds are represented as an aggregation of Kind Resource occurrence Statements whose Statement Contexts are the Kind Resource occurrence instance itself (Kind reified Context Resource Occurrence), and their Subjects, Predicates and Objects plays the PlayerType, AttributeType and ValueType of their Kind definition. Thus, the definition of a Kind is the set of Statements of its corresponding Kind as Resource Occurrence of their Statement Contexts.
-
-Kinds Aggregation of PlayerType(s) Resource Occurrences (SPOs) is performed by common AttributeType(s) (types) and then by common ValueTypes(s) (states). Parameterized interface for each Kind type (CK, SK, PK, OK). This process is called “Merge”.
-
-Kinds are a kind of “type / state in context inference mechanism”: if a Subject shares common attributes with another Subject, it is of the same Kind “type”. If their common attributes share common values, it is of the same Kind “state”. The same applies for Predicate and Object Kinds.
-
-The exception to this rule is the ContextKind Kind type which aggregates the S, P, O occurrences role Kinds instead of the occurrences Resources. This process is called “Fold”.
-
-**Kinds hierarchies, basic inheritance:**
-
-If a Subject attribute set is the superset of another Subject attribute set, it can be regarded as an “extension” of the first Subject type. TODO: Leverage this with other inference mechanisms (FCA, for example).
-
-**Kinds ordering:**
-
-a Subject “extended” by another Subject attributes set can be regarded as being “before” the first Subject. This assumes the existence of a super type is necessary for the existence of a sub type.
-
-**Kinds Aggregation:**
-
-Kinds aggregation is performed before the merge phase of an Augmentation pipeline layer. Resulting Kinds are merged into the same Kinds until Kinds identifying the same / equivalent instances are found. Kinds Player Type(s) Attribute Type(s) groups equivalent types. Kinds Attribute Type(s) Value Type(s) groups instances of a type in an equivalent state. Merge of Kinds determines whether Kinds are of the same type, same state and, if it is the case, whether two Kinds hold instances that are equivalent (same as).
-
-### Statement Occurrences {#statement-occurrences}
-
-Statements are Resources whose occurrences are their Subjects, Predicates and Objects in a given Statement Context Dimensional space. Statement Contexts (Quads Contexts) ContextKinds aggregates all of the dimensional axes (SPOs) Occurrences of the corresponding Statement SPOs Occurrences role Kind.
-
-**Statements Reification:**  
-Being a Statement an instance of Resource, it can play the Resource role in an Occurrence, being it a Statement Subject, Predicate or Object Occurrence player Resource.
-
-## Kinds
+Participation of a Resource in an Statement occurrence playing a given role Kind in a given occurrence context (Statement) SPO role. Occurrence role Kinds are of their corresponding CSPO Kinds counterparts (ContextKind, SubjectKind, PredicateKind, ObjectKind) respectively.
 
 ## Statements {#statements}
 
@@ -519,75 +446,107 @@ Context, Subject, Predicate and Object Resource Occurrences (CSPO) tuples.
 
 Context, Subject, Predicate, Object (CSPO) Statement Occurrences have a role (Kind) in their given Statement occurring Context.
 
-Kinds: ContextKind, SubjectKind, PredicateKind, ObjectKind (CK, SK, PK, OK) are themselves reifiable as CSPOs (Resources) respectively and can participate in a Statement Context as CSPO Occurrences.
+Kinds: ContextKind, SubjectKind, PredicateKind, ObjectKind (CK, SK, PK, OK) are themselves reifiable as CSPOs (they are Resources) and can participate in a Statement Context as CSPO Occurrences Resources.
 
-### Statement Types {#statement-types}
+Statements Context ContextKind roles play the special function of aggregating other Statements role Kinds (SK, PK, OK) into a “dimensional” context kind. For example, the SPO Kinds: (Employee, WorkingRelationship, Employer) can be aggregated into an “Employment” dimension. 
 
-Statements can be interpreted in the following ways:
+**Statements Reification:**  
+Being a Statement an instance of Resource, it can play the Resource role in an Occurrence, being it a Statement Subject, Predicate or Object Occurrence player Resource.
 
-* **Raw CSPO Statements:** Resource Instances are CSPOs.  
-* **Kind Context Statements (Type Kinds):** Statement’s Context role Kind type is one of SubjectKind, PredicateKind, ObjectKind. Statements S, P, O are Resource Occurrences aggregated by the Context Kind role instance. The Statement’s Context role Kind (SK, PK, OK) Resource (URI) aggregates all Kind’s SPO Statements Occurrences. This performs the Augmentation layers “Merge” task.  
-* **Kind Dimensional Context Statements (Dimensional Kinds):** Statement’s Context role Kind type is of ContextKind type (SubjectKind PlayerType, PredicateKind AttributeType and ObjectKind ValueType). Statements S, P, O are of SubjectKind, PredicateKind and ObjectKind Kinds respectively. The Kind Statements define the ContextKind definition (Resource occurrences) aggregated dimensional context axes and state (temporal / dimensional parts) addressing “coordinates” (SK, PK, OK) of a given Resource.  
-* TODO: Aggregate ContextKind Statements S, P, Os (SKs, PKs, OKs). Aggregated Statement S, P, O Occurrences Kinds SKs, PKs, OKs: (Dimension, Axis, Value)? Kind Dimensional Context Statements SPOs are further typed as Kind Context Statements (Augmentation Layers fold merge)? Meta Kinds?
+## Context, Subject, Predicate, Object Resources {#context,-subject,-predicate,-object-resources}
 
-A Kind is defined by all of the Statements on which the Kind (Kind Resource) plays the Statement Context occurrence role.
+Context, Subject, Predicate and Object are the positional roles of a Resource Occurrence instance in a Statement occurring context.
 
-This is further leveraged in the Augmentation Layers Domain Model Statements definitions section.
+The role of a Resource Occurrence in a Statement is typed by its Statement Occurrence position and its Occurrence role type (Kind). A Resource can occur in more than one role Kind or occurrence position type (CSPO) in different Statements with its corresponding occurrence position role Kind type. The type of the role (Kind) of the Resource Occurrence is determined by the type of the position it plays in a given Statement (SK, PK, OK).
 
-#### Kinds Context Statements
+Context, Subject, Predicate and Object Resource classes are a “view” of those Resource Occurrences (URIs) typed by its Statement occurrence position role (CSPO).
 
-Statement’s Context role Kind type is one of SubjectKind, PredicateKind, ObjectKind. Statements S, P, O are Resource Occurrences. The Statement’s Context role Kind (SK, PK, OK) Resource (URI) aggregates all Kind’s SPO Statements Occurrences.
+### Context {#context}
 
-Statement’s Context role Kind type is one of SubjectKind, PredicateKind, ObjectKind. Statements S, P, O are Resource Occurrences aggregated by the Context Kind role instance. The Statement’s Context role Kind (SK, PK, OK) Resource (URI) aggregates all Kind’s SPO Statements Occurrences.
+Resource (URI) whose Occurrences are the Statements in which this Resource URI occurs as a Statement Context.
 
-Kinds Aggregation of PlayerType(s) Resource Occurrences (SPOs) is performed by common AttributeType(s) (types) and then by common ValueTypes(s) (states). Parameterized interface for each Kind type (CK, SK, PK, OK). This process is called “Merge”.
+### Subject {#subject}
 
-#### Dimensional Kinds Context Statements {#dimensional-kinds-context-statements}
+Resource (URI) whose Occurrences are the Statements in which this Resource URI occurs as a Statement Subject.
 
-The Statement Context ContextKind Kind type aggregates the S, P, O occurrences role Kinds Player, Attribute and Values  instead of the occurrences Resources. This process is called “Fold”.
+### Predicate {#predicate}
 
-Statement’s Context role Kind type is of ContextKind type (SubjectKind PlayerType, PredicateKind AttributeType and ObjectKind ValueType). Statements S, P, O are of SubjectKind, PredicateKind and ObjectKind Kinds respectively. The Kind Statements define the ContextKind definition (Resource occurrences) aggregated dimensional context axes and state (temporal / dimensional parts) addressing “coordinates” (SK, PK, OK) of a given Resource.
+Resource (URI) whose Occurrences are the Statements in which this Resource URI occurs as a Statement Predicate.
 
-TODO: Aggregate ContextKind Statements S, P, Os (SKs, PKs, OKs). Aggregated Statement S, P, O Occurrences Kinds SKs, PKs, OKs: (Dimension, Axis, Value)? Kind Dimensional Context Statements SPOs are further typed as Kind Context Statements (Augmentation Layers)? Meta Kinds?  
-TODO: Dimensional Contexts (Context’s Occurrences ContextKind roles) shall encode data, information and knowledge which will allow to reference, classify, relate, order, group and address specific Statement(s).  
-TODO: Infer Order and relationships renderable as a previous, current, next materialized relation statements (containment, time, etc.). Temporal / dimensional parts.  
-TODO: Infer Dimensional Contexts Occurrences ContextKind(s). ML / Clustering?
+### Object {#object}
 
-#### Retrieve Type Kinds Statements (Merge) {#retrieve-type-kinds-statements-(merge)}
+Resource (URI) whose Occurrences are the Statements in which this Resource URI occurs as a Statement Object.
 
-Type Kind Statements aggregation.  
-TODO.
+## Kinds {#kinds}
 
-#### Retrieve Statements Dimensional Contexts (Fold) {#retrieve-statements-dimensional-contexts-(fold)}
+Kinds are a typing mechanism that performs aggregation by means of a Kind’s PlayerType parameter type instances sharing the same AttributeType parameter type instances (type aggregation) and sharing the corresponding AttributeValue parameter type instances for those AttributeType instances (state aggregation).
 
-ContextKind Dimensional Statements aggregation.  
-TODO.
+A Kind is defined by all of the Statements on which the Kind occurs as the Kind role of a corresponding CSPO Occurrence. So, Kinds can be viewed as a set of SPO Statements where the Subjects are the corresponding aggregated PlayerType instances, the Predicates are the corresponding aggregated AttributeType instances and the Objects are the corresponding aggregated AttributeValue instances.  
 
-#### Retrieve Dimensional Contexts Statements (Unfold) {#retrieve-dimensional-contexts-statements-(unfold)}
+Occurrences sharing common Attributes (type) and common Attribute Values (state) are aggregated into the same Kinds. They are Resources, reifiable as Subject, Predicate, Object Occurrence Resources playing the role of the Kind corresponding to its given Kind type aggregation (meta type) by their SPO position.
 
-ContextKind Dimensional Statements de-aggregation: retrieve Dimension source Statements.  
-TODO.
+**Kinds Aggregation:**
+
+Kinds aggregation is performed before the merge phase of an Augmentation pipeline layer. Resulting Kinds are merged into the same Kinds until Kinds identifying the same / equivalent instances are found. Kinds Player Type(s) Attribute Type(s) groups equivalent types. Kinds Attribute Type(s) Value Type(s) groups instances of a type in an equivalent state. Merge of Kinds determines whether Kinds are of the same type, same state and, if it is the case, whether two Kinds hold instances that are equivalent (same as).
+
+The aggregated Kind role of a Resource Occurrence is to be assigned to the Statement Occurrence role type. The Occurrence (Statement) Context (ContextKind) Kind role is to be aggregated from its corresponding SubjectKind, PredicateKind and ObjectKind occurrences given those of the Statement SPO Occurrences role Kinds.
+
+**Kinds hierarchies, basic inheritance:**
+
+If a Subject attribute set is the superset of another Subject attribute set, it can be regarded as an “extension” of the first Subject type. TODO: Leverage this with other inference mechanisms (FCA, for example).
+
+**Kinds ordering:**
+
+A Subject “extended” (attributes subset) by another Subject attributes set can be regarded as being “before” the first Subject. This assumes the existence of a super type is necessary for the existence of a sub type.
+
+### Context Kinds {#context-kinds}
+
+PlayerType: SubjectKind  
+AttributeType: PredicateKind  
+ValueType: ObjectKind
+
+The Statement Context Occurrence ContextKind role Kind type aggregates the S, P, O occurrences role Kinds Player, Attribute and Values  instead of the occurrences Resources. The aggregation process is the same as that of other Kind types: find / group by shared attributes (type aggregation), find / group by shared attribute values (state aggregation).
+
+For example, for an Statement whose SPO Occurrences role Kinds are: (Employee, WorkingRelationship, Employee), a “dimensional” ContextKind “Employment” can be aggregated.
+
+### Subject Kinds {#subject-kinds}
+
+PlayerType: Subject  
+AttributeType: Predicate  
+ValueType: Object
+
+Aggregates a set of Statements Occurrences whose Subjects share common Predicates and those Predicates share common Objects.
+
+For example, for an Statement whose SPO Occurrences Resources are: (:Peter, :worksFor, :someEnterprise), a SubjectKind “Employee” / “SomeEnterpriseEmployee” can be aggregated.
+
+### Predicate Kinds {#predicate-kinds}
+
+PlayerType: Predicate  
+AttributeType: Subject  
+ValueType: Object
+
+Aggregates a set of Statements Occurrences whose Predicates share common Subjects and those Subjects share common Objects.
+
+For example, for an Statement whose SPO Occurrences Resources are: (:Peter, :worksFor, :someEnterprise), a PredicateKind “WorkingRelationship” / “WorkingRelationshipAtSomeEnterprise” can be aggregated.
+
+### Object Kinds {#object-kinds}
+
+PlayerType: Object  
+AttributeType: Predicate  
+ValueType: Subject
+
+Aggregates a set of Statements Occurrences whose Objects share common Predicates and those Predicates share common Subjects.
+
+For example, for an Statement whose SPO Occurrences Resources are: (:Peter, :worksFor, :someEnterprise), a ObjectKind “Employer” / “PeterEmployer” can be aggregated.
 
 ### Kinds as Extensional Functional Definitions {#kinds-as-extensional-functional-definitions}
 
 Kind aggregated Statements can be regarded as the definition of a Function by extension. Their Statement Contexts Occurrence Resources are the Function name or signature. Their PlayerType(s) instances group their mappings by “context” and their AttributeType(s) and ValueType(s) instances are the Function domain / range corresponding value pairs. Note: Kinds are functional given their occurrences' dimensional context.
 
-* CK: Context (Contexts), Domain (Subject), Range (Predicates): aGivenContextKind(C, S): P  
+* CK: Context (SubjectKind), Domain (PredicateKind), Range (ObjectKind): aGivenContextKind(SK, PK): OK  
 * SK: Context (Subjects), Domain (Predicates), Range (Objects): aGivenSubjectKind(S, P): O  
 * PK: Context (Predicates), Domain (Subjects), Range (Objects): aGivenPredicateKind(P, S): O  
 * OK: Context (Objects), Domain (Predicate), Range (Subject): aGivenObjectKind(O, P): S
-
-**Kinds based functional merge:**
-
-If kind(S1, Ctx) \= A, and kind(S2, Ctx) \= A, S1 and S2 are equivalent in a given context.
-
-If kind(S1) \= A, aKind(next(S1)) \= next(A).
-
-Functional Composition (align, sort, link completion, merge).
-
-**Kinds Functional Comprehensions:**
-
-Kinds: extensional functions definitions. Functions Comprehensions: infer Kinds Functions from CPPE embeddings vía Embeddings / Helpers / ML. Resource Merge / Apply: Kinds inferred Functions inference.
 
 # Base Model Representations {#base-model-representations}
 
@@ -637,22 +596,6 @@ Predicate Kinds Set (Subjects Set intersection with Objects Set).
 Object Kinds Set (Subjects Set intersection with Predicates Set).
 
 ![][image1]
-
-### Sets layout for Dimensional Analysis {#sets-layout-for-dimensional-analysis}
-
-The above Sets Layout diagram represents the structure of the placeholders for a snapshot of the Resources occurrences in their corresponding Roles for a given Context Dimensional Point (Context’s axes Statements).
-
-Contexts (Statements: SPO Intersection) represents all the possible Statements for an aggregated Context dimensional point. All possible Dimension Point Kinds (SK, PK, OK) are then aggregated. Then all SPO Resource Occurrences are assigned to their corresponding Roles.  
-
-**Kind Dimensional Context Statements:**  
-See: “Statement Types”.
-
-Statement’s Context role Kind type is of ContextKind type. Statements S, P, O are of types SubjectKind, PredicateKind and ObjectKind respectively. They define the ContextKind instance (Resource) aggregated dimensional contexts axes and state (temporal / dimensional parts) addressing “coordinates” of a context Resource. Dimensional Contexts are ContextKind Statements aggregated by their Kind Resource (URI) by means of CSPO and CK, SK, PK, OK Kind Context Statements Sets / Functional relations (intersection, union, complement, difference, etc.).
-
-TODO: Encode Context Statements. Resolve Context Statements SPO Statements.  
-TODO: Refactor Base Model for CSPO Contexts representing Dimensional Aggregation Points (axes Statements): ContextKind\<Subject, Predicate, Object\>.  
-TODO: Inference through Sets based operations.  
-TODO: Reify Kinds as SPO Resource Occurrences.
 
 ## ISO TMRM Model Representation {#iso-tmrm-model-representation}
 
@@ -711,49 +654,45 @@ RDF / TMRM / FCA / Sets are primarily semantic/computational representations; XM
 
 The representations should remain semantically synchronized: an entity represented as a Resource/Occurrence/Statement in the Base Model can be projected into RDF triples/quads, set membership, TMRM subjects and occurrences, FCA contexts/concepts, or serialized TreeGraph messages without becoming a different semantic entity. Each projection exposes operations useful to a particular phase of the augmentation pipeline.
 
-# Execution Model: Augmentation Agents Pipeline  {#execution-model:-augmentation-agents-pipeline}
+# Execution Model: Augmentation Pipeline Agents {#execution-model:-augmentation-pipeline-agents}
 
-A sequential message driven execution model, the Augmentation Pipeline, performs, by means of message exchange streams processing (Augmentation Agents Statements type (Kinds) aggregation, Kinds merge, fold and unfolding), the Semantic Streams Augmentation of raw RDF CSPO URIs Quads input Statements (from configurable Datasources, by means of appropriate system Statements) into executable models of knowledge gathered by means of (1) Aggregation, (2) Alignment and (3) Activation of Statements (messages) encoding corresponding layers domain models Statement types structures.  
+A sequential message driven execution model, the Augmentation Pipeline performs, by means of message exchange streams processing, the Semantic Streams Augmentation of raw RDF CSPO URIs Quads input Statements (from configurable Datasources, by means of appropriate system Statements) into executable models of knowledge gathered by means of (1) Aggregation, (2) Alignment and (3) Activation of Statements (messages) pipeline phases encoding corresponding layers domain models Statement types structures.
 
-Augmentation Agents communicate with each other by means of a series of messaging endpoints where each layer consumes its input Statements and publishes their output Statements. The main operations a layer performs in a Statements stream are: type (Kinds) aggregation, Kinds merge, fold and unfolding of layers Statements. Layers input and output Statements are handled in two ways:
+Augmentation Agents communicate with each other by means of a series of messaging endpoints where each layer consumes its input Statements and publishes their output Statements. The main operations a layer performs in a Statements stream are: type (Kinds) aggregation, Kinds merge, fold and unfolding of layers Statements.
 
-Augmentation layers listen for Statements coming from an upper or lower layer. Augmentation layers publish their folding results and aggregated Kinds merge results for consumption of following or previous layers respectively. 
+Augmentation layers hold “state”, previously acquired knowledge given its past message exchange inputs in their corresponding level domain of abstraction. Each layer is considered to be a “lower level” representation of an upper / following layer level domain knowledge, from raw Statements to executable models.
 
-Statements coming from an upper layer (raw Resources for the initial Aggregation layer) are to be “merged” with existing layer’s knowledge by means of Kinds aggregation (input Statements aggregated Kinds and layer previously known Statements Kinds) and then “folded” with previous knowledge into dimensional statements and published into an output endpoint to be consumed by a lower layer.
+Augmentation layers (Aggregation, Alignment, Activation) listen for Statements coming from an upper or lower layer.
 
-Statements coming from a lower layer (dimensional Statements) are “unfolded” into their source Statements and then “merged” with the layer previous knowledge Statements by means of Kinds aggregation (unfolded Statements and layer previously known Statements Kinds) and the merge results are published into an output endpoint to be consumed by an upper layer. The merge result Statements are also processed as if they were Statements coming from an upper layer.
+Statements coming from an upper layer: TODO
+
+Statements coming from a lower layer: TODO
 
 This fan in / fan out approach is intended to be implemented in a reactive functional streams pipeline where each agent consumes and produces knowledge asynchronously and in parallel. An Agent output type Statement is another Agent source type Statement and an Agent output type Statement is the type of another Agent source Statement type. An Agent “accepts” an Statement if it is not known already or if it was further processed (updated) its context since the last consumption (or “acceptance” performance is no-op).
 
-Endpoints are configured in this way:
-
-Workflow:  
-Upper layer source consumed Statements: Kinds aggregation merge, fold \-\> publish (to be consumed by a lower layer).  
-Lower layer source consumed Statements: unfold, Kinds aggregation merge \-\> publish (to be consumed by an upper layer).
+Endpoints dataflow is configured in this way:
 
 Datasources \<-\> Aggregation \<-\> Alignment \<-\> Activation \<-\> Dynamic Endpoints API
 
 Datasources  
+(raw Statements in / raw Statements out)  
 \<-\>  
 (raw Statements in / raw Statements out)  
 Aggregation  
-(dimensional Aggregation Statements out / raw Alignment Statements in)  
+(Aggregation Statements out / Alignment Statements in)  
 \<-\>  
-(dimensional Aggregation Statements in / raw Alignment Statements out)  
+(Aggregation Statements in / Alignment Statements out)  
 Alignment  
-(dimensional Alignment Statements out / raw Activation Statements in)  
+(Alignment Statements out / Activation Statements in)  
 \<-\>  
-(dimensional Alignment Statements in / raw Activation Statements out)  
+(Alignment Statements in / Activation Statements out)  
 Activation  
-(dimensional Activation Statements out / dimensional Activation Statements in)  
+(Activation Statements out / Activation Statements in)  
 \<-\>  
+(Activation Statements out / Activation Statements in)  
 Dynamic Endpoints API
 
-## Homoiconic (code as data) approach {#homoiconic-(code-as-data)-approach}
-
-Messaging pipeline oriented resources consumption and publishing. Merge, Fold, Unfold Augmentation pipeline layer phases functional approach.
-
-Merging (Kind aggregated) input, unfolded and folded data against previously known data, inferring type, state and contextual relationships is what is meant with “code as data”.
+## Homoiconic (code as data) Approach {#homoiconic-(code-as-data)-approach}
 
 Resources (Occurrences, Statements, Contexts, Subjects, Predicates, Objects and their corresponding Kinds) are “functional” entities that can be “applied” to another Resources. The signature of such functional composition is as follows (TODO):
 
@@ -761,6 +700,10 @@ Resource::apply(res: Resource\[\]) : Resource\[\]
 Resource::merge(res: Resource\[\]) : Resource\[\]  
 Resource::fold(res: Resource\[\]) : Resource\[\]  
 Resource::unfold(res: Resource\[\]) : Resource\[\]
+
+Merging (Kind aggregated) input, unfolded and folded data against previously known data, inferring type, state and contextual relationships is what is meant with “code as data”.
+
+Apply, Merge, Fold, Unfold in terms of Kind functional application. Kind::apply(ctx : Resource, attr : Resource) : Occurrence\[\]
 
 Each Resource hierarchy class has their own overridden implementation of those ‘apply’ methods. The semantics of such “applications” (argument types and return types) are to be defined for each Resource type subclass implementing or overriding the corresponding ‘apply’ methods, their internal state and leveraging the following by means of Helper Services:
 
@@ -819,15 +762,7 @@ TODO: A schema shall exist which encodes Persistence IO actions and Endpoints Co
 TODO:  
 Resource hierarchy application semantics. Full layers types hierarchy (implement all layers models kinds). Template methods. Implementation Language? (Resources, Streams Processing), XSLT?
 
-## Stream-Oriented Merge, Fold and Unfold of Layered Statements {#stream-oriented-merge,-fold-and-unfold-of-layered-statements}
-
-As Resource functional composition (Homoiconic approach).
-
-Layers inputs / outputs. Layers functional definitions. Rules from source 'terminals' to production 'non-terminals': produce all possible production source Statements given contexts / constraints. Inferences.
-
-TODO
-
-#### Streams Augmentations Agents Model {#streams-augmentations-agents-model}
+### Streams Augmentation Services Agents Model {#streams-augmentation-services-agents-model}
 
 abstract class Augmentation  
 apply(input : Statement\[\]) : Statement\[\]  
@@ -843,27 +778,19 @@ class Activation extends Augmentation
 
 Each Pipeline layer (Aggregation, Alignment, Activation) has its own “template” methods.
 
-### Fold {#fold}
+#### Fold {#fold}
 
 Aggregate Dimensional Kinds Context Statements.  
 Stream “reduce” operation by means of aggregating by common roles.
 
 TODO.
 
-### Unfold {#unfold}
+#### Unfold {#unfold}
 
 De-Aggregate Dimensional Kinds Context Statements (Dimensional source Statements).  
 Streams “scan” operation emitting every unfolded Statement.
 
-### Merge as the Central Stream Contexts Operation {#merge-as-the-central-stream-contexts-operation}
-
-Type Kind Statements aggregation.
-
-Inferred new Statements by Augmentation pipeline phase. Leverage Kind Context Statements and Kind Dimensional Context Statements.
-
-TODO
-
-#### Possible Merge Approaches {#possible-merge-approaches}
+#### Merge {#merge}
 
 Identity Resolution driven. TODO: Find the way of unambiguously identifying concepts (Resources, Occurrences, Statements, SPOs, Kinds) equivalent (in a given role occurrence in a given context).
 
@@ -886,93 +813,31 @@ Naming Scheme:
 Name assignment for inferred entities.  
 Registry Mapping of Merge encodings.
 
-##### RDF Merge {#rdf-merge}
-
-This approach relies on graph theory. It essentially performs a graph union of multiple RDF datasets. A critical function of an RDF merge is the standardization and renaming of "blank nodes" (anonymous resources) across different graphs to avoid collisions, resulting in a single, unified knowledge graph of subject-predicate-object triples.
-
-Merge Statements as RDF graph patterns, combining compatible subjects, predicates, and objects while preserving graph identity and provenance. This provides a straightforward representation for stream-level graph merging and interoperability with RDF-based tooling.
-
-##### TMRM Merge {#tmrm-merge}
-
-TMRM merging is driven strictly by subject identity. If two topics (entities) across different data streams share the same subject locator, subject identifier, or item identifier, they are deterministically merged into a single topic. The resulting merged topic accumulates all the names, occurrences, and associations of the original topics.
-
-Perform merging at the TMRM metamodel level, using Resources, Occurrences, Statements, Subjects, Predicates, Objects, and Kinds as the semantic structures being matched and consolidated. This provides the underlying subject-centric merge and identity model for the pipeline.
-
-##### FCA Merge {#fca-merge}
-
-This approach merges data at the conceptual level by combining "formal contexts" (mappings of objects to their attributes). When two concept lattices are merged, the FCA algorithm recalculates the matrix to build a new, unified lattice. This is highly effective for discovering new structural hierarchies and implicit relationships that weren't visible in the isolated data streams.
-
-Treat matching Statements as formal contexts and merge compatible contexts to derive shared Properties and higher-level relationships. This is particularly suited to the Aggregation phase, where input Statements are consolidated into Property Statements. 
-
-##### CPPE Based FCA / Model Primitives Merge {#cppe-based-fca-/-model-primitives-merge}
-
-Operating at the most atomic level of a data architecture, this approach aligns the fundamental structural primitives (e.g., core entities, base properties, and semantic rules) of the models. By merging the structural primitives *first*, the pipeline creates a standardized baseline context, which is then fed into an FCA merge to build highly accurate, normalized concept lattices.
-
-Combine FCA context merging with CPPE/model primitives to support higher-level semantic matching and inference. This approach can be used in the Alignment phase to derive ontology matches, links, dimensions, ordering, and related Rule Statements. 
-
-##### Sets Model Based Merge {#sets-model-based-merge}
-
-Rooted in classic set theory, this methodology uses strict mathematical operations (unions, intersections, and relative differences) to combine data. It treats data streams as collections of elements, making it an incredibly fast, deterministic, and highly scalable approach for deduplication and exact-match aggregations.
-
-Represent Statement components and their relationships as sets and apply set operations such as union, intersection, difference, and compatibility matching. This provides a simple compositional mechanism that can be used as a lower-level merge primitive within the other approaches.
-
-##### Integration into Streams Processing {#integration-into-streams-processing}
-
-TODO
-
-## Comparisons: Dimensional axis Order and Matching (refactor as Dimensional and Ordering addressing features). {#comparisons:-dimensional-axis-order-and-matching-(refactor-as-dimensional-and-ordering-addressing-features).}
-
-Infer Occurrence Type.  
-Retrieve Occurrence Types.  
-Infer Statement Dimensions.  
-Retrieve Statement Dimensions.  
-Retrieve Dimension Statements.
-
-Folding and unfolding Merge operations can leverage comparisons of Resources for sorting and matching. This is sorting in a nested contexts approach where one sorted occurrence may be the ‘parent’ of child sorted occurrences (happened and sorted in the parent occurrence scope). Resource application can be used for sorted structures traversal and further comparisons.
-
-TODO: For leveraging CPPE, Algebraic Embeddings and FCA the comparison results may be encoded in a 3 bit string mask (octal) representation, for example: 001 is less than, 100 is greater than, 111 is equal, etc.
-
-One goal would be to be able to encode comparison results as Merge Materialized Merge Traversal Comparison Statements Results. Example: A to B in Context C is like D to E in Context F.
-
-The means for being able to construct such Statements for comparisons is by means of PredicateKind. Reified Relationships aggregation:
-
-(:subject, :employer / :position / :salary, :objects...)
-
-\-\> (:subject, :employment, :anEmployment)
-
-\-\> (:anEmployment, :attributes..., :values…)
-
-:employment: WorkRelationship PredicateKind (materialize)  
-:anEmployment: Employment Relationship Resource instance Kinds (ObjectKind, SubjectKind).
-
-Attributes: Dimensional Axes. Values: PredicateKind ValueType Aggregation. Infer and materialize :anEmployment reified relationship object / subject for :employment predicate of WorkRelationship PredicateKind.
-
-PredicateKind of SubjectKind Kind Attribute (Employee, Student) / ObjectKind Kind Value (Employer, School).
-
-TODO: Infer  
-Employee is to Employer (in WorkRelationship) as Student is to School (in StudentshipRelationship).
-
-Materialize: (Resource, ComparisonEncoding(axis, binary mask), Resource).
-
-Merge (materialize) Resources according to their axes binary mask comparison results.
-
-Leverage CPPE, Algebraic Embeddings, FCA.
-
-**Augmentation Layers Kinds Relationships Reification**
-
-Augmentation Layers, particularly the Information or Alignment layer already performs such a PredicateKind relationship, aggregating those Kinds from Subject and Object Kinds. Knowledge Activation Layers performs the aggregation over the previously aggregated layer results. Such arrangements should allow for: Information Alignment axes ordering and matching and Knowledge Activation axes ordering and matching.
-
-The examples shown so far may be appropriate for Information Alignment Layer instance data comparisons and inference. The Knowledge Activation layer should materialize ordering and matching of reified contexts and interactions of behavior instance data.
-
 ## Messaging Infrastructure {#messaging-infrastructure}
 
 Messaging pipeline:
 
-aggregationSourceTopic \<-\> Aggregation \<-\> aggregationProductionTopic
+Endpoints dataflow is configured in this way:
 
-aggregationProductionTopic \<-\> Alignment \<-\> alignmentProductionTopic
+Datasources \<-\> Aggregation \<-\> Alignment \<-\> Activation \<-\> Dynamic Endpoints API
 
-alignmentProductionTopic \<-\> Activation \<-\> activationProductionTopic
+Datasources  
+(raw Statements in / raw Statements out)  
+\<-\>  
+(raw Statements in / raw Statements out)  
+Aggregation  
+(Aggregation Statements out / Alignment Statements in)  
+\<-\>  
+(Aggregation Statements in / Alignment Statements out)  
+Alignment  
+(Alignment Statements out / Activation Statements in)  
+\<-\>  
+(Alignment Statements in / Activation Statements out)  
+Activation  
+(Activation Statements out / Activation Statements in)  
+\<-\>  
+(Activation Statements out / Activation Statements in)  
+Dynamic Endpoints API
 
 ### Messaging Format Representation: TreeGraph {#messaging-format-representation:-treegraph}
 
@@ -980,33 +845,11 @@ All Base Model entities Statements of each layer type must encode all of their c
 
 Source, Production Messages includes all Statements hierarchy which compose / lead to produced Statements (TreeGraph). Serialization. References to Resources (Registry Helper Service) to reduce message payload size..
 
-## Datasources {#datasources}
-
-Raw RDF CSPO URIs Quad Statement Messages Endpoint. Configured to produce configured datasource data and to consume updated Statements synchronizing state. 
-
 ## Streaming Agents Augmentation Pipeline {#streaming-agents-augmentation-pipeline}
 
 The core of the framework is the Augmentation pipeline. It performs Aggregation, Alignment and Activation of input Resources in a streaming fashion.
 
-Each pipeline Agent has three types of Statements: its Source Statements (consumes / produces), its internal Kind aggregation Statements (used in the merge phase of its processing) and its Production Statements (produces / consumes).
-
-Any of the three layers can be considered as (sets of) Resources of their types of source and production Statements. Layer state. Streams application processing (layer endpoints, topics).
-
-See: “Statement Types”.
-
-Aggregation (Data) Agent:  
-Source Statement Type: Raw RDF CSPO URIs Quad Statements. Kind Context Statements.  
-Production Statement Type: (CK, SK, PK, OK) Property Quad Statements. Kind Dimensional Context Statements.
-
-Alignment (Information) Agent:  
-Source Statement Type: (CK, SK, PK, OK) Property Quad Statements. Kind Context Statements.  
-Production Statement Type: (CK, SK, PK, OK) Rule Quad Statements. Kind Dimensional Context Statements.
-
-Activation (Knowledge) Agent:  
-Source Statement Type: Actor Statements (Alignment Information Layer outputs). Kind Context Statements.  
-Production Statement Type: (CK, SK, PK, OK) Context Quad Statements. Kind Dimensional Context Statements.
-
-TODO: Cleanup Agents Domain Model Examples.
+Each pipeline Agent Service holds state given its previous interactions. Any of the three layers can be considered as a set of processed / known Resources (Statements) it knows about, given its layer corresponding level of abstraction. 
 
 ### Aggregation Service Agent {#aggregation-service-agent}
 
@@ -1015,38 +858,6 @@ Context / Role / Type inference in the Aggregation Layer. Classification.
 #### Aggregation Agent Domain Model {#aggregation-agent-domain-model}
 
 Data Layer. DOM (Dynamic Object Model)
-
-**Data / Instance layer input Statements:**  
-Source Statement Type. Raw CSPO RDF URIs Quad Statements.
-
-(C, S, P, O)
-
-**Type aggregation Statements (Kind Context Statements):**  
-Kinds Merge aggregation Statement Types.
-
-(ContextKind, S,  P, O)  
-Context Kind, PlayerType: Context, AttributeType: Subject, ValueType: Object.   
-Example: (EmploymentCK, :Peter, :worksFor, :anEnterprise)
-
-(SubjectKind, S,  P, O)  
-SubjectKind, PlayerType: Subject, AttributeType: Predicate, ValueType: Object.  
-Example: (EmployeeTypeSK, :Peter, :employer, :anEnterprise)
-
-(PredicateKind, S,  P, O)  
-Predicate Kind, PlayerType: Predicate, AttributeType: Subject, ValueType: Object.  
-Example: (EmploymentRelationshipPropertyPK, :Peter, :worksFor, :anEnterprise)
-
-(ObjectKind, S,  P, O)  
-Object Kind, PlayerType: Object, AttributeType: Predicate, ValueType: Subject.  
-Example: (EmployerValueOK, :Peter, :employedBy, :anEnterprise)
-
-**Property output Statements (Kind Dimensional Context Statements):**  
-Production Fold Statement Type.
-
-(ContextKind, SubjectKind, PredicateKind, ObjectKind)
-
-Example:  
-(EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
 
 #### Aggregation Agent Merge / Fold / Unfold {#aggregation-agent-merge-/-fold-/-unfold}
 
@@ -1061,42 +872,6 @@ Ontology Matching / Links / Attributes / Dimensional / Order inference in the Al
 
 Information Layer. N-ary Dimensional Relationships Modelling.
 
-**Axis layer input Statements:**  
-Source Statement Type. Aggregation Production Statements.
-
-(C, S, P, O)
-
-(ContextKind, SubjectKind, PredicateKind, ObjectKind) from Aggregation Property Statements.  
-Example:  
-(EmploymentContextKind, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
-
-**State aggregation Statements (Kind Context Statements):**  
-Kinds Merge aggregation Statement Types.
-
-(RelationshipCK, SubjectKind, PredicateKind, ObjectKind)  
-Context Kind, PlayerType: ContextCK, AttributeType: TypeSK, ValueType: ValueOK.   
-Example: (EmploymentRelationshipCK, EmployeeSubjectKind, EmploymentRelationshipPredicateKind, EmployerObjectKind)
-
-(SourceEndSK, SubjectKind, PredicateKind, ObjectKind)  
-Subject Kind, PlayerType: TypeSK, AttributeType: PropertyPK, ValueType: ValueOK.   
-Example: (EmployeeRoleSK, EmployeeSubjectKind, EmploymentRoleRelationshipPredicateKind, EmployeeRoleObjectKind)
-
-(MeasurementContextPK, SubjectKind, PredicateKind, ObjectKind)  
-Predicate Kind, PlayerType: PropertySK, AttributeType: TypePK, ValueType: ValueOK.   
-Example: (EmployeePositionAtDatePK, EmployeeSubjectKind, EmploymentPositionRelationshipPredicateKind, EmployeePositionObjectKind)
-
-(DestinationEndOK, SubjectKind, PredicateKind, ObjectKind)  
-Object Kind, PlayerType: ValueOK, AttributeType: PropertyPK, ValueType: TypeSK.   
-Example: (CurrentEmployeeRoleOK, EmployeeSubjectKind, EmploymentRoleRelationshipPredicateKind, EmployeeRoleObjectKind)
-
-**Rule output Statements (Kind Dimensional Context Statements):**  
-Production Fold Statement Type.
-
-(RelationshipCK, SourceEndSK, MeasurementContextPK, DestinationEndOK)
-
-Example:  
-(EmploymentRelationshipCK, EmployeeRoleSK, EmployeePositionAtDatePK, CurrentEmployeeRoleOK)
-
 #### Alignment Agent Merge / Fold / Unfold {#alignment-agent-merge-/-fold-/-unfold}
 
 See: Homoiconic (code as data) approach.  
@@ -1109,42 +884,6 @@ Contexts (Use Cases) and behaviors (Interactions) in the Activation Layer. Regre
 #### Activation Agent Domain Model {#activation-agent-domain-model}
 
 Knowledge Layer. DCI Contexts, Roles, Actors, Interactions.
-
-**Actor layer input Statements:**  
-Source Statement Type. Alignment Rule Statements.
-
-(C, S, P, O):  
-(RelationshipCK, SourceEndSK, MeasurementContextPK, DestinationEndOK) from Alignment Rule Statements.
-
-Example:  
-(EmploymentRelationshipCK, EmployeeRoleSK, EmployeePositionAtDatePK, CurrentEmployeeRoleOK)
-
-**Role Interaction aggregation Statements (Kind Context Statements):**  
-Kinds Merge aggregation Statement Types.
-
-(DCIContextCK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
-Context Kind, PlayerType: DCIContexCK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
-Example: (EmploymentDepartmentCK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
-
-(RoleSK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
-Subject Kind, PlayerType: RoleSK, AttributeType: DimensionPK, ValueType: MeasurementOK.  
-Example: (EmploymentDepartmentRoleSK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
-
-(ActorPK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
-Predicate Kind, PlayerType: DimensionPK, AttributeType: MeasurementSK, ValueType: MeasurementOK.  
-Example: (EmploymentDepartmentActorPK, EmploymentDepartmentMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
-
-(InteractionOK, SourceEndSK, MeasurementContextPK, DestinationEndOK)  
-Object Kind, PlayerType: MeasurementOK, AttributeType: DimensionPK, ValueType: MeasurementSK.  
-Example: (EmploymentDepartmentRoleOK, EmploymentRoleMeasurementSK, EmploymentRoleDimensionPK, EmploymentRoleMeasurementOK)
-
-**Context output Statements (Kind Dimensional Context Statements):**  
-Production Fold Statement Type.
-
-(DCIContextCK, RoleSK, ActorPK, InteractionOK)
-
-Example:  
-(DCIContextCK, EmploymentDepartmentRoleSK, EmploymentDepartmentRoleSK, EmploymentDepartamentRoleOK) 
 
 #### Activation Agent Merge / Fold / Unfold {#activation-agent-merge-/-fold-/-unfold}
 
@@ -1204,6 +943,18 @@ class IndexService
 class Context : Unified API view of FCA Contexts
 
 TODO
+
+## State / IO Functional Addressing Features {#state-/-io-functional-addressing-features}
+
+State Monad.  
+IO Monad.
+
+Datasources interactions.  
+Dynamic API Endpoints interactions.
+
+## Datasources {#datasources}
+
+Raw RDF CSPO URIs Quad Statement Messages Endpoint. Configured to produce configured datasource data and to consume updated Statements synchronizing state. 
 
 ## Dynamic API Endpoints {#dynamic-api-endpoints}
 
@@ -1909,7 +1660,49 @@ Alignment. Order (axis arrangements). State transitions flow. Infer and encode t
 Leveraging Grammars as an LLM Interaction tool
 
 Possible contexts / functional transitions (behavior) as formal grammars rules / productions.  
-Possible Prompts in context. Contexts Roles behaviors Flows. Inference context productions from grammars. Statements as grammar rules / productions.
+Possible Prompts in context. Contexts Roles behaviors Flows. Inference context productions from grammars. Statements as grammar rules / productions.  
+Infer Occurrence Type.  
+Retrieve Occurrence Types.  
+Retrieve Type Occurrences  
+Infer Statement Dimensions.  
+Retrieve Statement Dimensions.  
+Retrieve Dimension Statements.
+
+Folding and unfolding Merge operations can leverage comparisons of Resources for sorting and matching. This is sorting in a nested contexts approach where one sorted occurrence may be the ‘parent’ of child sorted occurrences (happened and sorted in the parent occurrence scope). Resource application can be used for sorted structures traversal and further comparisons.
+
+TODO: For leveraging CPPE, Algebraic Embeddings and FCA the comparison results may be encoded in a 3 bit string mask (octal) representation, for example: 001 is less than, 100 is greater than, 111 is equal, etc.
+
+One goal would be to be able to encode comparison results as Merge Materialized Merge Traversal Comparison Statements Results. Example: A to B in Context C is like D to E in Context F.
+
+The means for being able to construct such Statements for comparisons is by means of PredicateKind. Reified Relationships aggregation:
+
+(:subject, :employer / :position / :salary, :objects...)
+
+\-\> (:subject, :employment, :anEmployment)
+
+\-\> (:anEmployment, :attributes..., :values…)
+
+:employment: WorkRelationship PredicateKind (materialize)  
+:anEmployment: Employment Relationship Resource instance Kinds (ObjectKind, SubjectKind).
+
+Attributes: Dimensional Axes. Values: PredicateKind ValueType Aggregation. Infer and materialize :anEmployment reified relationship object / subject for :employment predicate of WorkRelationship PredicateKind.
+
+PredicateKind of SubjectKind Kind Attribute (Employee, Student) / ObjectKind Kind Value (Employer, School).
+
+TODO: Infer  
+Employee is to Employer (in WorkRelationship) as Student is to School (in StudentshipRelationship).
+
+Materialize: (Resource, ComparisonEncoding(axis, binary mask), Resource).
+
+Merge (materialize) Resources according to their axes binary mask comparison results.
+
+Leverage CPPE, Algebraic Embeddings, FCA.
+
+**Augmentation Layers Kinds Relationships Reification**
+
+Augmentation Layers, particularly the Information or Alignment layer already performs such a PredicateKind relationship, aggregating those Kinds from Subject and Object Kinds. Knowledge Activation Layers performs the aggregation over the previously aggregated layer results. Such arrangements should allow for: Information Alignment axes ordering and matching and Knowledge Activation axes ordering and matching.
+
+The examples shown so far may be appropriate for Information Alignment Layer instance data comparisons and inference. The Knowledge Activation layer should materialize ordering and matching of reified contexts and interactions of behavior instance data.
 
 ## Leverage Formal Grammars {#leverage-formal-grammars}
 
