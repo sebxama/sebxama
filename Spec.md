@@ -692,6 +692,43 @@ Activation
 (Activation Statements out / Activation Statements in)  
 Dynamic Endpoints API
 
+TODO:
+
+What layers consumes / produces and how apply, merge, fold, unfold performs on each layer (layer / Graph methods).
+
+Aggregation produces:  
+. (CK, S, P, O)  
+. Attribute / Instance? : (Class, Instance, Attribute, Value) : DOM  
+. Until Attribute / Instance? definition (Classes). Instance Containment / Order (occurrence state / temporal? parts) hierarchies.
+
+Alignment produces:  
+. (CK, SK, PK, OK)  
+. Axis / Fact? : (Dimension, Fact / MeasurementValue, Axis, AxisValue) : Dimensional Alignment  
+. Facts table with dimensions tables FKs. Graph / Quad Statements encoding.  
+. Until Axis / Fact? definition (Dimension). Facts Containment / Order hierarchies.  
+. Ontology matching, links / attributes prediction: Same Fact value for same Axis different AxisValues (PK).
+
+Activation produces:  
+. Interaction / Role? : (Context, Role, Interaction, Actor / RoleState) : DCI  
+. Until Interaction / Role? definition (Contexts / use cases). Containment / Order (contexts interaction roles) hierarchies.
+
+Instance, Fact, Role reified Containment Statements Occurrences points to the "parent" (containing) Dimensional Containment Statement.
+
+Kind Resource Occurrence: Meta Kind.
+
+Kind super / sub Kind (type / state) traversal.
+
+Execution Pipeline Stream:  
+. Kind Functional & Kinds Application.  
+. Graph (Statements\[\]): Merge (Kinds Aggregation), Fold, Unfold : Statements\[\]. By means of Kind Functional and Kinds / Resources Application.
+
+Kinds Aggregation, Apply, Merge. Fold / Unfold of (in Augmentation layers):  
+. Resources  
+. Occurrences  
+. Statements  
+. SPOs  
+. Kinds
+
 ## Homoiconic (code as data) Approach {#homoiconic-(code-as-data)-approach}
 
 Resources (Occurrences, Statements, Contexts, Subjects, Predicates, Objects and their corresponding Kinds) are “functional” entities that can be “applied” to another Resources. The signature of such functional composition is as follows (TODO):
@@ -859,6 +896,13 @@ Context / Role / Type inference in the Aggregation Layer. Classification.
 
 Data Layer. DOM (Dynamic Object Model)
 
+Aggregation produces:  
+. (CK, S, P, O)  
+. Attribute / Instance? : (Class, Instance, Attribute, Value) : DOM  
+. Until Attribute / Instance? definition (Classes). Instance Containment / Order (occurrence state / temporal? parts) hierarchies.
+
+TODO.
+
 #### Aggregation Agent Merge / Fold / Unfold {#aggregation-agent-merge-/-fold-/-unfold}
 
 See: Homoiconic (code as data) approach.  
@@ -872,6 +916,15 @@ Ontology Matching / Links / Attributes / Dimensional / Order inference in the Al
 
 Information Layer. N-ary Dimensional Relationships Modelling.
 
+Alignment produces:  
+. (CK, SK, PK, OK)  
+. Axis / Fact? : (Dimension, Fact / MeasurementValue, Axis, AxisValue) : Dimensional Alignment  
+. Facts table with dimensions tables FKs. Graph / Quad Statements encoding.  
+. Until Axis / Fact? definition (Dimension). Facts Containment / Order hierarchies.  
+. Ontology matching, links / attributes prediction: Same Fact value for same Axis different AxisValues (PK).
+
+TODO.
+
 #### Alignment Agent Merge / Fold / Unfold {#alignment-agent-merge-/-fold-/-unfold}
 
 See: Homoiconic (code as data) approach.  
@@ -884,6 +937,12 @@ Contexts (Use Cases) and behaviors (Interactions) in the Activation Layer. Regre
 #### Activation Agent Domain Model {#activation-agent-domain-model}
 
 Knowledge Layer. DCI Contexts, Roles, Actors, Interactions.
+
+Activation produces:  
+. Interaction / Role? : (Context, Role, Interaction, Actor / RoleState) : DCI  
+. Until Interaction / Role? definition (Contexts / use cases). Containment / Order (contexts interaction roles) hierarchies.
+
+TODO.
 
 #### Activation Agent Merge / Fold / Unfold {#activation-agent-merge-/-fold-/-unfold}
 
