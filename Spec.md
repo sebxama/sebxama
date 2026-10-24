@@ -699,17 +699,20 @@ What layers consumes / produces and how apply, merge, fold, unfold performs on e
 Aggregation produces:  
 . (CK, S, P, O)  
 . Attribute / Instance? : (Class, Instance, Attribute, Value) : DOM  
+. Statement Resource URI encodes Instance value (URI). Statement Instance is Occurrence of parent Instance Statement.  
 . Until Attribute / Instance? definition (Classes). Instance Containment / Order (occurrence state / temporal? parts) hierarchies.
 
 Alignment produces:  
 . (CK, SK, PK, OK)  
 . Axis / Fact? : (Dimension, Fact / MeasurementValue, Axis, AxisValue) : Dimensional Alignment  
 . Facts table with dimensions tables FKs. Graph / Quad Statements encoding.  
+. Statement Resource URI encodes Fact value (URI). Statement Fact is Occurrence of parent Fact Statement.  
 . Until Axis / Fact? definition (Dimension). Facts Containment / Order hierarchies.  
 . Ontology matching, links / attributes prediction: Same Fact value for same Axis different AxisValues (PK).
 
 Activation produces:  
 . Interaction / Role? : (Context, Role, Interaction, Actor / RoleState) : DCI  
+. Statement Resource URI encodes Role value (URI). Statement Role is Occurrence of parent Role Statement.  
 . Until Interaction / Role? definition (Contexts / use cases). Containment / Order (contexts interaction roles) hierarchies.
 
 Instance, Fact, Role reified Containment Statements Occurrences points to the "parent" (containing) Dimensional Containment Statement.
@@ -717,6 +720,22 @@ Instance, Fact, Role reified Containment Statements Occurrences points to the "p
 Kind Resource Occurrence: Meta Kind.
 
 Kind super / sub Kind (type / state) traversal.
+
+Alignment:
+
+(Marriage, :aMarriage, :church, :aChurch)  
+(Marriage, :aMarriage, :date, :aDate)  
+(Marriage, :aMarriage, :husband, :aPerson)  
+(Marriage, :aMarriage, :wife, :anotherPerson)  
+(Churchs, :aChurch, :city, :aCity)  
+From / To:? (Person, :aPerson, :wife / :marriedWith, :anoterPerson)
+
+(Sales, :aSale, :store, :aStore)  
+(Sales, :aSale, :product, :aProduct)  
+(Sales, :aSale, :qty, :aQty)  
+(Sales, :aSale, :date, :aDate)  
+(Stores, :aStore, :region, :aRegion)  
+From / To:? (Products, :aStore, :sold, :aProduct)
 
 Execution Pipeline Stream:  
 . Kind Functional & Kinds Application.  
@@ -899,6 +918,7 @@ Data Layer. DOM (Dynamic Object Model)
 Aggregation produces:  
 . (CK, S, P, O)  
 . Attribute / Instance? : (Class, Instance, Attribute, Value) : DOM  
+. Statement Resource URI encodes Instance value (URI). Statement Instance is Occurrence of parent Instance Statement.  
 . Until Attribute / Instance? definition (Classes). Instance Containment / Order (occurrence state / temporal? parts) hierarchies.
 
 TODO.
@@ -920,8 +940,25 @@ Alignment produces:
 . (CK, SK, PK, OK)  
 . Axis / Fact? : (Dimension, Fact / MeasurementValue, Axis, AxisValue) : Dimensional Alignment  
 . Facts table with dimensions tables FKs. Graph / Quad Statements encoding.  
+. Statement Resource URI encodes Fact value (URI). Statement Fact is Occurrence of parent Fact Statement.  
 . Until Axis / Fact? definition (Dimension). Facts Containment / Order hierarchies.  
 . Ontology matching, links / attributes prediction: Same Fact value for same Axis different AxisValues (PK).
+
+Alignment:
+
+(Marriage, :aMarriage, :church, :aChurch)  
+(Marriage, :aMarriage, :date, :aDate)  
+(Marriage, :aMarriage, :husband, :aPerson)  
+(Marriage, :aMarriage, :wife, :anotherPerson)  
+(Churchs, :aChurch, :city, :aCity)  
+From / To:? (Person, :aPerson, :wife / :marriedWith, :anoterPerson)
+
+(Sales, :aSale, :store, :aStore)  
+(Sales, :aSale, :product, :aProduct)  
+(Sales, :aSale, :qty, :aQty)  
+(Sales, :aSale, :date, :aDate)  
+(Stores, :aStore, :region, :aRegion)  
+From / To:? (Products, :aStore, :sold, :aProduct)
 
 TODO.
 
@@ -940,6 +977,7 @@ Knowledge Layer. DCI Contexts, Roles, Actors, Interactions.
 
 Activation produces:  
 . Interaction / Role? : (Context, Role, Interaction, Actor / RoleState) : DCI  
+. Statement Resource URI encodes Role value (URI). Statement Role is Occurrence of parent Role Statement.  
 . Until Interaction / Role? definition (Contexts / use cases). Containment / Order (contexts interaction roles) hierarchies.
 
 TODO.
