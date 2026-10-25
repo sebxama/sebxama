@@ -694,20 +694,22 @@ Dynamic Endpoints API
 
 TODO:
 
-What layers consumes / produces and how apply, merge, fold, unfold performs on each layer (layer / Graph methods).
+What layers consume / produce and how apply, merge, fold, unfold performs on each layer (layer / Graph methods):
+
+LayerStatement : (Context, LayerStatement : parent, Attribute, Value)
 
 Aggregation produces:  
 . (CK, S, P, O)  
-. Attribute / Instance? : (Class, Instance, Attribute, Value) : DOM  
+. Instance : (Class, Instance, Attribute, Value) : DOM  
 . Statement Resource URI encodes Instance value (URI). Statement Instance is Occurrence of parent Instance Statement.  
-. Until Attribute / Instance? definition (Classes). Instance Containment / Order (occurrence state / temporal? parts) hierarchies.
+. Until Instance definition (Classes). Instance Containment / Order (occurrence state / temporal? parts) hierarchies.
 
 Alignment produces:  
 . (CK, SK, PK, OK)  
-. Axis / Fact? : (Dimension, Fact / MeasurementValue, Axis, AxisValue) : Dimensional Alignment  
+. Fact : (Dimension, Fact / MeasurementValue, Axis, AxisValue) : Dimensional Alignment  
 . Facts table with dimensions tables FKs. Graph / Quad Statements encoding.  
 . Statement Resource URI encodes Fact value (URI). Statement Fact is Occurrence of parent Fact Statement.  
-. Until Axis / Fact? definition (Dimension). Facts Containment / Order hierarchies.  
+. Until Fact definition (Dimension). Facts Containment / Order hierarchies.  
 . Ontology matching, links / attributes prediction: Same Fact value for same Axis different AxisValues (PK).
 
 Activation produces:  
@@ -717,11 +719,31 @@ Activation produces:
 
 Instance, Fact, Role reified Containment Statements Occurrences points to the "parent" (containing) Dimensional Containment Statement.
 
-Kind Resource Occurrence: Meta Kind.
+Statements : Occurrences of Resources (layers Subjects, Kinds)? Statement Occurrences role Kind: Statement ContextKind?
+
+Resource multiple Occurrences different Kinds.
+
+Kinds type / state class model / Statements:
+
+Kind type: Employee  
+. Type SK Statements: For all Kind Resource Occurrences Attributes / Values.  
+. SK (Employee) : (Ctx, SK :Person, Attrs, Values)\*
+
+Kind state: GoogleEmployee / HighSalaryEmployee / RemoteEmployee  
+. SK (GoogleEmployee) : (Ctx, SK :Employee, Attr :employer, Val :Google)  
+. Attr, Val: Placeholders / Kinds.
 
 Kind super / sub Kind (type / state) traversal.
 
+Kind Resource Occurrence: Meta Kind.
+
 Alignment:
+
+Alignment:  
+. PK Player Predicates?  
+. SK Attributes?  
+. PK: (Predicate, SK, OK)?  
+. Infer: aggregate / deaggregate (fold / unfold).
 
 (Marriage, :aMarriage, :church, :aChurch)  
 (Marriage, :aMarriage, :date, :aDate)  
