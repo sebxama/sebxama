@@ -801,7 +801,7 @@ transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :amount, :anAmount)
 From / To: Alignment Statements?
 
 TODO: To / From Activation / Alignment / Aggregation:  
-Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations.
+Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations. State / IO Monad approach. Monadic Parser Combinator: Behaviors (syntax / grammar,  expressions) expressed as Parsed Statements.
 
 Execution Pipeline Stream:  
 . Kind Functional & Kinds Application.  
