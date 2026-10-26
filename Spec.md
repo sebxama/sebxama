@@ -737,6 +737,25 @@ Kind super / sub Kind (type / state) traversal.
 
 Kind Resource Occurrence: Meta Kind.
 
+Type Kind Statements: For all Kind Resource Occurrences Attributes / Attributes Values
+
+SK (Employee) : (Ctx, SK :Person,  AttributeType, AttributeValue);  
+PK : (Ctx, PK :Parent, AttributeType, AttributeValue);  
+OK : (Ctx, OK :Parent, AttributeType, AttributeValue)
+
+Ctx: Kind Occurrences (Kind as role)? PlayerType Resource?
+
+Raw Statements.  
+Kind Statements.  
+Hierarchical Statements.
+
+Statements: Occurrences of Kind Resources.
+
+Alignment (PK Player Predicates, SK Attributes?): (CK, S, P, O Materialization / Folding)
+
+Execution:  
+Helpers: Index (FCA, Sets, etc.), Registry, Naming.
+
 Alignment:
 
 Alignment:  
