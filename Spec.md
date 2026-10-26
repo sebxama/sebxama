@@ -800,6 +800,9 @@ transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :amount, :anAmount)
 (AccountCredit, :transferInteractionCtx, :amount, :anAmount)  
 From / To: Alignment Statements?
 
+TODO: To / From Activation / Alignment / Aggregation:  
+Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations.
+
 Execution Pipeline Stream:  
 . Kind Functional & Kinds Application.  
 . Graph (Statements\[\]): Merge (Kinds Aggregation), Fold, Unfold : Statements\[\]. By means of Kind Functional and Kinds / Resources Application.
