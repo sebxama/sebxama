@@ -713,17 +713,17 @@ Alignment produces:
 . Ontology matching, links / attributes prediction: Same Fact value for same Axis different AxisValues (PK).
 
 Activation produces:  
-. Interaction / Role? : (Context, Role, Interaction, Actor / RoleState) : DCI  
-. Statement Resource URI encodes Role value (URI). Statement Role is Occurrence of parent Role Statement.  
-. Until Interaction / Role? definition (Contexts / use cases). Containment / Order (contexts interaction roles) hierarchies.
+. Interaction : (Context, Interaction, Role, Actor / RoleState) : DCI  
+. Statement Resource URI encodes Interaction value (URI). Statement Interaction is Occurrence of parent Role Statement.  
+. Until Interaction definition (Contexts / use cases). Containment / Order (contexts interaction roles) hierarchies.
 
-Instance, Fact, Role reified Containment Statements Occurrences points to the "parent" (containing) Dimensional Containment Statement.
-
-Statements : Occurrences of Resources (layers Subjects, Kinds)? Statement Occurrences role Kind: Statement ContextKind?
+Instance, Fact, Interaction reified Containment Statements Occurrences points to the "parent" (containing) Dimensional Containment Statement.
 
 Resource multiple Occurrences different Kinds.
 
 Kinds type / state class model / Statements:
+
+Statements : Occurrences of Resources (layers Subjects, Kinds)? Statement Occurrences role Kind: Statement ContextKind?
 
 Kind type: Employee  
 . Type SK Statements: For all Kind Resource Occurrences Attributes / Values.  
@@ -733,28 +733,33 @@ Kind state: GoogleEmployee / HighSalaryEmployee / RemoteEmployee
 . SK (GoogleEmployee) : (Ctx, SK :Employee, Attr :employer, Val :Google)  
 . Attr, Val: Placeholders / Kinds.
 
-Kind super / sub Kind (type / state) traversal.
-
-Kind Resource Occurrence: Meta Kind.
-
-Type Kind Statements: For all Kind Resource Occurrences Attributes / Attributes Values
-
 SK (Employee) : (Ctx, SK :Person,  AttributeType, AttributeValue);  
 PK : (Ctx, PK :Parent, AttributeType, AttributeValue);  
 OK : (Ctx, OK :Parent, AttributeType, AttributeValue)
 
 Ctx: Kind Occurrences (Kind as role)? PlayerType Resource?
 
-Raw Statements.  
-Kind Statements.  
-Hierarchical Statements.
+Kind super / sub Kind (type / state) traversal.
+
+Kind Resource Occurrence: Meta Kind.
+
+Type Kind Statements: For all Kind Resource Occurrences Attributes / Attributes Values
+
+Statement types:  
+Raw Statements (C, S, P, O).  
+Kind Statements (Ctk, Kind, AttributeType, AttributeValue).  
+Hierarchical Statements Instance: (Class, Instance, Attribute, Value).
 
 Statements: Occurrences of Kind Resources.
 
-Alignment (PK Player Predicates, SK Attributes?): (CK, S, P, O Materialization / Folding)
+Alignment (PK Player Predicates, SK Attributes?): (CK, S, P, O Materialization / Folding)  
+PK: (Predicate, SK, OK)? Folding?
 
 Execution:  
-Helpers: Index (FCA, Sets, etc.), Registry, Naming.
+. Kind Functional & Kinds Application.  
+. Helpers: Index (FCA, Sets, etc.), Registry, Naming.  
+. Graph (Statement\[\]): Merge, Kinds aggregation, fold, unfold : Statement\[\]. By means of Kinds functional and Kinds application.  
+. Kinds aggregation, apply, merge, fold / unfold: Augmentation layers API.
 
 Alignment:
 
@@ -764,19 +769,36 @@ Alignment:
 . PK: (Predicate, SK, OK)?  
 . Infer: aggregate / deaggregate (fold / unfold).
 
+Alignment Statements:
+
 (Marriage, :aMarriage, :church, :aChurch)  
 (Marriage, :aMarriage, :date, :aDate)  
 (Marriage, :aMarriage, :husband, :aPerson)  
 (Marriage, :aMarriage, :wife, :anotherPerson)  
 (Churchs, :aChurch, :city, :aCity)  
-From / To:? (Person, :aPerson, :wife / :marriedWith, :anoterPerson)
+From / To Aggregation Statements?:  
+(Person, :aPerson :marriedWith :anoterPerson)  
+(Person, :aPerson, :marryDate :aDate)...
 
 (Sales, :aSale, :store, :aStore)  
 (Sales, :aSale, :product, :aProduct)  
 (Sales, :aSale, :qty, :aQty)  
 (Sales, :aSale, :date, :aDate)  
 (Stores, :aStore, :region, :aRegion)  
-From / To:? (Products, :aStore, :sold, :aProduct)
+From / To Aggregation Statements?:  
+(Products, :aStore, :sold, :aProduct)  
+(Products, :aStore, :soldQty, :aQty)...
+
+Activation Statements:
+
+transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :sourceAccount, :account123)  
+transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :destinationAccount, :account456)  
+transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :amount, :anAmount)  
+(AccountDebit, :transferInteractionCtx, :account, :account123)  
+(AcountDebit, :transferInteractionCtx, :amount, :anAmount)  
+(AccountCredit, :transferInteractionCtx, :account, :account456)  
+(AccountCredit, :transferInteractionCtx, :amount, :anAmount)  
+From / To: Alignment Statements?
 
 Execution Pipeline Stream:  
 . Kind Functional & Kinds Application.  
