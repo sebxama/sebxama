@@ -70,6 +70,8 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Activation:](#activation:)
 
+[Execution Pipeline Stream:](#execution-pipeline-stream:)
+
 [Homoiconic (code as data) Approach](#homoiconic-\(code-as-data\)-approach)
 
 [Streams Augmentation Services Agents Model](#streams-augmentation-services-agents-model)
@@ -802,7 +804,8 @@ From / To: Alignment Statements?
 TODO: To / From Activation / Alignment / Aggregation:  
 Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations. State / IO Monad approach. Monadic Parser Combinator: Behaviors (syntax / grammar,  expressions) expressed as Grammar / Parsed Statements (codat approach).
 
-Execution Pipeline Stream:  
+### Execution Pipeline Stream: {#execution-pipeline-stream:}
+
 . Kind Functional & Kinds Application.  
 . Helpers: Index (FCA, Sets, etc.), Registry, Naming.  
 . Graph (Statement\[\]): Merge, Kinds aggregation, fold, unfold : Statement\[\]. By means of Kinds functional and Kinds application.  
@@ -816,6 +819,32 @@ Kinds Aggregation, Apply, Merge. Fold / Unfold of (in Augmentation layers):
 . Statements  
 . SPOs  
 . Kinds
+
+**Layers Aggregation:**
+
+TODO: Translate / Transform upper layers Statements into lower layer Statements and back forth. Layers Hierarchical Statements successive consumed Statements Kinds Aggregation? Merge, Apply, Fold / Unfold. Layers Statements examples.
+
+Aggregation:  
+(C, S, P, O) with Occurrences role Kinds:  
+(ContextKind, InstanceKind, AttributeKind, ValueKind).  
+(:Person, :Peter, :marriedWith :Mary)
+
+Alignment:  
+Aggregation SPOs (ContextKind, InstanceKind, AttributeKind, ValueKind) with Kinds Occurrences role Kinds:  
+(ContextKind, FactKind, FactAxisKind, FactAxisValueKind).  
+(:Married, :PetersMarriage, :wife, :Mary : Wife)
+
+Activation:  
+Alignment SK,PK,OKs (ContextKind, FactKind, FactAxisKind, FactAxisValueKind) with Kinds Occurrences role Kinds:  
+(ContextKind, InteractionKind, RoleKind, ActorKind).  
+(:Marriage, :aMarriageInteraction, :Married, :Peter : Husband)
+
+SPOs Kinds until singleton Kinds (individuals / occurrences, i.e: Peter Kind). From types to instances. Materialize layers Kinds / Interactions State changes. Streams: apply, merge, fold, unfold.
+
+Statement layers: SPOs as Subject arrangements views. As with Kind Statements. Reify C, P, Os also as Statements (singleton Kinds). For example, for FCA Contexts:  
+Subject : (Context, Subject, Predicate, Object)  
+Predicate : (Context, Predicate, Subject, Object)  
+Object : (Context, Object, Predicate, Subject)
 
 ## Homoiconic (code as data) Approach {#homoiconic-(code-as-data)-approach}
 
