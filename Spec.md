@@ -684,12 +684,14 @@ Kind : (PlayerTypeOccurrence, ParentContextKind, AttributeTypeOccurrence, Attrib
 Kind Statements are Occurrences of Statement ParentContextKind Resources.  
 Kind Statements Occurrences role Kind: PlayerTypeOccurrence Kind? TODO.
 
-SubjectKind (Employee) : (Context, SubjectKindParentContext :Person,  AttributeTypeOccurrence, AttributeValueOccurrence);
+SubjectKind : (Context, SubjectKindParentContext,  AttributeTypeOccurrence, AttributeValueOccurrence);  
+Context: Kind PlayerType (Subject) Resource Occurrences.
 
-PredicateKind : (Context, PredicateKindParentContext, AttributeTypeOccurrence, AttributeValueOccurrence);
+PredicateKind : (Context, PredicateKindParentContext, AttributeTypeOccurrence, AttributeValueOccurrence);  
+Context: Kind PlayerType (Predicate) Resource Occurrences.
 
 ObjectKind : (Context, ObjectKindParentContext, AttributeTypeOccurrence, AttributeValueOccurrence)  
-Context: Kind PlayerType Resource Occurrence.
+Context: Kind PlayerType (Object) Resource Occurrences.
 
 **Kinds type / state Statements model:**
 
@@ -715,7 +717,17 @@ Instance : (Class, ParentInstance, Attribute, Value).
 
 Instance reified Containment Statements Occurrences points to the "parent" (containing) Dimensional Containment Statement.  
 Instance Statements are Occurrences of Instance Statement ParentInstance Resources.  
-Instance Statement Occurrences role Kind: Statement Class? TODO.
+Instance Statement Occurrences role Kind: Statement Class / ContextKind? TODO.
+
+**SPO Reification:**
+
+Statement layers: SPOs as Subject arrangements (views). Hierarchical Statement Types (as with Kind Statements). Reify C, S, P, O Occurrences also as Statements with their corresponding Occurrence role Kinds (for example, for FCA Contexts):
+
+Subject : (Context, Subject, Predicate, Object)  
+Predicate : (Context, Predicate, Subject, Object)  
+Object : (Context, Object, Predicate, Subject)
+
+SPOs Kinds until singleton Kinds (individuals / occurrences, i.e: Peter Kind). From types to instances.  Reify singleton Kinds as Kind Statements. Materialize layers Kinds / Interactions State changes. Streams: apply, merge, fold, unfold.
 
 ### Augmentation: {#augmentation:}
 
@@ -795,10 +807,10 @@ Interaction : (Context, ParentInteraction, Role, Actor) : DCI
 transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :sourceAccount, :account123)  
 transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :destinationAccount, :account456)  
 transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :amount, :anAmount)  
-(AccountDebit, :transferInteractionCtx, :account, :account123)  
-(AcountDebit, :transferInteractionCtx, :amount, :anAmount)  
-(AccountCredit, :transferInteractionCtx, :account, :account456)  
-(AccountCredit, :transferInteractionCtx, :amount, :anAmount)  
+debitInteractionCtx: (AccountDebit, :transferInteractionCtx, :account, :account123)  
+debitInteractionCtx: (AccountDebit, :transferInteractionCtx, :amount, :anAmount)  
+creditInteractionCtx: (AccountCredit, :transferInteractionCtx, :account, :account456)  
+creditInteractionCtx: (AccountCredit, :transferInteractionCtx, :amount, :anAmount)  
 From / To: Alignment Statements?
 
 TODO: To / From Activation / Alignment / Aggregation:  
@@ -820,31 +832,26 @@ Kinds Aggregation, Apply, Merge. Fold / Unfold of (in Augmentation layers):
 . SPOs  
 . Kinds
 
-**Layers Aggregation:**
+**Layers Augmentation:**
 
-TODO: Translate / Transform upper layers Statements into lower layer Statements and back forth. Layers Hierarchical Statements successive consumed Statements Kinds Aggregation? Merge, Apply, Fold / Unfold. Layers Statements examples.
+TODO: Translate / Transform upper layers Statements into lower layer Statements and back forth. Layers Hierarchical Statements successive consumed Kinds Aggregation Statements? Merge, Apply, Fold / Unfold. Layers Statements examples.
 
 Aggregation:  
-(C, S, P, O) with Occurrences role Kinds:  
-(ContextKind, InstanceKind, AttributeKind, ValueKind).  
-(:Person, :Peter, :marriedWith :Mary)
+From (C, S, P, O) with aggregated Occurrences role Kinds to:  
+InstanceKind : (ContextKind : Class, InstanceKind, AttributeKind, ValueKind).  
+Peter : (:Person, :Peter, :marriedWith :Mary)
 
 Alignment:  
-Aggregation SPOs (ContextKind, InstanceKind, AttributeKind, ValueKind) with Kinds Occurrences role Kinds:  
-(ContextKind, FactKind, FactAxisKind, FactAxisValueKind).  
-(:Married, :PetersMarriage, :wife, :Mary : Wife)
+From Aggregation (ContextKind, InstanceKind, AttributeKind, ValueKind) with aggregated Occurrences role Kinds to:  
+FactKind : (ContextKind : Dimension, FactKind, FactAxisKind, FactAxisValueKind).  
+(CK, PK, SK, S) : (:MarriedDimension, :MarriagePKFactKind, :HusbandSKFactAxisKind, :PeterSubjectFactAxisValueKind)  
+(CK, PK, OK, O) : (:MarriedDimension, :MarriagePKFactKind, :WifeOKFactAxisKind, :MaryObjectFactAxisValueKind)
 
 Activation:  
-Alignment SK,PK,OKs (ContextKind, FactKind, FactAxisKind, FactAxisValueKind) with Kinds Occurrences role Kinds:  
-(ContextKind, InteractionKind, RoleKind, ActorKind).  
-(:Marriage, :aMarriageInteraction, :Married, :Peter : Husband)
-
-SPOs Kinds until singleton Kinds (individuals / occurrences, i.e: Peter Kind). From types to instances. Materialize layers Kinds / Interactions State changes. Streams: apply, merge, fold, unfold.
-
-Statement layers: SPOs as Subject arrangements views. As with Kind Statements. Reify C, P, Os also as Statements (singleton Kinds). For example, for FCA Contexts:  
-Subject : (Context, Subject, Predicate, Object)  
-Predicate : (Context, Predicate, Subject, Object)  
-Object : (Context, Object, Predicate, Subject)
+From Alignment (ContextKind, FactKind, FactAxisKind, FactAxisValueKind) with aggregated Occurrences role Kinds to:  
+ContextKind : (ContextKind : InteractionContext, InteractionKind, RoleKind, ActorKind).  
+(CK, PK, SK, S) : (:MarriageContextKind, :aMarriageInteractionKind, :MarriedRoleKind, :PeterActorKind)  
+(CK, PK, OK, O) : (:Marriage, :aMarriageInteractionKind, :MarriedRoleKind, :MaryActorKind)
 
 ## Homoiconic (code as data) Approach {#homoiconic-(code-as-data)-approach}
 
