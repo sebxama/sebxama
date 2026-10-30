@@ -836,22 +836,47 @@ Kinds Aggregation, Apply, Merge. Fold / Unfold of (in Augmentation layers):
 
 TODO: Translate / Transform upper layers Statements into lower layer Statements and back forth. Layers Hierarchical Statements successive consumed Kinds Aggregation Statements? Merge, Apply, Fold / Unfold. Layers Statements examples.
 
-Aggregation:  
-From (C, S, P, O) with aggregated Occurrences role Kinds to:  
-InstanceKind : (ContextKind : Class, InstanceKind, AttributeKind, ValueKind).  
-Peter : (:Person, :Peter, :marriedWith :Mary)
+**Aggregation:**
 
-Alignment:  
-From Aggregation (ContextKind, InstanceKind, AttributeKind, ValueKind) with aggregated Occurrences role Kinds to:  
-FactKind : (ContextKind : Dimension, FactKind, FactAxisKind, FactAxisValueKind).  
-(CK, PK, SK, S) : (:MarriedDimension, :MarriagePKFactKind, :HusbandSKFactAxisKind, :PeterSubjectFactAxisValueKind)  
-(CK, PK, OK, O) : (:MarriedDimension, :MarriagePKFactKind, :WifeOKFactAxisKind, :MaryObjectFactAxisValueKind)
+From (C, S, P, O) produces (with aggregated Aggregation layer Occurrences role Kinds assigned):  
+InstanceKind : (Context : Class, Instance, Attribute, Value).
 
-Activation:  
-From Alignment (ContextKind, FactKind, FactAxisKind, FactAxisValueKind) with aggregated Occurrences role Kinds to:  
-ContextKind : (ContextKind : InteractionContext, InteractionKind, RoleKind, ActorKind).  
-(CK, PK, SK, S) : (:MarriageContextKind, :aMarriageInteractionKind, :MarriedRoleKind, :PeterActorKind)  
-(CK, PK, OK, O) : (:Marriage, :aMarriageInteractionKind, :MarriedRoleKind, :MaryActorKind)
+Peter : (:Person, :Peter, :wife :Mary)  
+Mary : (:Person, :Mary, :husband :Peter)
+
+**Alignment:**
+
+From Aggregation (Context : Class, Instance, Attribute, ObjectValue) produces (with Alignment layer aggregated Occurrences role Kinds assigned):  
+Fact : (Measurement, Fact, FactAxis, FactAxisValue).
+
+Materialize Alignment Dimensional (Fact) Statements from source Aggregation Kinds aggregated Statements into this Statements arrangement transforms:
+
+(P, PK, SK, S):  
+(Measurement, Fact, FactAxis, FactAxisValue) : (InputPredicateOccurrence,, AggregatedInputAttributePredicateKind, AggregatedInputInstanceSubjectKind, InstanceInputValue)
+
+(:marriedWith, :MarriageInputAttributePKFactKind, :HusbandInputInstanceSKFactAxisKind, :PeterInputSubjectFactAxisValue)
+
+(P, PK, OK, O):  
+(Measurement, Fact, FactAxis, FactAxisValue) : (AggregatedInputContextKind, AggregatedInputAttributePredicateKind, AggregatedInputInstanceObjectKind, InputObjectValue)
+
+(:marriedWith, :MarriageInputAttributePKFactKind, :WifeInputObjectOKFactAxisKind, :MaryInputObjectFactAxisValue)
+
+**Activation:**
+
+From Alignment (Measurement, Fact, FactAxis, FactAxisValue) produces (with Activation layer aggregated Occurrences role Kinds assigned):  
+Interaction : (InteractionContext, Interaction, Role, Actor).
+
+Materialize Activation (Interaction) Statements from source Alignment Kinds aggregated Statements into this Statements arrangement transforms:
+
+(CK, PK, SK, S):  
+(InteractionContext, Interaction, Role, Actor) : (AggregatedInputContextKind, AggregatedInputFactAxisPredicateKind, AggregatedInputFactSubjectKind, InputFactAxisValue)
+
+(:MarriageContext, :aMarriageInteraction, :MarriedRole, :PeterActor)
+
+(CK, PK, OK, O):  
+(InteractionContext, Interaction, Role, Actor) : (AggregatedInputContextKind, AggregatedInputFactAxisPredicateKind, AggregatedInputFactAxisValueObjectKind, InputFactAxisValue)
+
+(:Marriage, :aMarriageInteractionKind, :MarriedRole, :MaryActor) 
 
 ## Homoiconic (code as data) Approach {#homoiconic-(code-as-data)-approach}
 
