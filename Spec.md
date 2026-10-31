@@ -675,23 +675,39 @@ Statement Occurrences role Kind: Statement ContextKind? TODO.
 
 **Raw Statements Type:**
 
-(C, S, P, O).
+(Context, Subject, Predicate, Object),
 
-**Kind Statements Type (SubjectKind, PredicateKind, ObjectKind:**
+**Kind Statements Types (ContextKind, SubjectKind, PredicateKind, ObjectKind):**
 
-Kind : (PlayerTypeOccurrence, ParentContextKind, AttributeTypeOccurrence, AttributeValueOccurrence).
+Kinds are reified as materialized Statements.
 
-Kind Statements are Occurrences of Statement ParentContextKind Resources.  
-Kind Statements Occurrences role Kind: PlayerTypeOccurrence Kind? TODO.
+Kind Statement : (PlayerTypeOccurrence, ParentContextKind, AttributeTypeOccurrence, AttributeValueOccurrence).
 
-SubjectKind : (Context, SubjectKindParentContext,  AttributeTypeOccurrence, AttributeValueOccurrence);  
-Context: Kind PlayerType (Subject) Resource Occurrences.
+Kind Statements are Occurrences of Statement ParentContextKind Resources.
 
-PredicateKind : (Context, PredicateKindParentContext, AttributeTypeOccurrence, AttributeValueOccurrence);  
-Context: Kind PlayerType (Predicate) Resource Occurrences.
+**Context Kind Statement:**
 
-ObjectKind : (Context, ObjectKindParentContext, AttributeTypeOccurrence, AttributeValueOccurrence)  
-Context: Kind PlayerType (Object) Resource Occurrences.
+ContexttKind : (SubjectKindOccurrence, ContextKindParentContext,  PredicateKindAttributeOccurrence, ObjectKindValueOccurrence);  
+Context: Kind PlayerType (Subject Kind) Resource Occurrences.  
+CK: (CK, SK, PK, OK)
+
+**Subject Kind Statements:**
+
+SubjectKind : (Context, SubjectKindParentContext,  PredicateAttributeTypeOccurrence, ObjectAttributeValueOccurrence);  
+Context: Kind PlayerType (Subject) Resource Occurrences.  
+SK: (S, SK, P, O)
+
+**Predicate Kind Statements:**
+
+PredicateKind : (Context, PredicateKindParentContext, SubjectAttributeTypeOccurrence, ObjectAttributeValueOccurrence);  
+Context: Kind PlayerType (Predicate) Resource Occurrences.  
+PK: (P, PK, S, O)
+
+**Object Kind Statements:**
+
+ObjectKind : (Context, ObjectKindParentContext, PredicateAttributeTypeOccurrence, SubjectAttributeValueOccurrence)  
+Context: Kind PlayerType (Object) Resource Occurrences.  
+OK: (O, OK, S, O)
 
 **Kinds type / state Statements model:**
 
@@ -729,6 +745,13 @@ Object : (Context, Object, Predicate, Subject)
 
 SPOs Kinds until singleton Kinds (individuals / occurrences, i.e: Peter Kind). From types to instances.  Reify singleton Kinds as Kind Statements. Materialize layers Kinds / Interactions State changes. Streams: apply, merge, fold, unfold.
 
+**Kinds Reification (Kind Statements):**
+
+ContextKind: (ContextOccurrence, SubjectKind, PredicateKind, ObjectKind)  
+SubjectKind: (SubjectOccurrence, SubjectKind, PredicateOccurrence, ObjectOccurrence)  
+PredicateKind: (PredicateOccurrence, PredicateKind, SubjectOccurrence, ObjectOccurrence)  
+ObjectKind: (ObjectOccurrence, ObjectKind, PredicateOccurrence, SubjectOccurrence)
+
 ### Augmentation: {#augmentation:}
 
 What layers consume / produce and how apply, merge, fold, unfold performs on each layer Graph: TODO.
@@ -737,20 +760,39 @@ What layers consume / produce and how apply, merge, fold, unfold performs on eac
 
 **Aggregation consumes:**
 
-Raw (S, P, O) Statements.
+Raw (C, S, P, O) Statements.
 
 **Aggregation produces:**
 
-Instance : (Class, ParentInstance, Attribute, Value) : DOM
+From Source / Kind Statements:
+
+CK: (CK, SK, PK, OK)  
+SK: (S, SK, P, O)  
+PK: (P, PK, S, O)  
+OK: (O, OK, P, S)
+
+Aggregation “unfolds” into multiple Statements (Subjects and Objects as attribute value instances of aggregated class / context PK reified relationship):
+
+(C, PK, SK, S)  
+(C, PK, OK, O)
+
+Instance : (Instance, Class / Kind, Attribute, Value) : DOM (Dynamic Object Model)
 
 * Statement Resource URI encodes Instance value (URI).  
-* Statement Resource URI encodes Instance value (URI). Instance Statements are Occurrences of ParentInstance Statements.  
+* Instance Statements are Occurrences of Parent Instance Statements (Instance Context).  
 * Until Instance definition (Classes). Instance Containment / Order (occurrence state / temporal? parts) hierarchies.
 
 **Aggregation Statements Examples:**
 
-(Person, :aPerson :marriedWith :anoterPerson)  
-(Person, :aPerson, :marryDate :aDate)...
+From Source:
+
+(Person, :aPerson, :wife :anoterPerson)  
+…
+
+To Aggregated:
+
+(:aPerson, Person, :marriedWith :anoterPerson)  
+(:aPerson, Person, :marryDate :aDate)...
 
 ### Alignment: {#alignment:}
 
@@ -760,7 +802,17 @@ Aggregation Hierarchical Statements.
 
 **Alignment produces:**
 
-Fact : (Dimension, ParentFact, Axis, AxisValue) : Dimensional Alignment
+From Source / Kind Statements:  
+CK: (CK, SK, PK, OK)  
+SK: (S, SK, P, O)  
+PK: (P, PK, S, O)  
+OK: (O, OK, P, S)
+
+Alignment “unfolds” into multiple Statements:  
+(C, PK, SK, S)  
+(C, PK, OK, O)
+
+Fact : (Fact, Dimension, Axis, AxisValue) : Dimensional Alignment
 
 * Facts table with dimensions tables FKs. Graph / Quad Statements encoding from Aggregation Statements.  
 * Statement Resource URI encodes Fact value (URI). Fact Statements are Occurrences of ParentFact Statements.  
@@ -769,6 +821,13 @@ Fact : (Dimension, ParentFact, Axis, AxisValue) : Dimensional Alignment
 * Ontology matching, links / attributes prediction: Same Fact value for same Axis different AxisValues.
 
 **Alignment Statements Examples:**
+
+From Source Aggregation Statements:
+
+(Marriage, :aPerson, :marriedWith, :anotherPerson)  
+…
+
+To Aligned:
 
 (Marriage, :aMarriage, :church, :aChurch)  
 (Marriage, :aMarriage, :date, :aDate)  
@@ -779,15 +838,6 @@ From / To Aggregation Statements?:
 (Person, :aPerson :marriedWith :anoterPerson)  
 (Person, :aPerson, :marryDate :aDate)...
 
-(Sales, :aSale, :store, :aStore)  
-(Sales, :aSale, :product, :aProduct)  
-(Sales, :aSale, :qty, :aQty)  
-(Sales, :aSale, :date, :aDate)  
-(Stores, :aStore, :region, :aRegion)  
-From / To Aggregation Statements?:  
-(Products, :aStore, :sold, :aProduct)  
-(Products, :aStore, :soldQty, :aQty)...
-
 ### Activation: {#activation:}
 
 **Activation consumes:**
@@ -796,22 +846,38 @@ Alignment Hierarchical Statements.
 
 **Activation produces:**
 
-Interaction : (Context, ParentInteraction, Role, Actor) : DCI
+From Source / Kind Statements:  
+CK: (CK, SK, PK, OK)  
+SK: (S, SK, P, O)  
+PK: (P, PK, S, O)  
+OK: (O, OK, P, S)
 
-* Statement Resource URI encodes Interaction value (URI). Interaction Statements are Occurrences of parent ParentInteraction Statements.  
+Alignment “unfolds” into multiple Statements:  
+(C, PK, SK, S)  
+(C, PK, OK, O)
+
+Interaction : (Interaction, Context, Role, Actor) : DCI (Data, Context, Interaction)
+
+* Statement Resource URI encodes Interaction value (URI). Interaction Statements are Occurrences of parent Parent Interaction Statements (Interaction Contexts).  
 * Until Interaction definition (Contexts / use cases). Containment / Order (contexts interaction roles) hierarchies.  
 * Interaction Statements are Occurrences of ParentInteraction Statement.
 
 **Activation Statements Examples:**
 
-transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :sourceAccount, :account123)  
-transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :destinationAccount, :account456)  
-transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :amount, :anAmount)  
-debitInteractionCtx: (AccountDebit, :transferInteractionCtx, :account, :account123)  
-debitInteractionCtx: (AccountDebit, :transferInteractionCtx, :amount, :anAmount)  
-creditInteractionCtx: (AccountCredit, :transferInteractionCtx, :account, :account456)  
-creditInteractionCtx: (AccountCredit, :transferInteractionCtx, :amount, :anAmount)  
-From / To: Alignment Statements?
+From Source Alignment Statements:
+
+(MoneyTransfer, :sourceAccount, :transferTo, :destinationAccount)  
+…
+
+To Activated:
+
+transferInteractionCtx: (:aTransferCtx, MoneyTransfer, :sourceAccount, :account123)  
+transferInteractionCtx: (:aTransferCtx, MoneyTransfer,:destinationAccount, :account456)  
+transferInteractionCtx: (:aTransferCtx, MoneyTransfer, :amount, :anAmount)  
+debitInteractionCtx: (:transferInteractionCtx, AccountDebit, :account, :account123)  
+debitInteractionCtx: (:transferInteractionCtx, AccountDebit, :amount, :anAmount)  
+creditInteractionCtx: (:transferInteractionCtx, AccountCredit, :account, :account456)  
+creditInteractionCtx: (:transferInteractionCtx, AccountCredit, :amount, :anAmount)
 
 TODO: To / From Activation / Alignment / Aggregation:  
 Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations. State / IO Monad approach. Monadic Parser Combinator: Behaviors (syntax / grammar,  expressions) expressed as Grammar / Parsed Statements (codat approach).
@@ -841,8 +907,22 @@ TODO: Translate / Transform upper layers Statements into lower layer Statements 
 From (C, S, P, O) produces (with aggregated Aggregation layer Occurrences role Kinds assigned):  
 InstanceKind : (Context : Class, Instance, Attribute, Value).
 
-Peter : (:Person, :Peter, :wife :Mary)  
-Mary : (:Person, :Mary, :husband :Peter)
+From Source / Kind Statements:
+
+CK: (CK, SK, PK, OK)  
+SK: (S, SK, P, O)  
+PK: (P, PK, S, O)  
+OK: (O, OK, P, S)
+
+Aggregation “unfolds” into multiple Statements (Subjects and Objects as attribute value instances of aggregated class / context PK reified relationship):
+
+(C, PK, SK, S)  
+(C, PK, OK, O)
+
+Instance : (Instance, Class / Kind, Attribute, Value) : DOM (Dynamic Object Model)
+
+Peter : (:Peter, :Person, :wife :Mary)  
+Mary : (:Mary, :Person, :husband :Peter)
 
 **Alignment:**
 
@@ -851,13 +931,21 @@ Fact : (Measurement, Fact, FactAxis, FactAxisValue).
 
 Materialize Alignment Dimensional (Fact) Statements from source Aggregation Kinds aggregated Statements into this Statements arrangement transforms:
 
-(P, PK, SK, S):  
-(Measurement, Fact, FactAxis, FactAxisValue) : (InputPredicateOccurrence,, AggregatedInputAttributePredicateKind, AggregatedInputInstanceSubjectKind, InstanceInputValue)
+From Source / Kind Statements:
+
+CK: (CK, SK, PK, OK)  
+SK: (S, SK, P, O)  
+PK: (P, PK, S, O)  
+OK: (O, OK, P, S)
+
+Alignment “unfolds” into multiple Statements (Subjects and Objects as attribute value instances of aggregated class / context PK reified relationship):
+
+(C, PK, SK, S)  
+(C, PK, OK, O)
+
+Fact : (Fact, Dimension, Axis, AxisValue) : Dimensional Alignment
 
 (:marriedWith, :MarriageInputAttributePKFactKind, :HusbandInputInstanceSKFactAxisKind, :PeterInputSubjectFactAxisValue)
-
-(P, PK, OK, O):  
-(Measurement, Fact, FactAxis, FactAxisValue) : (AggregatedInputContextKind, AggregatedInputAttributePredicateKind, AggregatedInputInstanceObjectKind, InputObjectValue)
 
 (:marriedWith, :MarriageInputAttributePKFactKind, :WifeInputObjectOKFactAxisKind, :MaryInputObjectFactAxisValue)
 
@@ -868,15 +956,23 @@ Interaction : (InteractionContext, Interaction, Role, Actor).
 
 Materialize Activation (Interaction) Statements from source Alignment Kinds aggregated Statements into this Statements arrangement transforms:
 
-(CK, PK, SK, S):  
-(InteractionContext, Interaction, Role, Actor) : (AggregatedInputContextKind, AggregatedInputFactAxisPredicateKind, AggregatedInputFactSubjectKind, InputFactAxisValue)
+From Source / Kind Statements:
 
-(:MarriageContext, :aMarriageInteraction, :MarriedRole, :PeterActor)
+CK: (CK, SK, PK, OK)  
+SK: (S, SK, P, O)  
+PK: (P, PK, S, O)  
+OK: (O, OK, P, S)
 
-(CK, PK, OK, O):  
-(InteractionContext, Interaction, Role, Actor) : (AggregatedInputContextKind, AggregatedInputFactAxisPredicateKind, AggregatedInputFactAxisValueObjectKind, InputFactAxisValue)
+Activation “unfolds” into multiple Statements (Subjects and Objects as attribute value instances of aggregated class / context PK reified relationship):
 
-(:Marriage, :aMarriageInteractionKind, :MarriedRole, :MaryActor) 
+(C, PK, SK, S)  
+(C, PK, OK, O)
+
+Interaction : (Interaction, Context, Role, Actor) : DCI (Data, Context, Interaction)
+
+(:aMarriageInteraction, :MarriageContext, :MarriedRole, :PeterActor)
+
+(:aMarriageInteraction, :Marriage, :MarriedRole, :MaryActor) 
 
 ## Homoiconic (code as data) Approach {#homoiconic-(code-as-data)-approach}
 
@@ -1052,16 +1148,18 @@ Context / Role / Type inference in the Aggregation Layer. Classification.
 
 Data Layer. DOM (Dynamic Object Model)
 
-Instance : (Class, ParentInstance, Attribute, Value)
+**Aggregation produces:**
+
+Instance : (Instance, Class, Attribute, Value) : DOM
 
 * Statement Resource URI encodes Instance value (URI).  
 * Statement Resource URI encodes Instance value (URI). Instance Statements are Occurrences of ParentInstance Statements.  
 * Until Instance definition (Classes). Instance Containment / Order (occurrence state / temporal? parts) hierarchies.
 
-**Aggregation outputs example:**
+**Aggregation Statements examples:**
 
-(Person, :aPerson :marriedWith :anoterPerson)  
-(Person, :aPerson, :marryDate :aDate)...
+(:aPerson, Person, :marriedWith, :anoterPerson)  
+(:aPerson, Person, :marryDate :aDate)...
 
 TODO.
 
@@ -1080,7 +1178,7 @@ Information Layer. N-ary Dimensional Relationships Modelling.
 
 **Alignment produces:**
 
-Fact : (Dimension, ParentFact, Axis, AxisValue) : Dimensional Alignment
+Fact : (Fact, Dimension, Axis, AxisValue) : Dimensional Alignment
 
 * Facts table with dimensions tables FKs. Graph / Quad Statements encoding from Aggregation Statements.  
 * Statement Resource URI encodes Fact value (URI). Fact Statements are Occurrences of ParentFact Statements.  
@@ -1099,15 +1197,6 @@ From / To Aggregation Statements?:
 (Person, :aPerson :marriedWith :anoterPerson)  
 (Person, :aPerson, :marryDate :aDate)...
 
-(Sales, :aSale, :store, :aStore)  
-(Sales, :aSale, :product, :aProduct)  
-(Sales, :aSale, :qty, :aQty)  
-(Sales, :aSale, :date, :aDate)  
-(Stores, :aStore, :region, :aRegion)  
-From / To Aggregation Statements?:  
-(Products, :aStore, :sold, :aProduct)  
-(Products, :aStore, :soldQty, :aQty)...
-
 TODO.
 
 #### Alignment Agent Merge / Apply / Fold / Unfold {#alignment-agent-merge-/-apply-/-fold-/-unfold}
@@ -1125,22 +1214,21 @@ Knowledge Layer. DCI Contexts, Roles, Actors, Interactions.
 
 **Activation produces:**
 
-Interaction : (Context, ParentInteraction, Role, Actor) : DCI
+Interaction : (Interaction, Context, Role, Actor) : DCI
 
-* Statement Resource URI encodes Interaction value (URI). Interaction Statements are Occurrences of parent ParentInteraction Statements.  
+* Statement Resource URI encodes Interaction value (URI). Interaction Statements are Occurrences of parent Parent Interaction Statements context.  
 * Until Interaction definition (Contexts / use cases). Containment / Order (contexts interaction roles) hierarchies.  
 * Interaction Statements are Occurrences of ParentInteraction Statement.
 
 **Activation Statements Examples:**
 
-transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :sourceAccount, :account123)  
-transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :destinationAccount, :account456)  
-transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :amount, :anAmount)  
-(AccountDebit, :transferInteractionCtx, :account, :account123)  
-(AcountDebit, :transferInteractionCtx, :amount, :anAmount)  
-(AccountCredit, :transferInteractionCtx, :account, :account456)  
-(AccountCredit, :transferInteractionCtx, :amount, :anAmount)  
-From / To: Alignment Statements?
+transferInteractionCtx: (:aTransferCtx, MoneyTransfer, :sourceAccount, :account123)  
+transferInteractionCtx: (:aTransferCtx, MoneyTransfer,:destinationAccount, :account456)  
+transferInteractionCtx: (:aTransferCtx, MoneyTransfer, :amount, :anAmount)  
+debitInteractionCtx: (:transferInteractionCtx, AccountDebit, :account, :account123)  
+debitInteractionCtx: (:transferInteractionCtx, AccountDebit, :amount, :anAmount)  
+creditInteractionCtx: (:transferInteractionCtx, AccountCredit, :account, :account456)  
+creditInteractionCtx: (:transferInteractionCtx, AccountCredit, :amount, :anAmount)
 
 TODO: To / From Activation / Alignment / Aggregation:  
 Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations. State / IO Monad approach. Monadic Parser Combinator: Behaviors (syntax / grammar,  expressions) expressed as Grammar / Parsed Statements (codat approach).
