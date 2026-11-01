@@ -858,26 +858,34 @@ Extract Subjects and Objects as attributes value instances of aggregated class /
 
 TODO.
 
-Context : (Context, Interaction, Role, Actor) : DCI (Data, Context, Interaction)
+Interaction : (Interaction, Context, Role, Actor) : DCI (Data, Context, Interaction)
 
 * Context Statements are Occurrences of parent context Statement Context.
 
 **Activation Statements Examples:**
 
-From Source Alignment Statements:
+From Source Alignment Hierarchical Statements:
 
-(MoneyTransfer, :sourceAccount, :transferTo, :destinationAccount)  
+(Transfers, :aMoneyTransfer, :sourceAccount,:anAccount)  
+(Transfers, :aMoneyTransfer, :destinationAccount,:anotherAccount)  
+(Transfers, :aMoneyTransfer, :amount,:anAmount)  
 …
 
 To Activated:
 
-transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :sourceAccount, :account123)  
-transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :destinationAccount, :account456)  
-transferInteractionCtx: (MoneyTransfer, :aTransferCtx, :amount, :anAmount)  
-debitInteractionCtx: (AccountDebit, :transferInteractionCtx, :account, :account123)  
-debitInteractionCtx: (AccountDebit, :transferInteractionCtx, :amount, :anAmount)  
-creditInteractionCtx: (AccountCredit, :transferInteractionCtx, :account, :account456)  
-creditInteractionCtx: (AccountCredit, :transferInteractionCtx, :amount, :anAmount)
+aTransferInteraction: (:aTransferInteraction, MoneyTransfer, :sourceAccount, :account123)
+
+aTransferInteraction: (:aTransferInteraction, MoneyTransfer,:destinationAccount, :account456)
+
+aTransferInteraction: (:aTransferInteraction, MoneyTransfer, :amount, :anAmount)
+
+aDebitInteraction: (:aTransferInteraction, AccountDebit, :sourceAccount, :account123)
+
+aDebitInteraction: (:aTransferInteraction, AccountDebit, :amount, :anAmount)
+
+aCreditInteraction: (:aTransferInteraction, AccountCredit, :destinationAccount, :account456)
+
+aCreditInteraction: (:aTransferInteraction, AccountCredit, :amount, :anAmount)
 
 TODO.
 
