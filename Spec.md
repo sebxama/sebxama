@@ -649,7 +649,63 @@ Activation
 (Activation Statements out / Activation Statements in)  
 Dynamic Endpoints API
 
-TODO:
+TODO / REFACTOR:
+
+Helper Services instances per Augmentation layer. Graphs, FCA Contexts, Embeddings, features leveraged for each. Pipeline steps.
+
+Underlying Model: Augmented in each layer. Augmentation layers Models: layers domain "views" of the underlying knowledge model.
+
+Outline Dimensional Features. Analogies: Student / School, Employee / Employer. Alignment: apply, merge, unfold, fold.
+
+Outline Augmentation layers Features and how they "augment" the underlying model:  
+. Datasources State / IO  
+. Aggregation: DOM / FCA  
+. Alignment: Dimensional / Links / Matching  
+. Activation: DCI / Declarative Runtime  
+. Endpoints State / IO
+
+Outline State / IO Datasources / Endpoints interfaces.
+
+Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
+
+Outline Augmentation layers pipelines / layers "views" endpoints (State / IO) messaging orchestration:  
+. Underlying Model "reads" and "writes" in a functional fashion (State / IO). Handle base / layers upper ontologies to / from Transforms.  
+. Augmentation Messaging Topics: one for each layers upper model consumption / production (handle Base Model Transforms). One "generic" Base Model upper model in / out endpoint.
+
+Layers Models IO Statements Transformations. Messages (Graph / Stream) API. From / to underlying Model.
+
+Augmentation layers re-augment underlying model layers persisted knowledge according its "view" model.
+
+Augmentation underlying Model (Graph) API: apply, merge, unfold, fold:
+
+Underlying Model:  
+. Reify each types CSPOs? Hierarchical Statements? Underlying Model upper ontology (from layers upper ontologies types instances)?  
+. Resource  
+. Occurrence  
+. Statement  
+. Kinds (CK, SK, PK, OK)
+
+Layers Models:  
+. Layers Classes are Base Model Schema as Data (Resources)? Reify all types CSPOs? Hierarchical Statements? Base Model views "upper" ontology (from Base Model upper ontology types instances):  
+. Aggregation. Class : (Class, Instance, Attribute, Value)  
+Alignment. Dimension : (Dimension, Fact, Axis, Value)  
+. Activation. Interaction : (Interaction, Context, Role, Actor)
+
+Source:  
+. (Context, Subject, Predicate, Object)  
+Base Model Ontology:  
+. Resource, Occurrence, Statement, Kinds  
+Kinds (Hierarchical) Statements:  
+SK : (SK, S, P, O)  
+PK : (PK, P, S, O)  
+OK : (OK, O, P, S)
+
+Flatten (fold) transform:  
+. (CK, PK, SK, S)  
+. (CK, PK, OK, O)
+
+Augmentation layers re consumption (from same / other Augmentation Layers Base Model sync): Meta Kinds?  
+TODO.
 
 ## Streaming Agents Augmentation Pipeline {#streaming-agents-augmentation-pipeline}
 
@@ -968,7 +1024,7 @@ Kinds Aggregation, Apply, Merge. Fold / Unfold of (in Augmentation layers):
 . Kinds  
 . Class  
 . Dimension  
-. Context
+. Interaction
 
 **Layers Augmentation:**
 
