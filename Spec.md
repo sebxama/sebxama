@@ -58,6 +58,16 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Execution Model: Augmentation Pipeline Agents](#execution-model:-augmentation-pipeline-agents)
 
+[Augmentation Unified Underlying Base Model](#augmentation-unified-underlying-base-model)
+
+[Base Model Statements](#base-model-statements)
+
+[Augmentation Layers: Augment Underlying Model](#augmentation-layers:-augment-underlying-model)
+
+[Augmentation Layers Models:](#augmentation-layers-models:)
+
+[State IO and layers Upper Ontologies Views Alignment](#state-io-and-layers-upper-ontologies-views-alignment)
+
 [Streaming Agents Augmentation Pipeline](#streaming-agents-augmentation-pipeline)
 
 [Streams Augmentation Services Agents Model](#streams-augmentation-services-agents-model)
@@ -74,19 +84,19 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Aggregation Service Agent](#aggregation-service-agent)
 
-[Aggregation Agent Domain Model](#aggregation-agent-domain-model)
+[Aggregation Agent Domain Model View](#aggregation-agent-domain-model-view)
 
 [Aggregation Agent Merge / Apply / Fold / Unfold](#aggregation-agent-merge-/-apply-/-fold-/-unfold)
 
 [Alignment Service Agent](#alignment-service-agent)
 
-[Alignment Agent Domain Model](#alignment-agent-domain-model)
+[Alignment Agent Domain Model View](#alignment-agent-domain-model-view)
 
 [Alignment Agent Merge / Apply / Fold / Unfold](#alignment-agent-merge-/-apply-/-fold-/-unfold)
 
 [Activation Service Agent](#activation-service-agent)
 
-[Activation Agent Domain Model](#activation-agent-domain-model)
+[Activation Agent Domain Model View](#activation-agent-domain-model-view)
 
 [Activation Agent Merge / Apply / Fold / Unfold](#activation-agent-merge-/-apply-/-fold-/-unfold)
 
@@ -546,9 +556,9 @@ Hierarchical Statements Types:
 * SubjectKind Statements,  
 * PredicateKind Statements,  
 * ObjectKind Statements,  
-* Class Statements (DOM),  
-* Dimension Statements (Alignment),  
-* Context Statements (DCI)
+* Aggregation Class Statements (DOM),  
+* Alignment Dimension Statements (Alignment),  
+* Activation Context Statements (DCI)
 
 Hierarchical reified Containment Statements Occurrences points to the "parent" (containing) Hierarchical Containment Statement.
 
@@ -613,105 +623,139 @@ SPOs Kinds until singleton Kinds (individuals / occurrences, i.e: Peter Kind). F
 
 # Execution Model: Augmentation Pipeline Agents {#execution-model:-augmentation-pipeline-agents}
 
-A sequential message driven execution model, the Augmentation Pipeline performs, by means of message exchange streams processing, the Semantic Streams Augmentation of raw RDF CSPO URIs Quads input Statements (from configurable Datasources, by means of appropriate system Statements) into executable models of knowledge gathered by means of (1) Aggregation, (2) Alignment and (3) Activation of Statements (messages) pipeline phases encoding corresponding layers domain models Statement types structures.
+A sequential message driven execution model, the Augmentation Pipeline performs, by means of message exchange streams processing, the Semantic Streams Augmentation of raw RDF CSPO URIs Quads input Statements (from configurable Datasources, by means of appropriate system Statements) into executable Augmentation “views”, models of knowledge gathered by means of (1) Aggregation, (2) Alignment and (3) Activation of Statements (messages) pipeline phases encoding corresponding layers domain models Statement types structures.
 
-Augmentation Agents communicate with each other by means of a series of messaging endpoints where each layer consumes its input Statements and publishes their output Statements. The main operations a layer performs in a Statements stream are: type (Kinds) aggregation / application, Kinds merge, fold and unfolding of layers graphs Statements.
+Augmentation “orchestration” Agent has the responsibility of managing an unified underlying base model of which Aggregation, Alignment and Augmentation Agents are “views” of the underlying unified base model in respect to their own domains responsibilities. Each Augmentation layer Agent is responsible for translating to each Augmentation layer “view” (domain model) Messages to Agents for processing and from Agents for consumption and synchronization of the underlying base model.
 
-Augmentation layers hold “state” (graphs), of previously acquired knowledge given its past message exchange inputs in their corresponding level domain of abstraction. Each layer is considered to be a “lower level” representation of an upper / following layer level domain knowledge, from raw Statements to executable models.
+Augmentation layers Agents communicate with each other by means of Augmentation Agent publishing base model messages, translate them from unified base model Statements to their respective layer domains model (views) endpoints of the underlying model knowledge and consuming Agent Augmentated / processed layers domain models views endpoints, translating them into base model unified knowledge Statements.
 
-Augmentation layers (Aggregation, Alignment, Activation) listen for Statements coming from an upper or lower layer.
+Augmentation and Augmentation layers Agents hold “state” (graphs) of previously acquired knowledge given its past message exchange inputs in their corresponding level domain of abstraction. Each layer is considered to be a “lower level” representation of an upper / following layer level of domain knowledge, from raw Statements to executable models. The previous state is used for Aggregation, Alignment and Activation of current knowledge.
 
-Statements coming from an upper layer: Augmentation layer source Statements. Produced by previous layers. Layer produces its output in base of these inputs. TODO.
+This “blackboard” approach is intended to be implemented in a reactive functional streams pipeline manner where each agent consumes and produces knowledge asynchronously and in parallel.
 
-Statements coming from a lower layer: Those are “unfolded” back to this layer domain representation, processed as if they were coming from an upper layer and layers produce outputs to the following layer. TODO. 
+## Augmentation Unified Underlying Base Model {#augmentation-unified-underlying-base-model}
 
-This fan in / fan out approach is intended to be implemented in a reactive functional streams pipeline where each agent consumes and produces knowledge asynchronously and in parallel. An Agent output type Statement is another Agent source type Statement and an Agent output type Statement is the type of another Agent source Statement type. An Agent “accepts” an Statement if it is not known already or if it was further processed (updated) its context since the last consumption (or “acceptance” performance is no-op).
+An Augmentation Unified Underlying Model (graph) is to be handled by the Augmentation orchestration Agent. Augmentation Layers parse “views” of this knowledge graph, “augments” those “views” and publishes them back into the Augmentation Agent base model endpoint. Each Augmentation layer Agent is responsible for the translation of base model knowledge (Statements) into layers specific “views” domain models and for translating them back into base model representations for unified model synchronization.
+
+Augmentation and Augmentation layers Agents should have a declarative “upper” ontology which enables seamless translation from Augmentation knowledge to layer “views” representations of this knowledge and back.
+
+Reify each type's CSPOs?
+
+Hierarchical Statements?
+
+Message (Statements / Graph) IO should be handled in a pure functional fashion by means of an State / IO Monadic approach.
+
+Underlying Model (Base Model):
+
+* Resource  
+* Occurrence  
+* Statement  
+* Kinds;  
+  * Context Kind  
+  * Subject Kind  
+  * Predicate Kind  
+  * Object Kind
 
 Endpoints dataflow is configured in this way:
 
-Datasources \<-\> Aggregation \<-\> Alignment \<-\> Activation \<-\> Dynamic Endpoints API
+Augmentation::DatasourcePublishing (Datasource::consume)  
+Augmentation::DatasourceConsuming (Datasource::produce)  
+Augmentation::AggregationPublishing (Aggregation::consume)  
+Augmentation::AggregationConsuming (Aggregation::produce)  
+Augmentation::AlignmentPublishing (Alignment::consume)  
+Augmentation::AlignmentConsuming (Alignment::produce)  
+Augmentation::ActivationPublishing (Activation::consume)  
+Augmentation::ActivationConsuming (Activation::produce)  
+Augmentation::APIEndpointPublishing (APIEndpoint::consume)  
+Augmentation::APIEndpointConsuming (APIEndpoint::produce)
 
-Datasources  
-(raw Statements in / raw Statements out)  
-\<-\>  
-(raw Statements in / raw Statements out)  
-Aggregation  
-(Aggregation Statements out / Alignment Statements in)  
-\<-\>  
-(Aggregation Statements in / Alignment Statements out)  
-Alignment  
-(Alignment Statements out / Activation Statements in)  
-\<-\>  
-(Alignment Statements in / Activation Statements out)  
-Activation  
-(Activation Statements out / Activation Statements in)  
-\<-\>  
-(Activation Statements out / Activation Statements in)  
-Dynamic Endpoints API
+Datasource and APIEndpoint are a special type of layer (State IO Monad).
 
-TODO / REFACTOR:
+### Base Model Statements {#base-model-statements}
 
-Helper Services instances per Augmentation layer. Graphs, FCA Contexts, Embeddings, features leveraged for each. Pipeline steps.
+Resource : (Resource, Statement, Occurrence, Kind)  
+Statement : (Occurrence, Occurrence, Occurrence, Occurrence)  
+Occurrence : (Occurrence, Statement, Resource, Kind)  
+Kind : (Kind, Resource, Statement, Occurrence)
 
-Underlying Model: Augmented in each layer. Augmentation layers Models: layers domain "views" of the underlying knowledge model.
+TODO (CSPOs, CK, SK, PK, OK).
 
-Outline Dimensional Features. Analogies: Student / School, Employee / Employer. Alignment: apply, merge, unfold, fold.
+## Augmentation Layers: Augment Underlying Model {#augmentation-layers:-augment-underlying-model}
 
-Outline Augmentation layers Features and how they "augment" the underlying model:  
-. Datasources State / IO  
-. Aggregation: DOM / FCA  
-. Alignment: Dimensional / Links / Matching  
-. Activation: DCI / Declarative Runtime  
-. Endpoints State / IO
+Augmentation layers: Aggregate, Align and Activate underlying model “views” of domain knowledge.
 
-Outline State / IO Datasources / Endpoints interfaces.
+Datasources: State / IO  
+Aggregation: DOM / FCA. Type / State inference  
+Alignment: Dimensional / Links inference / Matching  
+Activation: DCI / Declarative Runtime  
+APIEndpoints: State / IO
 
-Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
+**Source Statements:**
 
-Outline Augmentation layers pipelines / layers "views" endpoints (State / IO) messaging orchestration:  
-. Underlying Model "reads" and "writes" in a functional fashion (State / IO). Handle base / layers upper ontologies to / from Transforms.  
-. Augmentation Messaging Topics: one for each layers upper model consumption / production (handle Base Model Transforms). One "generic" Base Model upper model in / out endpoint.
+Base Model Statements:
 
-Layers Models IO Statements Transformations. Messages (Graph / Stream) API. From / to underlying Model.
+(Context, Subject, Predicate, Object)
 
-Augmentation layers re-augment underlying model layers persisted knowledge according its "view" model.
+**Hierarchical Statements:**
 
-Augmentation underlying Model (Graph) API: apply, merge, unfold, fold:
+Context : (Context, Subject, Predicate, Object)
 
-Underlying Model:  
-. Reify each types CSPOs? Hierarchical Statements? Underlying Model upper ontology (from layers upper ontologies types instances)?  
-. Resource  
-. Occurrence  
-. Statement  
-. Kinds (CK, SK, PK, OK)
+**Kinds (Hierarchical) Statements:**
 
-Layers Models:  
-. Layers Classes are Base Model Schema as Data (Resources)? Reify all types CSPOs? Hierarchical Statements? Base Model views "upper" ontology (from Base Model upper ontology types instances):  
-. Aggregation. Class : (Class, Instance, Attribute, Value)  
-Alignment. Dimension : (Dimension, Fact, Axis, Value)  
-. Activation. Interaction : (Interaction, Context, Role, Actor)
-
-Source:  
-. (Context, Subject, Predicate, Object)  
-Base Model Ontology:  
-. Resource, Occurrence, Statement, Kinds  
-Kinds (Hierarchical) Statements:  
+CK : (CK, S, P, O)  
 SK : (SK, S, P, O)  
 PK : (PK, P, S, O)  
 OK : (OK, O, P, S)
 
-Flatten (fold) transform:  
-. (CK, PK, SK, S)  
-. (CK, PK, OK, O)
+**Flatten (fold):**
 
-Augmentation layers re consumption (from same / other Augmentation Layers Base Model sync): Meta Kinds?  
-TODO.
+Transform of Statements: Subjects and Objects as attribute (Kinds) values:
+
+(CK, PK, SK, S)  
+(CK, PK, OK, O)
+
+### Augmentation Layers Models: {#augmentation-layers-models:}
+
+Base Model views "upper" ontologies (from Base Model upper ontology types instances).
+
+Reify each type's CSPOs?
+
+**Aggregation:**
+
+Class : (Class, Instance, Attribute, Value)  
+Instance : (Instance, Class, Attribute, Value)?  
+Attribute : (Attribute, Class, Instance, Value)?  
+Value : (Value, Class, Instance, Attribute)?
+
+**Alignment:**
+
+Dimension : (Dimension, Fact, Axis, Value)  
+Fact :  (Fact, Dimension, Axis, Value)?  
+Axis : (Axis, Dimension, Fact, Value)?  
+Value : (Value, Dimension, Fact, Axis)?
+
+**Activation:**
+
+Interaction : (Interaction, Context, Role, Actor)  
+Context : (Context, Interaction, Role, Actor)?  
+Role : (Role, Context, Interaction, Actor)?  
+Actor : (Actor, Interaction, Context, Role)?
+
+### State IO and layers Upper Ontologies Views Alignment {#state-io-and-layers-upper-ontologies-views-alignment}
+
+Base Model representation and Augmentation layers “views” of this model are to be aligned by Upper Ontologies which enables for seamless translation to / from base model and these views.
+
+State modification: Datasources, Dynamic API Endpoints and Augmentation Base Model synchronization read / writes  are to be handled in a pure functional fashion by means of a State / IO Monad approach.
+
+Augmentation layers Agents handle base model / layers “views” upper ontologies representations to / from transforms
+
+Augmentation layers: re-augment underlying model layers persisted knowledge according to its "view" model. Augmentation layers re-consumption (from same / other Augmentation Layers Base Model sync): Meta Kinds?
 
 ## Streaming Agents Augmentation Pipeline {#streaming-agents-augmentation-pipeline}
 
-The core of the framework is the Augmentation pipeline. It performs Aggregation, Alignment and Activation of input Resources in a streaming fashion.
+The core of the framework is the Augmentation pipeline. It orchestrates Aggregation, Alignment and Activation of input Resources in a streaming fashion.
 
-Each pipeline Agent Service holds state given its previous interactions. Any of the three layers can be considered as a set of processed / known Resources (Statements) it knows about, given its layer corresponding level of abstraction.
+Each pipeline Agent Service holds state given its previous interactions. Any of the three layers can be considered as a set of processed / known Resources (Statements) it knows about (Graph), given its layer corresponding level of abstraction.
 
 ### Streams Augmentation Services Agents Model {#streams-augmentation-services-agents-model}
 
@@ -774,19 +818,29 @@ What layers consume / produce and how apply, merge, fold, unfold performs on eac
 
 ### Aggregation Service Agent {#aggregation-service-agent}
 
-Context / Role / Type inference in the Aggregation Layer. Classification.
+Context / Role / Type / State inference in the Aggregation Layer. Classification.
 
-#### Aggregation Agent Domain Model {#aggregation-agent-domain-model}
+#### Aggregation Agent Domain Model View {#aggregation-agent-domain-model-view}
 
 Data Layer. DOM (Dynamic Object Model)
 
 **Aggregation consumes:**
 
-Raw (C, S, P, O) Statements.
+Base Model Statements:
 
-Alignment Dimension Hierarchical Statements (unfolds).
+Resource : (Resource, Statement, Occurrence, Kind)  
+Statement : (Occurrence, Occurrence, Occurrence, Occurrence)  
+Occurrence : (Occurrence, Statement, Resource, Kind)  
+Kind : (Kind, Resource, Statement, Occurrence)
+
+TODO (CSPOs, CK, SK, PK, OK).
 
 **Aggregation produces:**
+
+Class : (Class, Instance, Attribute, Value) : DOM (Dynamic Object Model) Statements
+
+* Class Statements are Occurrences of Parent Class Statements (Class Context).  
+* Until Class definition context. Instance Containment / Order (occurrence state / temporal? parts) hierarchies.
 
 From Source / Kind Statements:
 
@@ -803,11 +857,6 @@ Extract Subjects and Objects as attributes value instances of aggregated class /
 (CK, PK, OK, O)
 
 TODO.
-
-Class : (Class, Instance, Attribute, Value) : DOM (Dynamic Object Model) Statements
-
-* Class Statements are Occurrences of Parent Class Statements (Class Context).  
-* Until Class definition context. Instance Containment / Order (occurrence state / temporal? parts) hierarchies.
 
 **Aggregation Statements Examples:**
 
@@ -830,17 +879,31 @@ TODO.
 
 Ontology Matching / Links / Attributes / Dimensional / Order inference in the Alignment Layer. Clustering.
 
-#### Alignment Agent Domain Model {#alignment-agent-domain-model}
+Outline Dimensional Features. Analogies: Student / School, Employee / Employer. Alignment: apply, merge, unfold, fold.
+
+#### Alignment Agent Domain Model View {#alignment-agent-domain-model-view}
 
 Information Layer. N-ary Dimensional Relationships Modelling.
 
 **Alignment consumes**:
 
-Aggregation Hierarchical Statements.
+Base Model Statements:
 
-Activation Context Hierarchical Statements (unfolds).
+Resource : (Resource, Statement, Occurrence, Kind)  
+Statement : (Occurrence, Occurrence, Occurrence, Occurrence)  
+Occurrence : (Occurrence, Statement, Resource, Kind)  
+Kind : (Kind, Resource, Statement, Occurrence)
+
+TODO (CSPOs, CK, SK, PK, OK).
 
 **Alignment produces:**
+
+Dimension : (Dimension, Fact, Axis, AxisValue) : Dimensional Alignment
+
+* Facts table with dimensions tables FKs. Graph / Quad Statements encoding from Aggregation Statements.  
+* Dimension Statements are Occurrences of Parent Dimension Statement context..  
+* Until Dimension definition. Facts Containment / Order hierarchies.  
+* Ontology matching, links / attributes prediction: Same Fact value for same Axis different AxisValues.
 
 From Source / Kind Statements:
 
@@ -857,13 +920,6 @@ Extract Subjects and Objects as attributes value instances of aggregated class /
 (CK, PK, OK, O)
 
 TODO.
-
-Dimension : (Dimension, Fact, Axis, AxisValue) : Dimensional Alignment
-
-* Facts table with dimensions tables FKs. Graph / Quad Statements encoding from Aggregation Statements.  
-* Dimension Statements are Occurrences of Parent Dimension Statement context..  
-* Until Dimension definition. Facts Containment / Order hierarchies.  
-* Ontology matching, links / attributes prediction: Same Fact value for same Axis different AxisValues.
 
 **Alignment Statements Examples:**
 
@@ -888,15 +944,28 @@ TODO.
 
 Contexts (Use Cases) and behaviors (Interactions) in the Activation Layer. Regression.
 
-#### Activation Agent Domain Model {#activation-agent-domain-model}
+Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
+
+#### Activation Agent Domain Model View {#activation-agent-domain-model-view}
 
 Knowledge Layer. DCI Contexts, Roles, Actors, Interactions.
 
 **Activation consumes:**
 
-Alignment Hierarchical Statements.
+Base Model Statements:
+
+Resource : (Resource, Statement, Occurrence, Kind)  
+Statement : (Occurrence, Occurrence, Occurrence, Occurrence)  
+Occurrence : (Occurrence, Statement, Resource, Kind)  
+Kind : (Kind, Resource, Statement, Occurrence)
+
+TODO (CSPOs, CK, SK, PK, OK).
 
 **Activation produces:**
+
+Interaction : (Interaction, Context, Role, Actor) : DCI (Data, Context, Interaction)
+
+* Interaction Statements are Occurrences of parent Statement Context.
 
 From Source / Kind Statements:
 
@@ -913,10 +982,6 @@ Extract Subjects and Objects as attributes value instances of aggregated class /
 (CK, PK, OK, O)
 
 TODO.
-
-Interaction : (Interaction, Context, Role, Actor) : DCI (Data, Context, Interaction)
-
-* Context Statements are Occurrences of parent context Statement Context.
 
 **Activation Statements Examples:**
 
@@ -947,6 +1012,8 @@ TODO.
 
 #### Activation Agent Merge / Apply / Fold / Unfold {#activation-agent-merge-/-apply-/-fold-/-unfold}
 
+Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
+
 See: Homoiconic (code as data) approach.  
 TODO.
 
@@ -959,6 +1026,8 @@ Monadic wrapper bound Base Model Entities (Resource, Occurrence, Statement, Cont
 Kinds as Extensional Function Definitions Functional APIs.
 
 Resource merge / “application” (transform / template) Functional APIs.
+
+Helper Services instances per Augmentation layer. Graphs, FCA Contexts, Embeddings, features leveraged for each. Pipeline steps functions.
 
 #### Registry Service {#registry-service}
 
@@ -981,6 +1050,8 @@ Naming API Functional Definitions.
 Formal Grammars / LLM Models.  
 Names Relationships in Contexts / Identity Resolution (NER).  
 Representations Rendering / Parsing. Messages Representations.
+
+Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
 
 TODO
 
@@ -1009,6 +1080,8 @@ TODO
 TODO: To / From Activation / Alignment / Aggregation:  
 Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations. State / IO Monad approach. Monadic Parser Combinator: Behaviors (syntax / grammar,  expressions) expressed as Grammar / Parsed Statements (codat approach).
 
+Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
+
 . Kind Functional & Kinds Application.  
 . Helpers: Index (FCA, Sets, etc.), Registry, Naming.  
 . Graph (Statement\[\]): Merge, Kinds aggregation, fold, unfold : Statement\[\]. By means of Kinds functional and Kinds application.  
@@ -1020,7 +1093,7 @@ Kinds Aggregation, Apply, Merge. Fold / Unfold of (in Augmentation layers):
 . Resources  
 . Occurrences  
 . Statements  
-. SPOs  
+. CSPOs  
 . Kinds  
 . Class  
 . Dimension  
@@ -1034,6 +1107,8 @@ TODO: Translate / Transform upper layers Statements into lower layer Statements 
 
 TODO: To / From Activation / Alignment / Aggregation:  
 Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations. State / IO Monad approach. Monadic Parser Combinator: Behaviors (syntax / grammar,  expressions) expressed as Grammar / Parsed Statements (codat approach).
+
+Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
 
 Resources (Occurrences, Statements, Contexts, Subjects, Predicates, Objects and their corresponding Kinds) are “functional” entities that can be “applied” to another Resources. The signature of such functional composition is as follows (TODO):
 
@@ -1109,25 +1184,18 @@ Messaging pipeline:
 
 Endpoints dataflow is configured in this way:
 
-Datasources \<-\> Aggregation \<-\> Alignment \<-\> Activation \<-\> Dynamic Endpoints API
+Augmentation::DatasourcePublishing (Datasource::consume)  
+Augmentation::DatasourceConsuming (Datasource::produce)  
+Augmentation::AggregationPublishing (Aggregation::consume)  
+Augmentation::AggregationConsuming (Aggregation::produce)  
+Augmentation::AlignmentPublishing (Alignment::consume)  
+Augmentation::AlignmentConsuming (Alignment::produce)  
+Augmentation::ActivationPublishing (Activation::consume)  
+Augmentation::ActivationConsuming (Activation::produce)  
+Augmentation::APIEndpointPublishing (APIEndpoint::consume)  
+Augmentation::APIEndpointConsuming (APIEndpoint::produce)
 
-Datasources  
-(raw Statements in / raw Statements out)  
-\<-\>  
-(raw Statements in / raw Statements out)  
-Aggregation  
-(Aggregation Statements out / Alignment Statements in)  
-\<-\>  
-(Aggregation Statements in / Alignment Statements out)  
-Alignment  
-(Alignment Statements out / Activation Statements in)  
-\<-\>  
-(Alignment Statements in / Activation Statements out)  
-Activation  
-(Activation Statements out / Activation Statements in)  
-\<-\>  
-(Activation Statements out / Activation Statements in)  
-Dynamic Endpoints API
+Datasource and APIEndpoint are a special type of layer (State IO Monad).
 
 ### Messaging Format Representation: TreeGraph {#messaging-format-representation:-treegraph}
 
@@ -1319,6 +1387,8 @@ Augmentation Layers, particularly the Information or Alignment layer already per
 The examples shown so far may be appropriate for Information Alignment Layer instance data comparisons and inference. The Knowledge Activation layer should materialize ordering and matching of reified contexts and interactions of behavior instance data.
 
 ## Leverage Formal Grammars {#leverage-formal-grammars}
+
+Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
 
 **Grammatical Production Rules**: Maps Non-Terminals to Kinds, Terminals to Resources, and Production Rules to pipeline Statements using monadic parsers.
 
