@@ -824,7 +824,7 @@ Context / Role / Type / State inference in the Aggregation Layer. Classification
 
 Data Layer. DOM (Dynamic Object Model)
 
-**Aggregation consumes:**
+**Aggregation consumes / publishes from / to Augmentation Base Model:**
 
 Base Model Statements:
 
@@ -835,7 +835,7 @@ Kind : (Kind, Resource, Statement, Occurrence)
 
 TODO (CSPOs, CK, SK, PK, OK).
 
-**Aggregation produces:**
+**Aggregation domain view:**
 
 Class : (Class, Instance, Attribute, Value) : DOM (Dynamic Object Model) Statements
 
@@ -885,7 +885,7 @@ Outline Dimensional Features. Analogies: Student / School, Employee / Employer. 
 
 Information Layer. N-ary Dimensional Relationships Modelling.
 
-**Alignment consumes**:
+**Alignment consumes / publishes from / to Augmentation Base Model:**
 
 Base Model Statements:
 
@@ -896,7 +896,7 @@ Kind : (Kind, Resource, Statement, Occurrence)
 
 TODO (CSPOs, CK, SK, PK, OK).
 
-**Alignment produces:**
+**Alignment domain view:**
 
 Dimension : (Dimension, Fact, Axis, AxisValue) : Dimensional Alignment
 
@@ -950,7 +950,7 @@ Outline Grammar (Statement rules / productions, monadic parser) Driven Activatio
 
 Knowledge Layer. DCI Contexts, Roles, Actors, Interactions.
 
-**Activation consumes:**
+**Activation consumes / publishes from / to Augmentation Base Model:**
 
 Base Model Statements:
 
@@ -961,7 +961,7 @@ Kind : (Kind, Resource, Statement, Occurrence)
 
 TODO (CSPOs, CK, SK, PK, OK).
 
-**Activation produces:**
+**Activation domain view:**
 
 Interaction : (Interaction, Context, Role, Actor) : DCI (Data, Context, Interaction)
 
