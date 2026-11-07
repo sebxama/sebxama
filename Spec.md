@@ -62,15 +62,19 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Base Model Statements](#base-model-statements)
 
-[Augmentation Layers: Augment Underlying Model](#augmentation-layers:-augment-underlying-model)
+[Augmentation Layers: Augment Underlying Base Model](#augmentation-layers:-augment-underlying-base-model)
 
 [Augmentation Layers Models:](#augmentation-layers-models:)
 
 [State IO and layers Upper Ontologies Views Alignment](#state-io-and-layers-upper-ontologies-views-alignment)
 
+[Homoiconic (code as data) Approach](#homoiconic-\(code-as-data\)-approach)
+
 [Streaming Agents Augmentation Pipeline](#streaming-agents-augmentation-pipeline)
 
-[Streams Augmentation Services Agents Model](#streams-augmentation-services-agents-model)
+[Execution Pipeline Stream](#execution-pipeline-stream)
+
+[Augmentation Services Agents Streams Model](#augmentation-services-agents-streams-model)
 
 [Fold](#fold)
 
@@ -80,7 +84,7 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Apply](#apply)
 
-[Augmentation:](#augmentation:)
+[Augmentation Pipeline](#augmentation-pipeline)
 
 [Aggregation Service Agent](#aggregation-service-agent)
 
@@ -108,15 +112,9 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Index Service](#index-service)
 
-[Execution Pipeline Stream:](#execution-pipeline-stream:)
-
-[Homoiconic (code as data) Approach](#homoiconic-\(code-as-data\)-approach)
-
 [Messaging Infrastructure](#messaging-infrastructure)
 
 [Messaging Format Representation: TreeGraph](#messaging-format-representation:-treegraph)
-
-[State / IO Functional Addressing Features](#state-/-io-functional-addressing-features)
 
 [Datasources](#datasources)
 
@@ -658,16 +656,16 @@ Underlying Model (Base Model):
 
 Endpoints dataflow is configured in this way:
 
-Augmentation::DatasourcePublishing (Datasource::consume)  
-Augmentation::DatasourceConsuming (Datasource::produce)  
-Augmentation::AggregationPublishing (Aggregation::consume)  
-Augmentation::AggregationConsuming (Aggregation::produce)  
-Augmentation::AlignmentPublishing (Alignment::consume)  
-Augmentation::AlignmentConsuming (Alignment::produce)  
-Augmentation::ActivationPublishing (Activation::consume)  
-Augmentation::ActivationConsuming (Activation::produce)  
-Augmentation::APIEndpointPublishing (APIEndpoint::consume)  
-Augmentation::APIEndpointConsuming (APIEndpoint::produce)
+Augmentation::Publishing (Datasource::consume)  
+Augmentation::Consuming (Datasource::produce)  
+Augmentation::Publishing (Aggregation::consume)  
+Augmentation::Consuming (Aggregation::produce)  
+Augmentation::Publishing (Alignment::consume)  
+Augmentation::Consuming (Alignment::produce)  
+Augmentation::Publishing (Activation::consume)  
+Augmentation::Consuming (Activation::produce)  
+Augmentation::Publishing (APIEndpoint::consume)  
+Augmentation::Consuming (APIEndpoint::produce)
 
 Datasource and APIEndpoint are a special type of layer (State IO Monad).
 
@@ -680,7 +678,7 @@ Kind : (Kind, Resource, Statement, Occurrence)
 
 TODO (CSPOs, CK, SK, PK, OK).
 
-## Augmentation Layers: Augment Underlying Model {#augmentation-layers:-augment-underlying-model}
+## Augmentation Layers: Augment Underlying Base Model {#augmentation-layers:-augment-underlying-base-model}
 
 Augmentation layers: Aggregate, Align and Activate underlying model “views” of domain knowledge.
 
@@ -741,15 +739,96 @@ Context : (Context, Interaction, Role, Actor)?
 Role : (Role, Context, Interaction, Actor)?  
 Actor : (Actor, Interaction, Context, Role)?
 
-### State IO and layers Upper Ontologies Views Alignment {#state-io-and-layers-upper-ontologies-views-alignment}
+## State IO and layers Upper Ontologies Views Alignment {#state-io-and-layers-upper-ontologies-views-alignment}
 
 Base Model representation and Augmentation layers “views” of this model are to be aligned by Upper Ontologies which enables for seamless translation to / from base model and these views.
-
-State modification: Datasources, Dynamic API Endpoints and Augmentation Base Model synchronization read / writes  are to be handled in a pure functional fashion by means of a State / IO Monad approach.
 
 Augmentation layers Agents handle base model / layers “views” upper ontologies representations to / from transforms
 
 Augmentation layers: re-augment underlying model layers persisted knowledge according to its "view" model. Augmentation layers re-consumption (from same / other Augmentation Layers Base Model sync): Meta Kinds?
+
+**Implement Stateful Operations via State / IO Monad approach:**
+
+State modification: Messaging, Datasources, Dynamic API Endpoints and Augmentation Graphs Models synchronization read / writes  are to be handled in a pure functional fashion by means of a State / IO Monad approach.
+
+Augmentation Base Model Graph read / writes, Aggregation, Alignment and Activation Graphs read / writes and Base Model from / to transforms and Message exchanges are to be handled in a pure functional stream State / IO Monad approach.
+
+State / IO world “state” preserved, history of previous stateful operations. Augmentation and Augmentation layers graphs.
+
+### Homoiconic (code as data) Approach {#homoiconic-(code-as-data)-approach}
+
+TODO: To / From Activation / Alignment / Aggregation:  
+Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations. State / IO Monad approach. Monadic Parser Combinator: Behaviors (syntax / grammar,  expressions) expressed as Grammar / Parsed Statements (codat approach).
+
+Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
+
+Resources (Occurrences, Statements, Contexts, Subjects, Predicates, Objects and their corresponding Kinds) are “functional” entities that can be “applied” to another Resources. The signature of such functional composition is as follows (TODO):
+
+Resource::apply(res: Resource\[\]) : Resource\[\]  
+Resource::merge(res: Resource\[\]) : Resource\[\]  
+Resource::fold(res: Resource\[\]) : Resource\[\]  
+Resource::unfold(res: Resource\[\]) : Resource\[\]
+
+Merging (Kind aggregated) input, unfolded and folded data against previously known data, inferring type, state and contextual relationships is what is meant with “code as data”.
+
+Apply, Merge, Fold, Unfold in terms of Kind functional application. Kind::apply(ctx : Resource, attr : Resource) : Occurrence\[\]
+
+Each Resource hierarchy class has their own overridden implementation of those ‘apply’ methods. The semantics of such “applications” (argument types and return types) are to be defined for each Resource type subclass implementing or overriding the corresponding ‘apply’ methods, their internal state and leveraging the following by means of Helper Services:
+
+Apply as functional graph traversal by invocations compositions.
+
+Kinds Functional Application.
+
+FCA Inference / Traversal.
+
+CPPE Contextual Inference.
+
+Sets Model Representation Inferences.
+
+Example: Kind applied to a Resource returns all Statements where the Resource is a player of the Kind.
+
+Given a monadic wrapper (Spring Flux, Mono, for example) for handling streams processing:
+
+aWrappedResource.map(aResourceInstance::apply) : Flux\<AResourceInstanceApplyType\>
+
+Then, Resource(s) applications can be chained and combined by means of stream pipeline composition. 
+
+**Kinds Functional Comprehensions:**
+
+Kinds: extensional functions definitions. Functions Comprehensions: infer Kinds Functions from CPPE embeddings vía Helpers / ML. Resource Merge / Apply: Kinds inferred Functions inference. Kinds are functional given their occurrences in given dimensional contexts. Otherwise, an attribute could have multiple values.
+
+**Monadic merge / fold / unfold:** 
+
+Augmentation pipeline wraps Resources in a stream invocation monadic chain where Resource / Augmentation (see below) merge, fold, unfold methods can be invoked in a functional manner.
+
+Merge: application of aggregated (folded) / de aggregated (unfolded) Resources to output / input streams (augmented with previous merge results) on each key Context Kind (fold) aggregation completion and on each unfold stream scan emitted Resource.
+
+TODO: Resource::apply Helpers Services approaches: FCA, CPPE, RDF inference, Sets, etc. ML Models / LLMs (classification : Aggregation, clustering : Alignment, regression : Activation). Unify Augmentation application Helper Services approaches APIs.
+
+**Materialization of Resources: State / IO**
+
+TODO: Refactor to IO / State Monad. Execution Resource Statements Schema.
+
+“Primitive” Resources (Kinds) shall exist which allows for executable composition of streams models by their types and their internal instance state. Their signature may be a composite traversal of application invocations. For example, for the “createLink” Resource primitive could be invoked like:
+
+createLinkResource::apply(subjectRes : Resource)::apply(predicateRes : Resource)::apply(objectRes : Resource) : Statement Resource
+
+**Merge by means of Resource Application**
+
+Merge phase of pipeline agents processing first applies its input source / production Statement to each corresponding already known Statement. It then recursively applies resulting / inferred application result Resource(s) to the corresponding already known Statement structure composition.
+
+**Folding / Unfolding by means of Resource Application**
+
+Kinds layers (aggregation Statement types) folding and unfolding may be also defined in terms of Resource(s) functional application. Then the streaming pipeline can be built in terms of those operations (merge, fold and unfold) with streaming flows corresponding to each Augmentation pipeline step.
+
+In this way, folding and unfolding would become “contextualized” operations, where each application’s context is the previously applied Resource.
+
+**Persistence and Endpoints Interactions by means of Resource Application**
+
+TODO: A schema shall exist which encodes Persistence IO actions and Endpoints Context Interactions behaviors and executions into Execution Statements Materialization / State IO performances.
+
+TODO:  
+Resource hierarchy application semantics. Full layers types hierarchy (implement all layers models kinds). Template methods. Implementation Language? (Resources, Streams Processing), XSLT?
 
 ## Streaming Agents Augmentation Pipeline {#streaming-agents-augmentation-pipeline}
 
@@ -757,7 +836,37 @@ The core of the framework is the Augmentation pipeline. It orchestrates Aggregat
 
 Each pipeline Agent Service holds state given its previous interactions. Any of the three layers can be considered as a set of processed / known Resources (Statements) it knows about (Graph), given its layer corresponding level of abstraction.
 
-### Streams Augmentation Services Agents Model {#streams-augmentation-services-agents-model}
+### Execution Pipeline Stream {#execution-pipeline-stream}
+
+TODO: To / From Activation / Alignment / Aggregation:  
+Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations. State / IO Monad approach. Monadic Parser Combinator: Behaviors (syntax / grammar,  expressions) expressed as Grammar / Parsed Statements (codat approach).
+
+Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
+
+. Kind Functional & Kinds Application.  
+. Helpers: Index (FCA, Sets, etc.), Registry, Naming.  
+. Graph (Statement\[\]): Merge, Kinds aggregation, fold, unfold : Statement\[\]. By means of Kinds functional and Kinds application.  
+. Kinds aggregation, apply, merge, fold / unfold: Augmentation layers API.  
+. Kind Functional & Kinds Application.  
+. Graph (Statements\[\]): Merge (Kinds Aggregation), Fold, Unfold : Statements\[\]. By means of Kind Functional and Kinds / Resources Application.
+
+Kinds Aggregation, Apply, Merge. Fold / Unfold of (in Augmentation layers):  
+. Resources  
+. Occurrences  
+. Statements  
+. CSPOs  
+. Kinds  
+. Class  
+. Dimension  
+. Interaction
+
+**Layers Augmentation:**
+
+TODO: Translate / Transform upper layers Statements into lower layer Statements and back forth. Layers Hierarchical Statements successive consumed Kinds Aggregation Statements? Merge, Apply, Fold / Unfold. Layers Statements examples.
+
+### Augmentation Services Agents Streams Model {#augmentation-services-agents-streams-model}
+
+Augmentation layers must implement the following abstract Augmentation Operations which will leverage each layer's domain view model processing by means of “applying”, “merging” (matching / aggregating), “folding” (base model into layer domain view model) and “unfolding” (layer domain view model into base model representation) of resources. TODO.
 
 abstract class Augmentation  
 apply(input : Statement\[\]) : Statement\[\]  
@@ -775,15 +884,16 @@ Each Pipeline layer (Aggregation, Alignment, Activation) has its own “template
 
 #### Fold {#fold}
 
-Aggregate Dimensional Kinds Context Statements.  
-Stream “reduce” operation by means of aggregating by common roles.
+Convert input Augmentation base model unified representation resources into layer’s domain view model.
 
 TODO.
 
 #### Unfold {#unfold}
 
-De-Aggregate Dimensional Kinds Context Statements (Dimensional source Statements).  
+Convert layer’s domain view model resources into Augmentation base model unified representation.  
 Streams “scan” operation emitting every unfolded Statement.
+
+TODO.
 
 #### Merge {#merge}
 
@@ -812,7 +922,7 @@ Registry Mapping of Merge encodings.
 
 TODO.
 
-### Augmentation: {#augmentation:}
+## Augmentation Pipeline {#augmentation-pipeline}
 
 What layers consume / produce and how apply, merge, fold, unfold performs on each layer state (graph): TODO. 
 
@@ -1075,125 +1185,22 @@ class Context : Unified API view of FCA Contexts
 
 TODO
 
-### Execution Pipeline Stream: {#execution-pipeline-stream:}
-
-TODO: To / From Activation / Alignment / Aggregation:  
-Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations. State / IO Monad approach. Monadic Parser Combinator: Behaviors (syntax / grammar,  expressions) expressed as Grammar / Parsed Statements (codat approach).
-
-Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
-
-. Kind Functional & Kinds Application.  
-. Helpers: Index (FCA, Sets, etc.), Registry, Naming.  
-. Graph (Statement\[\]): Merge, Kinds aggregation, fold, unfold : Statement\[\]. By means of Kinds functional and Kinds application.  
-. Kinds aggregation, apply, merge, fold / unfold: Augmentation layers API.  
-. Kind Functional & Kinds Application.  
-. Graph (Statements\[\]): Merge (Kinds Aggregation), Fold, Unfold : Statements\[\]. By means of Kind Functional and Kinds / Resources Application.
-
-Kinds Aggregation, Apply, Merge. Fold / Unfold of (in Augmentation layers):  
-. Resources  
-. Occurrences  
-. Statements  
-. CSPOs  
-. Kinds  
-. Class  
-. Dimension  
-. Interaction
-
-**Layers Augmentation:**
-
-TODO: Translate / Transform upper layers Statements into lower layer Statements and back forth. Layers Hierarchical Statements successive consumed Kinds Aggregation Statements? Merge, Apply, Fold / Unfold. Layers Statements examples.
-
-## Homoiconic (code as data) Approach {#homoiconic-(code-as-data)-approach}
-
-TODO: To / From Activation / Alignment / Aggregation:  
-Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations. State / IO Monad approach. Monadic Parser Combinator: Behaviors (syntax / grammar,  expressions) expressed as Grammar / Parsed Statements (codat approach).
-
-Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
-
-Resources (Occurrences, Statements, Contexts, Subjects, Predicates, Objects and their corresponding Kinds) are “functional” entities that can be “applied” to another Resources. The signature of such functional composition is as follows (TODO):
-
-Resource::apply(res: Resource\[\]) : Resource\[\]  
-Resource::merge(res: Resource\[\]) : Resource\[\]  
-Resource::fold(res: Resource\[\]) : Resource\[\]  
-Resource::unfold(res: Resource\[\]) : Resource\[\]
-
-Merging (Kind aggregated) input, unfolded and folded data against previously known data, inferring type, state and contextual relationships is what is meant with “code as data”.
-
-Apply, Merge, Fold, Unfold in terms of Kind functional application. Kind::apply(ctx : Resource, attr : Resource) : Occurrence\[\]
-
-Each Resource hierarchy class has their own overridden implementation of those ‘apply’ methods. The semantics of such “applications” (argument types and return types) are to be defined for each Resource type subclass implementing or overriding the corresponding ‘apply’ methods, their internal state and leveraging the following by means of Helper Services:
-
-Apply as functional graph traversal by invocations compositions.
-
-Kinds Functional Application.
-
-FCA Inference / Traversal.
-
-CPPE Contextual Inference.
-
-Sets Model Representation Inferences.
-
-Example: Kind applied to a Resource returns all Statements where the Resource is a player of the Kind.
-
-Given a monadic wrapper (Spring Flux, Mono, for example) for handling streams processing:
-
-aWrappedResource.map(aResourceInstance::apply) : Flux\<AResourceInstanceApplyType\>
-
-Then, Resource(s) applications can be chained and combined by means of stream pipeline composition. 
-
-**Kinds Functional Comprehensions:**
-
-Kinds: extensional functions definitions. Functions Comprehensions: infer Kinds Functions from CPPE embeddings vía Helpers / ML. Resource Merge / Apply: Kinds inferred Functions inference. Kinds are functional given their occurrences in given dimensional contexts. Otherwise, an attribute could have multiple values.
-
-**Monadic merge / fold / unfold:** 
-
-Augmentation pipeline wraps Resources in a stream invocation monadic chain where Resource / Augmentation (see below) merge, fold, unfold methods can be invoked in a functional manner.
-
-Merge: application of aggregated (folded) / de aggregated (unfolded) Resources to output / input streams (augmented with previous merge results) on each key Context Kind (fold) aggregation completion and on each unfold stream scan emitted Resource.
-
-TODO: Resource::apply Helpers Services approaches: FCA, CPPE, RDF inference, Sets, etc. ML Models / LLMs (classification : Aggregation, clustering : Alignment, regression : Activation). Unify Augmentation application Helper Services approaches APIs.
-
-**Materialization of Resources: State / IO**
-
-TODO: Refactor to IO / State Monad. Execution Resource Statements Schema.
-
-“Primitive” Resources (Kinds) shall exist which allows for executable composition of streams models by their types and their internal instance state. Their signature may be a composite traversal of application invocations. For example, for the “createLink” Resource primitive could be invoked like:
-
-createLinkResource::apply(subjectRes : Resource)::apply(predicateRes : Resource)::apply(objectRes : Resource) : Statement Resource
-
-**Merge by means of Resource Application**
-
-Merge phase of pipeline agents processing first applies its input source / production Statement to each corresponding already known Statement. It then recursively applies resulting / inferred application result Resource(s) to the corresponding already known Statement structure composition.
-
-**Folding / Unfolding by means of Resource Application**
-
-Kinds layers (aggregation Statement types) folding and unfolding may be also defined in terms of Resource(s) functional application. Then the streaming pipeline can be built in terms of those operations (merge, fold and unfold) with streaming flows corresponding to each Augmentation pipeline step.
-
-In this way, folding and unfolding would become “contextualized” operations, where each application’s context is the previously applied Resource.
-
-**Persistence and Endpoints Interactions by means of Resource Application**
-
-TODO: A schema shall exist which encodes Persistence IO actions and Endpoints Context Interactions behaviors and executions into Execution Statements Materialization / State IO performances.
-
-TODO:  
-Resource hierarchy application semantics. Full layers types hierarchy (implement all layers models kinds). Template methods. Implementation Language? (Resources, Streams Processing), XSLT?
-
 ## Messaging Infrastructure {#messaging-infrastructure}
 
 Messaging pipeline:
 
 Endpoints dataflow is configured in this way:
 
-Augmentation::DatasourcePublishing (Datasource::consume)  
-Augmentation::DatasourceConsuming (Datasource::produce)  
-Augmentation::AggregationPublishing (Aggregation::consume)  
-Augmentation::AggregationConsuming (Aggregation::produce)  
-Augmentation::AlignmentPublishing (Alignment::consume)  
-Augmentation::AlignmentConsuming (Alignment::produce)  
-Augmentation::ActivationPublishing (Activation::consume)  
-Augmentation::ActivationConsuming (Activation::produce)  
-Augmentation::APIEndpointPublishing (APIEndpoint::consume)  
-Augmentation::APIEndpointConsuming (APIEndpoint::produce)
+Augmentation::Publishing (Datasource::consume)  
+Augmentation::Consuming (Datasource::produce)  
+Augmentation::Publishing (Aggregation::consume)  
+Augmentation::Consuming (Aggregation::produce)  
+Augmentation::Publishing (Alignment::consume)  
+Augmentation::Consuming (Alignment::produce)  
+Augmentation::Publishing (Activation::consume)  
+Augmentation::Consuming (Activation::produce)  
+Augmentation::Publishing (APIEndpoint::consume)  
+Augmentation::Consuming (APIEndpoint::produce)
 
 Datasource and APIEndpoint are a special type of layer (State IO Monad).
 
@@ -1201,15 +1208,7 @@ Datasource and APIEndpoint are a special type of layer (State IO Monad).
 
 All Base Model entities Statements of each layer type must encode all of their corresponding composing entities in a single message. A Statement containing a specific Kind must encode all its Kind’s composing aggregation Statements, for example. 
 
-Source, Production Messages includes all Statements hierarchy which compose / lead to produced Statements (TreeGraph). Serialization. References to Resources (Registry Helper Service) to reduce message payload size..
-
-## State / IO Functional Addressing Features {#state-/-io-functional-addressing-features}
-
-State Monad.  
-IO Monad.
-
-Datasources interactions.  
-Dynamic API Endpoints interactions.
+Source, Production Messages includes all Statements hierarchy which compose / lead to produced Statements (TreeGraph). Serialization. References to Resources (Registry Helper Service) to reduce message payload size.
 
 ## Datasources {#datasources}
 
