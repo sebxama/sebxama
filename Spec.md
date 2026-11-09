@@ -50,7 +50,7 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Hierarchical Statements Type](#hierarchical-statements-type)
 
-[Kind Statement Types Reification](#kind-statement-types-reification)
+[Kinds Reification Statement Types](#kinds-reification-statement-types)
 
 [Kinds type / state Statements model](#kinds-type-/-state-statements-model)
 
@@ -76,13 +76,13 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Augmentation Services Agents Streams Model](#augmentation-services-agents-streams-model)
 
-[Fold](#fold)
+[Apply](#apply)
 
-[Unfold](#unfold)
+[Fold](#fold)
 
 [Merge](#merge)
 
-[Apply](#apply)
+[Unfold](#unfold)
 
 [Augmentation Pipeline](#augmentation-pipeline)
 
@@ -90,19 +90,19 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Aggregation Agent Domain Model View](#aggregation-agent-domain-model-view)
 
-[Aggregation Agent Merge / Apply / Fold / Unfold](#aggregation-agent-merge-/-apply-/-fold-/-unfold)
+[Aggregation Agent Apply / Fold / Merge / Unfold](#aggregation-agent-apply-/-fold-/-merge-/-unfold)
 
 [Alignment Service Agent](#alignment-service-agent)
 
 [Alignment Agent Domain Model View](#alignment-agent-domain-model-view)
 
-[Alignment Agent Merge / Apply / Fold / Unfold](#alignment-agent-merge-/-apply-/-fold-/-unfold)
+[Alignment Agent Apply / Fold / Merge / Unfold](#alignment-agent-apply-/-fold-/-merge-/-unfold)
 
 [Activation Service Agent](#activation-service-agent)
 
 [Activation Agent Domain Model View](#activation-agent-domain-model-view)
 
-[Activation Agent Merge / Apply / Fold / Unfold](#activation-agent-merge-/-apply-/-fold-/-unfold)
+[Activation Agent Apply / Fold / Merge / Unfold](#activation-agent-apply-/-fold-/-merge-/-unfold)
 
 [Helper Services](#helper-services)
 
@@ -532,7 +532,7 @@ Context, Subject, Predicate, Object (CSPO) Statement Occurrences have a role (Ki
 Kinds: ContextKind, SubjectKind, PredicateKind, ObjectKind (CK, SK, PK, OK) are themselves reifiable as CSPOs (they are Resources) and can participate in a Statement Context as CSPO Occurrences Resources.
 
 **Statements Reification:**  
-Being a Statement an instance of Resource, it can play the Resource role in an Occurrence, being it an Statement Context, Subject, Predicate or Object Occurrence player Resource. This is the case in which Kind Statements and Hierarchical Statements have a Statement as Resource in their Context Occurrence role.
+Being a Statement an instance of Occurrence, it can play the Occurrence role in an Statement, being it an Statement Context, Subject, Predicate or Object Occurrence. This is the case in which Kind Statements and Hierarchical Statements have a Statement in their Context Occurrence role.
 
 ### Statement types {#statement-types}
 
@@ -544,9 +544,7 @@ Being a Statement an instance of Resource, it can play the Resource role in an O
 
 Context : (Context, Subject, Predicate, Object),
 
-Statements are Occurrences of Statement Context Resources.
-
-Statement Occurrences role Kind: Statement ContextKind.
+Statements are Occurrences of Statement Context Resources. Multiple Statements can be Occurrences of the same Resource.
 
 Hierarchical Statements Types:
 
@@ -560,11 +558,19 @@ Hierarchical Statements Types:
 
 Hierarchical reified Containment Statements Occurrences points to the "parent" (containing) Hierarchical Containment Statement.
 
-#### Kind Statement Types Reification {#kind-statement-types-reification}
+Hierarchical Statements types are meant, by means of Statements reification, to encode “order”, or “containment”, relationships between Statements. A hierarchical Statement Context (Context Statement) represents the “parent” or “previous” Statement given an axis and comparison relationship operations.
+
+Ordering axis and comparison relationship operations are given by means of the Statement Subject, Predicate and Object Kinds reified hierarchical Statements (see below). Each Augmentation layer “merge” phase is responsible for populating the Statement Context Occurrence corresponding to the “upper” / “previous” Statement Context. TODO.
+
+Statement Context Occurrences Kind role: Statement Comparison ContextKind (axis and relationships).
+
+#### Kinds Reification Statement Types {#kinds-reification-statement-types}
 
 **ContextKind, SubjectKind, PredicateKind, ObjectKind Statements:**
 
 Kinds are reified as materialized Hierarchical Statements.
+
+Kinds Hierarchical Statements Contexts references the “super” or “previous” Kind in relation to the Kind Statement Occurrence.
 
 Kind Statement Structure:  
 Kind : (ParentKind, PlayerTypeOccurrence, AttributeTypeOccurrence, AttributeValueOccurrence).
@@ -688,56 +694,32 @@ Alignment: Dimensional / Links inference / Matching
 Activation: DCI / Declarative Runtime  
 APIEndpoints: State / IO
 
-**Source Statements:**
-
-Base Model Statements:
-
-(Context, Subject, Predicate, Object)
-
-**Hierarchical Statements:**
-
-Context : (Context, Subject, Predicate, Object)
-
-**Kinds (Hierarchical) Statements:**
-
-CK : (CK, S, P, O)  
-SK : (SK, S, P, O)  
-PK : (PK, P, S, O)  
-OK : (OK, O, P, S)
-
-**Flatten (fold):**
-
-Transform of Statements: Subjects and Objects as attribute (Kinds) values:
-
-(CK, PK, SK, S)  
-(CK, PK, OK, O)
-
 ### Augmentation Layers Models: {#augmentation-layers-models:}
 
 Base Model views "upper" ontologies (from Base Model upper ontology types instances).
 
-Reify each type's CSPOs?
+Reified Hierarchical Statements. Augmentation layers merge phase populates / updates hierarchical Statements Contexts (aggregates order and context over axis relationships) and performs layers core business logic.
 
 **Aggregation:**
 
 Class : (Class, Instance, Attribute, Value)  
-Instance : (Instance, Class, Attribute, Value)?  
-Attribute : (Attribute, Class, Instance, Value)?  
-Value : (Value, Class, Instance, Attribute)?
+Instance : (Instance, Class, Attribute, Value)  
+Attribute : (Attribute, Value, Class, Instance)  
+Value : (Value, Class, Instance, Attribute)
 
 **Alignment:**
 
 Dimension : (Dimension, Fact, Axis, Value)  
-Fact :  (Fact, Dimension, Axis, Value)?  
-Axis : (Axis, Dimension, Fact, Value)?  
-Value : (Value, Dimension, Fact, Axis)?
+Fact :  (Fact, Dimension, Axis, Value)  
+Axis : (Axis, Value, Dimension, Fact)  
+Value : (Value, Dimension, Fact, Axis)
 
 **Activation:**
 
 Interaction : (Interaction, Context, Role, Actor)  
-Context : (Context, Interaction, Role, Actor)?  
-Role : (Role, Context, Interaction, Actor)?  
-Actor : (Actor, Interaction, Context, Role)?
+Context : (Context, Interaction, Role, Actor)  
+Role : (Role, Actor, Interaction, Context)  
+Actor : (Actor, Interaction, Context, Role)
 
 ## State IO and layers Upper Ontologies Views Alignment {#state-io-and-layers-upper-ontologies-views-alignment}
 
@@ -882,20 +864,28 @@ class Activation extends Augmentation
 
 Each Pipeline layer (Aggregation, Alignment, Activation) has its own “template” methods.
 
+#### Apply {#apply}
+
+Main Augmentation Layer entry point / event loop. Consumes, Folds, Merges, Unfolds and Publishes merged Statements.
+
+TODO.
+
 #### Fold {#fold}
 
 Convert input Augmentation base model unified representation resources into layer’s domain view model.
 
-TODO.
+**Flatten (fold):**
 
-#### Unfold {#unfold}
+Transform of Statements: Subjects and Objects as attribute (Kinds) values:
 
-Convert layer’s domain view model resources into Augmentation base model unified representation.  
-Streams “scan” operation emitting every unfolded Statement.
+(CK, PK, SK, S)  
+(CK, PK, OK, O)
 
 TODO.
 
 #### Merge {#merge}
+
+Perform Hierarchical Statements Contexts Aggregation. Perform core layers business logic.
 
 Identity Resolution driven. TODO: Find the way of unambiguously identifying concepts (Resources, Occurrences, Statements, SPOs, Kinds) equivalent (in a given role occurrence in a given context).
 
@@ -918,7 +908,10 @@ Naming Scheme:
 Name assignment for inferred entities.  
 Registry Mapping of Merge encodings.
 
-#### Apply {#apply}
+#### Unfold {#unfold}
+
+Convert layer’s domain view augmented (merged) model resources into Augmentation base model unified representation for publishing back into the Augmentation service.  
+Streams “scan” operation emitting every unfolded Statement.
 
 TODO.
 
@@ -947,7 +940,10 @@ TODO (CSPOs, CK, SK, PK, OK).
 
 **Aggregation domain view:**
 
-Class : (Class, Instance, Attribute, Value) : DOM (Dynamic Object Model) Statements
+Class : (Class, Instance, Attribute, Value)  
+Instance : (Instance, Class, Attribute, Value)  
+Attribute : (Attribute, Value, Class, Instance)  
+Value : (Value, Class, Instance, Attribute)
 
 * Class Statements are Occurrences of Parent Class Statements (Class Context).  
 * Until Class definition context. Instance Containment / Order (occurrence state / temporal? parts) hierarchies.
@@ -980,7 +976,7 @@ To Aggregated:
 (Husband, :aPerson, :marriedWith :anoterPerson)  
 (Husband, :aPerson, :marryDate :aDate)...
 
-#### Aggregation Agent Merge / Apply / Fold / Unfold {#aggregation-agent-merge-/-apply-/-fold-/-unfold}
+#### Aggregation Agent Apply / Fold / Merge / Unfold {#aggregation-agent-apply-/-fold-/-merge-/-unfold}
 
 See: Homoiconic (code as data) approach.  
 TODO.
@@ -1008,7 +1004,10 @@ TODO (CSPOs, CK, SK, PK, OK).
 
 **Alignment domain view:**
 
-Dimension : (Dimension, Fact, Axis, AxisValue) : Dimensional Alignment
+Dimension : (Dimension, Fact, Axis, Value)  
+Fact :  (Fact, Dimension, Axis, Value)  
+Axis : (Axis, Value, Dimension, Fact)  
+Value : (Value, Dimension, Fact, Axis)
 
 * Facts table with dimensions tables FKs. Graph / Quad Statements encoding from Aggregation Statements.  
 * Dimension Statements are Occurrences of Parent Dimension Statement context..  
@@ -1045,7 +1044,7 @@ To Aligned:
 (Marriage, :aMarriage, :husband, :aPerson)  
 (Marriage, :aMarriage, :wife, :anotherPerson)
 
-#### Alignment Agent Merge / Apply / Fold / Unfold {#alignment-agent-merge-/-apply-/-fold-/-unfold}
+#### Alignment Agent Apply / Fold / Merge / Unfold {#alignment-agent-apply-/-fold-/-merge-/-unfold}
 
 See: Homoiconic (code as data) approach.  
 TODO.
@@ -1073,7 +1072,10 @@ TODO (CSPOs, CK, SK, PK, OK).
 
 **Activation domain view:**
 
-Interaction : (Interaction, Context, Role, Actor) : DCI (Data, Context, Interaction)
+Interaction : (Interaction, Context, Role, Actor)  
+Context : (Context, Interaction, Role, Actor)  
+Role : (Role, Actor, Interaction, Context)  
+Actor : (Actor, Interaction, Context, Role)
 
 * Interaction Statements are Occurrences of parent Statement Context.
 
@@ -1120,7 +1122,7 @@ aCreditInteraction: (:aTransferInteraction, AccountCredit, :amount, :anAmount)
 
 TODO.
 
-#### Activation Agent Merge / Apply / Fold / Unfold {#activation-agent-merge-/-apply-/-fold-/-unfold}
+#### Activation Agent Apply / Fold / Merge / Unfold {#activation-agent-apply-/-fold-/-merge-/-unfold}
 
 Outline Grammar (Statement rules / productions, monadic parser) Driven Activation Runtime Behavior modelling.
 
