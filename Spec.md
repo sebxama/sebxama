@@ -16,6 +16,8 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Base Model](#base-model)
 
+[Base Model Statements](#base-model-statements)
+
 [Resources](#resources)
 
 [Occurrences](#occurrences)
@@ -32,6 +34,8 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Kinds](#kinds)
 
+[Kinds Aggregation](#kinds-aggregation)
+
 [Context Kinds](#context-kinds)
 
 [Subject Kinds](#subject-kinds)
@@ -44,6 +48,8 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Statements](#statements)
 
+[Statements Alignment](#statements-alignment)
+
 [Statement types](#statement-types)
 
 [Raw Statements Type](#raw-statements-type)
@@ -54,17 +60,23 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Kinds type / state Statements model](#kinds-type-/-state-statements-model)
 
-[SPO Reification](#spo-reification)
-
 [Execution Model: Augmentation Pipeline Agents](#execution-model:-augmentation-pipeline-agents)
+
+[Resource Activation](#resource-activation)
 
 [Augmentation Unified Underlying Base Model](#augmentation-unified-underlying-base-model)
 
-[Base Model Statements](#base-model-statements)
-
 [Augmentation Layers: Augment Underlying Base Model](#augmentation-layers:-augment-underlying-base-model)
 
-[Augmentation Layers Models:](#augmentation-layers-models:)
+[Base Model Statements](#base-model-statements-1)
+
+[Augmentation Layers Models (Base Model Views)](#augmentation-layers-models-\(base-model-views\))
+
+[Aggregation Layer Model View](#aggregation-layer-model-view)
+
+[Alignment Layer Model View](#alignment-layer-model-view)
+
+[Activation Layer Model View](#activation-layer-model-view)
 
 [State IO and layers Upper Ontologies Views Alignment](#state-io-and-layers-upper-ontologies-views-alignment)
 
@@ -72,9 +84,13 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Streaming Agents Augmentation Pipeline](#streaming-agents-augmentation-pipeline)
 
+[Messaging Infrastructure](#messaging-infrastructure)
+
+[Messaging Format Representation: TreeGraph](#messaging-format-representation:-treegraph)
+
 [Execution Pipeline Stream](#execution-pipeline-stream)
 
-[Augmentation Services Agents Streams Model](#augmentation-services-agents-streams-model)
+[Augmentation Services Agents Streams API](#augmentation-services-agents-streams-api)
 
 [Apply](#apply)
 
@@ -84,7 +100,7 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 
 [Unfold](#unfold)
 
-[Augmentation Pipeline](#augmentation-pipeline)
+[Augmentation Agents](#augmentation-agents)
 
 [Aggregation Service Agent](#aggregation-service-agent)
 
@@ -111,10 +127,6 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareA
 [Naming Service](#naming-service)
 
 [Index Service](#index-service)
-
-[Messaging Infrastructure](#messaging-infrastructure)
-
-[Messaging Format Representation: TreeGraph](#messaging-format-representation:-treegraph)
 
 [Datasources](#datasources)
 
@@ -344,7 +356,7 @@ This can be regarded as “reverse engineering” of business applications rende
 
 * **Intra-Application Schema and Type Discovery (Data Aggregation)**: Raw RDF graph statements exported from individual backend datasources can be processed to infer hidden object types, property definitions, and relational schemas. For example, analyzing raw triple statements like (:dev1, :worksOn, :projA) allows the framework to infer a structural DeveloperWorksOnProject schema with defined domain (Developer) and range (Project) types.  
 * **Inter-Application Entity and Identity Resolution (Information Alignment)**: Equivalent entities and relationships across disparate backend streams can be merged, filling in missing attributes or cross-system links. This includes discovering structural analogies across different domain contexts, such as recognizing that Employee is to Employer in a corporate backend as Student is to School in an academic backend.  
-* **State Transition and Event Flow Tracking (Information Alignment)**: Sequential data updates within or across applications can be mapped into ordered state networks. For instance, tracking previous, current, and next (PCN) states allows systems to infer behavioral paths like (Single, Marriage, Married) or employment cycles like (Unemployed, Employment, Employee). This knowledge is dimensionally aggregated by means of Kind Dimensional Context Statements (ContextKinds) axes points resolution.  
+* **State Transition and Event Flow Tracking (Information Alignment)**: Sequential data updates within or across applications can be mapped into ordered state networks. For instance, tracking previous, current, and next (PCN) states allows systems to infer behavioral paths like (Single, Marriage, Married) or employment cycles like (Unemployed, Employment, Employee). This knowledge is dimensionally aggregated by means of Kind Dimensional Context Statements (Alignment Dimensional Model View)..  
 * **Cross-System DCI Contexts and Role Executions (Knowledge Activation)**: Inter-application interactions are mapped into executable Data-Context-Interaction (DCI) contexts. Multi-department operational scenarios—such as linking employee role definitions, position timelines, and departmental interactions—are unified into an executable context statement like (EmploymentContextCK, EmploymentInteractionSK, EmploymentPositionRolePK, EmploymentEmployeeActorOK).
 
 * The framework infers Use Case types by modeling them as Contexts and Roles.  
@@ -375,6 +387,10 @@ The pipeline integrates source system data through three sequential stream proce
 By merging, folding, and unfolding these statement streams, the facade infers resource types, matches equivalent entities across disparate datasources, and completes missing attributes to expose the resulting behaviors as a unified, executable Activation domain model.
 
 # Base Model {#base-model}
+
+**Base Common Underlying Metamodel Entities:**
+
+The Augmentation Pipeline is responsible for a publish / subscribe events mechanism of Base Model Underlying Metamodel Entities Messages. Augmentation layers (Aggregation, Alignment and Activation) are responsible for handling the incoming base model entities, “folding” them into their layer’s domain model views, “merging” (perform core layer functional business logic) those folded model statements and “unfolding” the model views merged representation into Base Model Common Underlying Metamodel Entities for consumption by the Augmentation Pipeline.
 
 class Resource  
 \+ ID : URI  
@@ -411,7 +427,7 @@ abstract class Kind\<PlayerType extends Resource,
 getPlayers : PlayerType\[\]  
 getAttributes(player : PlayerType) : AttributeType\[\]  
 getValues(player : PlayerType, attribute : AttributeType) : ValueType\[\]  
-getStatements() : Statement\[\]  
+getKindStatements() : Statement\[\]  
 getOccurrences() : Occurrence\[\]
 
 class ContextKind extends Kind\<SubjectKind, PredicateKind, ObjectKind\>
@@ -422,13 +438,22 @@ class PredicateKind extends Kind\<Predicate, Subject, Object\>
 
 class ObjectKind extends Kind\<Object, Predicate, Subject\>
 
+### Base Model Statements {#base-model-statements}
+
+Resource : (Resource, Statement, Occurrence, Kind)  
+Statement : (Occurrence, Occurrence, Occurrence, Occurrence)  
+Occurrence : (Occurrence, Statement, Resource, Kind)  
+Kind : (Kind, Resource, Statement, Occurrence)
+
+TODO (CSPOs, CK, SK, PK, OK).
+
 ## Resources {#resources}
 
 Everything is a Resource identified by an URI, assigned a Prime Number ID, keeping track of its Occurrences and thus enabling the calculation of their CPPE (Prime Number Contextual Embedding) by means of the product of its Prime Number ID by the Prime Number IDs of the other Resources in their aggregated Occurrences contexts.
 
 ## Occurrences {#occurrences}
 
-Participation of a Resource in an Statement occurrence playing a given role Kind in a given occurrence context (Statement) SPO role. Occurrence role Kinds are of their corresponding CSPO Kinds counterparts (ContextKind, SubjectKind, PredicateKind, ObjectKind) respectively.
+Participation of a Resource in an Statement occurrence playing a given role Kind in a given occurrence context (Statement) CSPO role. Occurrence role Kinds are of their corresponding CSPO Kinds counterparts (ContextKind, SubjectKind, PredicateKind, ObjectKind) respectively.
 
 ## Context, Subject, Predicate, Object Resources {#context,-subject,-predicate,-object-resources}
 
@@ -458,13 +483,9 @@ Resource (URI) whose Occurrences are the Statements in which this Resource URI o
 
 Kinds are a typing mechanism that performs aggregation by means of a Kind’s PlayerType parameter type instances sharing the same AttributeType parameter type instances (type aggregation) and sharing the corresponding AttributeValue parameter type instances for those AttributeType instances (state aggregation).
 
-A Kind is defined by all of the Statements on which the Kind occurs as the Kind role of a corresponding CSPO Occurrence. So, Kinds can be viewed as a set of CSPO Statements where the Subjects are the corresponding aggregated PlayerType instances, the Predicates are the corresponding aggregated AttributeType instances and the Objects are the corresponding aggregated AttributeValue instances.  
+A Kind is defined by all of the Statements on which the Kind occurs as the Kind role of a corresponding CSPO Occurrence. So, Kinds can be viewed as a set of CSPO Statements where the Subjects are the corresponding Kind aggregated PlayerType instances, the Predicates are the corresponding aggregated Kind AttributeType instances and the Objects are the corresponding aggregated Kind AttributeValue instances.
 
-Occurrences sharing common Attributes (type) and common Attribute Values (state) are aggregated into the same Kinds. They are Resources, reifiable as Context, Subject, Predicate, Object Occurrence Resources playing the role of the Kind corresponding to its given Kind type aggregation (meta type) by their CSPO position.
-
-**Kinds Aggregation:**
-
-Kinds aggregation is performed before the merge phase of an Augmentation pipeline layer. Resulting Kinds are merged into the same Kinds until Kinds identifying the same / equivalent instances are found. Kinds Player Type(s) Attribute Type(s) groups equivalent types. Kinds Attribute Type(s) Value Type(s) groups instances of a type in an equivalent state. Merge of Kinds determines whether Kinds are of the same type, same state and, if it is the case, whether two Kinds hold instances that are equivalent (same as).
+Occurrences sharing common Attributes (type) and common Attribute Values (state) are aggregated into the same Kinds. They are Resources, reifiable as Context, Subject, Predicate, Object Occurrence Resources. Kinds as Occurrences Resources have their corresponding Kind (Meta Kind) in turn.
 
 **Kinds hierarchies, basic inheritance:**
 
@@ -473,6 +494,14 @@ Subject Kind: If a Subject attribute set is the superset of another Subject attr
 **Kinds ordering:**
 
 A Subject “extended” (attributes subset) by another Subject attributes set can be regarded as being “before” the first Subject. This assumes the existence of a super type is necessary for the existence of a sub type.
+
+### Kinds Aggregation {#kinds-aggregation}
+
+Kinds Aggregation is performed in the Aggregation Augmentation Pipeline layer merge phase. Consumed (Augmentation listened) Augmentation Underlying Base Model Statements are “folded” into Aggregation domain view model (Class, Instance, Attribute, Value) Statements, for example, and “merged” by means of FCA Concept Lattices Contexts arrangements. 
+
+Resulting Classes / Instances are merged into the same Classes / Instances (Statements) and their Attributes and Attribute values are merged, or inferred if not available. This by means of Class, Instance, Attribute and Values equivalence measurements until the case where two entities are deemed of being “equals” (same as). TODO: Class, Instance, Attribute, Value Matching Inference.
+
+Then, merge phase results are to be converted (unfolded) back into Augmentation Underlying Base Model Statements to be published into the Augmentation Pipeline Unified Endpoint.
 
 ### Context Kinds {#context-kinds}
 
@@ -534,6 +563,10 @@ Kinds: ContextKind, SubjectKind, PredicateKind, ObjectKind (CK, SK, PK, OK) are 
 **Statements Reification:**  
 Being a Statement an instance of Occurrence, it can play the Occurrence role in an Statement, being it an Statement Context, Subject, Predicate or Object Occurrence. This is the case in which Kind Statements and Hierarchical Statements have a Statement in their Context Occurrence role.
 
+### Statements Alignment {#statements-alignment}
+
+Statements Alignment is performed in the Alignment Augmentation Pipeline layer merge phase. Consumed (Augmentation listened) Augmentation Underlying Base Model Statements are “folded” into Alignment domain view model (Dimension, Fact, Axis, AxisValue) Statements, for example, and “merged” by means of Dimension, Fact, Axis and Axis Values aggregation.
+
 ### Statement types {#statement-types}
 
 #### Raw Statements Type {#raw-statements-type}
@@ -544,7 +577,7 @@ Being a Statement an instance of Occurrence, it can play the Occurrence role in 
 
 Context : (Context, Subject, Predicate, Object),
 
-Statements are Occurrences of Statement Context Resources. Multiple Statements can be Occurrences of the same Resource.
+Statements who are Occurrences of Statement Context Resources. Multiple Statements can be Occurrences of the same Statement Occurrence Resource.
 
 Hierarchical Statements Types:
 
@@ -554,7 +587,7 @@ Hierarchical Statements Types:
 * ObjectKind Statements,  
 * Aggregation Class Statements (DOM),  
 * Alignment Dimension Statements (Alignment),  
-* Activation Context Statements (DCI)
+* Activation Interaction Statements (DCI)
 
 Hierarchical reified Containment Statements Occurrences points to the "parent" (containing) Hierarchical Containment Statement.
 
@@ -602,28 +635,18 @@ OK : (OK, O, P, S)
 Kind type Statements: Employee
 
 * For all Kind Resource Occurrences Attributes / Attributes Values (all states)  
-* SubjectKind (Employee) : (EmployeeSubjectOccurrence, SubjectKindParentContext :Person, AttributeTypeOccurrence, AttributeValueOccurrence)
+* SubjectKind (Employee) : (SubjectKindParentContext :Person, EmployeeSubjectOccurrence, AttributeTypeOccurrence, AttributeValueOccurrence)
 
-Kind state Statements: GoogleEmployee / HighSalaryEmployee / RemoteEmployee
+Kind state Statements: GoogleEmployee
 
-* SubjectKind (GoogleEmployee) : (EmployeeSubjectOccurrence, SubjectKindParentContext :Employee, Attribute :employer, Value :Google)  
+* SubjectKind (GoogleEmployee) : (SubjectKindParentContext :Employee, EmployeeSubjectOccurrence, Attribute :employer, Value :Google)  
 * Attributes, Values: Placeholders / Kinds.
 
-Resource multiple Occurrences different Kinds.
-
-Kind super / sub Kind (type / state) traversal API.
-
-Kind Resource Occurrence: Meta Kind.
-
-#### SPO Reification {#spo-reification}
-
-Statement layers: SPOs as Subject arrangements (views). Hierarchical Statement Types (as with Kind Statements). Reify C, S, P, O Occurrences also as Statements with their corresponding Occurrence role Kinds (for example, for FCA Contexts):
-
-Subject : (Context, Subject, Predicate, Object)  
-Predicate : (Context, Predicate, Subject, Object)  
-Object : (Context, Object, Predicate, Subject)
-
-SPOs Kinds until singleton Kinds (individuals / occurrences, i.e: Peter Kind). From types to instances.  Reify singleton Kinds as Kind Statements. Materialize layers Kinds / Interactions State changes. Streams: apply, merge, fold, unfold.
+TODO: Kind API:  
+Kind super / sub Kind (type / state) traversal API.  
+Kind Resource Occurrence: Meta Kind.  
+Resource multiple Occurrences different Kinds.  
+Functional / Helpers.
 
 # Execution Model: Augmentation Pipeline Agents {#execution-model:-augmentation-pipeline-agents}
 
@@ -637,45 +660,31 @@ Augmentation and Augmentation layers Agents hold “state” (graphs) of previou
 
 This “blackboard” approach is intended to be implemented in a reactive functional streams pipeline manner where each agent consumes and produces knowledge asynchronously and in parallel.
 
+### Resource Activation {#resource-activation}
+
+Resource Activation is performed in the Activation Augmentation Pipeline layer merge phase. Consumed (Augmentation listened) Augmentation Underlying Base Model Statements are “folded” into Activation domain view model (Interaction, Context, Role, Actor) Statements, for example, and “merged” by means of Interactions, Contexts, Roles and Actors aggregation.
+
+TODO. Resource Mime Types, JAF: JavaBeans Activation Framework. DCI / DDD Design Pattern.
+
 ## Augmentation Unified Underlying Base Model {#augmentation-unified-underlying-base-model}
 
-An Augmentation Unified Underlying Model (graph) is to be handled by the Augmentation orchestration Agent. Augmentation Layers parse “views” of this knowledge graph, “augments” those “views” and publishes them back into the Augmentation Agent base model endpoint. Each Augmentation layer Agent is responsible for the translation of base model knowledge (Statements) into layers specific “views” domain models and for translating them back into base model representations for unified model synchronization.
+An Augmentation Unified Underlying Base Model (graph) is to be handled by the Augmentation Orchestration Agent and exposed as a publish / subscribe endpoint for Augmentation layers to consume / produce. Augmentation Layers parse “views” (folds) of this knowledge graph, “augments” (merge) those “views” and publishes them back into the Augmentation Agent base model endpoint (unfolds). Each Augmentation layer Agent is responsible for the translation of base model knowledge Statements into layers specific “views” domain models and for translating them back into base model representations for unified model synchronization.
 
-Augmentation and Augmentation layers Agents should have a declarative “upper” ontology which enables seamless translation from Augmentation knowledge to layer “views” representations of this knowledge and back.
-
-Reify each type's CSPOs?
-
-Hierarchical Statements?
+Augmentation and Augmentation layers Agents should have declarative “upper” ontologies available which enable seamless translation from Augmentation knowledge to layer “views” representations of this knowledge and back.
 
 Message (Statements / Graph) IO should be handled in a pure functional fashion by means of an State / IO Monadic approach.
 
-Underlying Model (Base Model):
+## Augmentation Layers: Augment Underlying Base Model {#augmentation-layers:-augment-underlying-base-model}
 
-* Resource  
-* Occurrence  
-* Statement  
-* Kinds;  
-  * Context Kind  
-  * Subject Kind  
-  * Predicate Kind  
-  * Object Kind
+Augmentation layers: Aggregate, Align and Activate underlying model “views” of domain knowledge.
 
-Endpoints dataflow is configured in this way:
+Datasources: State / IO  
+Aggregation: DOM / FCA. Type / State inference  
+Alignment: Dimensional / Links inference / Ontology Matching  
+Activation: DCI / Declarative Runtime  
+APIEndpoints: State / IO 
 
-Augmentation::Publishing (Datasource::consume)  
-Augmentation::Consuming (Datasource::produce)  
-Augmentation::Publishing (Aggregation::consume)  
-Augmentation::Consuming (Aggregation::produce)  
-Augmentation::Publishing (Alignment::consume)  
-Augmentation::Consuming (Alignment::produce)  
-Augmentation::Publishing (Activation::consume)  
-Augmentation::Consuming (Activation::produce)  
-Augmentation::Publishing (APIEndpoint::consume)  
-Augmentation::Consuming (APIEndpoint::produce)
-
-Datasource and APIEndpoint are a special type of layer (State IO Monad).
-
-### Base Model Statements {#base-model-statements}
+### Base Model Statements {#base-model-statements-1}
 
 Resource : (Resource, Statement, Occurrence, Kind)  
 Statement : (Occurrence, Occurrence, Occurrence, Occurrence)  
@@ -684,37 +693,27 @@ Kind : (Kind, Resource, Statement, Occurrence)
 
 TODO (CSPOs, CK, SK, PK, OK).
 
-## Augmentation Layers: Augment Underlying Base Model {#augmentation-layers:-augment-underlying-base-model}
-
-Augmentation layers: Aggregate, Align and Activate underlying model “views” of domain knowledge.
-
-Datasources: State / IO  
-Aggregation: DOM / FCA. Type / State inference  
-Alignment: Dimensional / Links inference / Matching  
-Activation: DCI / Declarative Runtime  
-APIEndpoints: State / IO
-
-### Augmentation Layers Models: {#augmentation-layers-models:}
+### Augmentation Layers Models (Base Model Views) {#augmentation-layers-models-(base-model-views)}
 
 Base Model views "upper" ontologies (from Base Model upper ontology types instances).
 
 Reified Hierarchical Statements. Augmentation layers merge phase populates / updates hierarchical Statements Contexts (aggregates order and context over axis relationships) and performs layers core business logic.
 
-**Aggregation:**
+#### Aggregation Layer Model View {#aggregation-layer-model-view}
 
 Class : (Class, Instance, Attribute, Value)  
 Instance : (Instance, Class, Attribute, Value)  
 Attribute : (Attribute, Value, Class, Instance)  
 Value : (Value, Class, Instance, Attribute)
 
-**Alignment:**
+#### Alignment Layer Model View {#alignment-layer-model-view}
 
 Dimension : (Dimension, Fact, Axis, Value)  
 Fact :  (Fact, Dimension, Axis, Value)  
 Axis : (Axis, Value, Dimension, Fact)  
 Value : (Value, Dimension, Fact, Axis)
 
-**Activation:**
+#### Activation Layer Model View {#activation-layer-model-view}
 
 Interaction : (Interaction, Context, Role, Actor)  
 Context : (Context, Interaction, Role, Actor)  
@@ -738,6 +737,8 @@ Augmentation Base Model Graph read / writes, Aggregation, Alignment and Activati
 State / IO world “state” preserved, history of previous stateful operations. Augmentation and Augmentation layers graphs.
 
 ### Homoiconic (code as data) Approach {#homoiconic-(code-as-data)-approach}
+
+**Layers Merge Implementation:**
 
 TODO: To / From Activation / Alignment / Aggregation:  
 Materialize Interactions State changes (i.e.: accountBalance). Encode State Behavior / Operations. State / IO Monad approach. Monadic Parser Combinator: Behaviors (syntax / grammar,  expressions) expressed as Grammar / Parsed Statements (codat approach).
@@ -818,6 +819,31 @@ The core of the framework is the Augmentation pipeline. It orchestrates Aggregat
 
 Each pipeline Agent Service holds state given its previous interactions. Any of the three layers can be considered as a set of processed / known Resources (Statements) it knows about (Graph), given its layer corresponding level of abstraction.
 
+## Messaging Infrastructure {#messaging-infrastructure}
+
+Messaging pipeline:
+
+Endpoints dataflow is configured in this way:
+
+Augmentation::Publishing (Datasource::consume)  
+Augmentation::Consuming (Datasource::produce)  
+Augmentation::Publishing (Aggregation::consume)  
+Augmentation::Consuming (Aggregation::produce)  
+Augmentation::Publishing (Alignment::consume)  
+Augmentation::Consuming (Alignment::produce)  
+Augmentation::Publishing (Activation::consume)  
+Augmentation::Consuming (Activation::produce)  
+Augmentation::Publishing (APIEndpoint::consume)  
+Augmentation::Consuming (APIEndpoint::produce)
+
+Datasource and APIEndpoint are a special type of layer (State IO Monad).
+
+### Messaging Format Representation: TreeGraph {#messaging-format-representation:-treegraph}
+
+All Base Model entities Statements of each layer type must encode all of their corresponding composing entities in a single message. A Statement containing a specific Kind must encode all its Kind’s composing aggregation Statements, for example. 
+
+Source, Production Messages includes all Statements hierarchy which compose / lead to produced Statements (TreeGraph). Serialization. References to Resources (Registry Helper Service) to reduce message payload size.
+
 ### Execution Pipeline Stream {#execution-pipeline-stream}
 
 TODO: To / From Activation / Alignment / Aggregation:  
@@ -846,7 +872,7 @@ Kinds Aggregation, Apply, Merge. Fold / Unfold of (in Augmentation layers):
 
 TODO: Translate / Transform upper layers Statements into lower layer Statements and back forth. Layers Hierarchical Statements successive consumed Kinds Aggregation Statements? Merge, Apply, Fold / Unfold. Layers Statements examples.
 
-### Augmentation Services Agents Streams Model {#augmentation-services-agents-streams-model}
+### Augmentation Services Agents Streams API {#augmentation-services-agents-streams-api}
 
 Augmentation layers must implement the following abstract Augmentation Operations which will leverage each layer's domain view model processing by means of “applying”, “merging” (matching / aggregating), “folding” (base model into layer domain view model) and “unfolding” (layer domain view model into base model representation) of resources. TODO.
 
@@ -915,7 +941,7 @@ Streams “scan” operation emitting every unfolded Statement.
 
 TODO.
 
-## Augmentation Pipeline {#augmentation-pipeline}
+## Augmentation Agents {#augmentation-agents}
 
 What layers consume / produce and how apply, merge, fold, unfold performs on each layer state (graph): TODO. 
 
@@ -1187,36 +1213,15 @@ class Context : Unified API view of FCA Contexts
 
 TODO
 
-## Messaging Infrastructure {#messaging-infrastructure}
-
-Messaging pipeline:
-
-Endpoints dataflow is configured in this way:
-
-Augmentation::Publishing (Datasource::consume)  
-Augmentation::Consuming (Datasource::produce)  
-Augmentation::Publishing (Aggregation::consume)  
-Augmentation::Consuming (Aggregation::produce)  
-Augmentation::Publishing (Alignment::consume)  
-Augmentation::Consuming (Alignment::produce)  
-Augmentation::Publishing (Activation::consume)  
-Augmentation::Consuming (Activation::produce)  
-Augmentation::Publishing (APIEndpoint::consume)  
-Augmentation::Consuming (APIEndpoint::produce)
-
-Datasource and APIEndpoint are a special type of layer (State IO Monad).
-
-### Messaging Format Representation: TreeGraph {#messaging-format-representation:-treegraph}
-
-All Base Model entities Statements of each layer type must encode all of their corresponding composing entities in a single message. A Statement containing a specific Kind must encode all its Kind’s composing aggregation Statements, for example. 
-
-Source, Production Messages includes all Statements hierarchy which compose / lead to produced Statements (TreeGraph). Serialization. References to Resources (Registry Helper Service) to reduce message payload size.
-
 ## Datasources {#datasources}
+
+Special kind of Augmentation Pipeline Layer (publishes / subscribes). TODO.
 
 Raw RDF CSPO URIs Quad Statement Messages Endpoint. Configured to produce configured datasource data and to consume updated Statements synchronizing state. 
 
 ## Dynamic API Endpoints {#dynamic-api-endpoints}
+
+Special kind of Augmentation Pipeline Layer (publishes / subscribes). TODO.
 
 Activation pipeline layer production messages I/O API Facade for rendering Dynamic API Endpoints. Execution Approach: State / Representational Resources Conversation IO.
 
